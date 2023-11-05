@@ -1,0 +1,17 @@
+variables:
+  APP_NAME: "hsse"
+  IMAGE_NAME: $APP_NAME-$CI_COMMIT_BRANCH
+  NAMESPACE_DEV: "kf-asd-hsseonline-dev"
+  NAMESPACE_STAGING: "kf-asd-hsseonline-staging"
+  NAMESPACE_PROD: "kf-asd-hsseonline-prod"
+  APP_URL_DEV: "http://hsse-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id/"
+  APP_URL_STAGING: ""
+  APP_URL_PROD: ""
+  APP_SECRET_DEV: "f74dbfca92d237ea3df102f581344277"
+  APP_SECRET_STAGING: "d96d8e5865448044931906e97cd8ffc7"
+  APP_SECRET_PROD: "6a06905f8d2e430026a2b12f200acbab"
+
+include:
+  - project: "asd/base"
+    ref: "master"
+    file: "/frontend/gitlab-ci/.nextjs-ci-podman.yml"
