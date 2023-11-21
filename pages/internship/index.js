@@ -146,9 +146,8 @@ const MasterUser = (props) => {
   return (
     <div>
       <BreadCrumbs
-        breadCrumbParent="Master"
-        breadCrumbParent2="Intern"
-        breadCrumbActive="List"
+        breadCrumbParent="Internship"
+        breadCrumbActive="Attendance List"
       />
       <div className="d-flex align-items-center my-3">
         <Button.Ripple

@@ -14,7 +14,6 @@ import DashboardChart from "components/Dashboard/DashboardChart";
 import DashboardComplaint from "components/Dashboard/DashboardComplaint";
 import { useRouter } from "next/router";
 import useMobileDetector from "components/useMobileDetector";
-import HomeMobile from "components/Mobile_version/Home/Index";
 import DashboardAccident from "components/Dashboard/DashboardAccident";
 import DashboardNearmiss from "components/Dashboard/DashboardNearmiss";
 import DashboardVictim from "components/Dashboard/DashboardVictim";
@@ -57,32 +56,26 @@ const Home = ({ userRoles, query, roles }) => {
 
   return (
     <>
-      {isMobileWidth ? (
-        <HomeMobile user={userRoles?.user} moduleMobile={moduleMobile} />
-      ) : (
-        <>
-          <div className="mt-3">
-            <Dashboard />
-            <div className="mt-1"></div>
-          </div>
-          <div className="mt-3">
-            <DashboardChart />
-          </div>
-          <div className="mt-3">
-            <DashboardComplaint />
-            <div className="mt-2"></div>
-          </div>
-          <div className="mt-3">
-            <DashboardAccident />
-          </div>
-          <div className="mt-3">
-            <DashboardNearmiss />
-          </div>
-          <div className="mt-3">
-            <DashboardVictim />
-          </div>
-        </>
-      )}
+      <div className="mt-3">
+        <Dashboard />
+        <div className="mt-1"></div>
+      </div>
+      <div className="mt-3">
+        <DashboardChart />
+      </div>
+      <div className="mt-3">
+        <DashboardComplaint />
+        <div className="mt-2"></div>
+      </div>
+      <div className="mt-3">
+        <DashboardAccident />
+      </div>
+      <div className="mt-3">
+        <DashboardNearmiss />
+      </div>
+      <div className="mt-3">
+        <DashboardVictim />
+      </div>
     </>
   );
 };

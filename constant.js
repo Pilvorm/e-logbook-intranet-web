@@ -8,8 +8,50 @@ export const HTTP_CODE = {
   CONFLICT: 409,
 };
 
-export const SUPER_USER = "HSSE-SU"
-export const SYSTEM_ADMIN = "HSSE-SYSADMIN"
+export const SITE_DATA = [
+  {
+    id: 1,
+    value: 'PT ABC',
+    name: 'PT ABC',
+    label: 'PT ABC'
+  },
+  {
+    id: 2,
+    value: 'PT DEF',
+    name: 'PT DEF',
+    label: 'PT DEF'
+  },
+  {
+    id: 3,
+    value: 'PT XYZ',
+    name: 'PT XYZ',
+    label: 'PT XYZ'
+  }
+]
+
+export const DEPARTMENT_DATA = [
+  {
+    id: 1,
+    value: 'Corporate IT',
+    name: 'Corporate IT',
+    label: 'Corporate IT'
+  },
+  {
+    id: 2,
+    value: 'Corporate Digital',
+    name: 'Corporate Digital',
+    label: 'Corporate Digital'
+  },
+  {
+    id: 3,
+    value: 'Corporate Analyst',
+    name: 'Corporate Analys',
+    label: 'Corporate Analys'
+  }
+]
+
+export const SUPER_USER = "HSSE-SU";
+export const SYSTEM_ADMIN = "HSSE-SYSADMIN";
 
 export const AUTH_URL =
   typeof window === "undefined"
@@ -31,10 +73,15 @@ export const MODULE_URL =
     ? process.env.NEXT_PUBLIC_API_MODULE
     : process.env.NEXT_PUBLIC_API_MODULE;
 
-export const INVENTORY_URL =
+export const API_GLOBAL_SBU_URL =
   typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_SERVER_API_INVENTORY
-    : process.env.NEXT_PUBLIC_SERVER_API_INVENTORY;
+    ? process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_SBU
+    : process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_SBU;
+
+export const API_GLOBAL_COMPANY_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_COMPANY
+    : process.env.NEXT_PUBLIC_SERVER_API_GLOBAL_COMPANY;
 
 export const API_MASTER =
   "http://hsseonline-master-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id";
@@ -56,26 +103,6 @@ export const API_INVENTORY =
 
 export const API_NEARMISS =
   "http://hsseonline-nearmiss-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id/api/HsseOnlineNearmiss";
-
-export const API_P3K =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_CLIENT_API_P3K
-    : process.env.NEXT_PUBLIC_SERVER_API_P3K;
-
-export const API_GLOBAL_SBU_URL =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_SBU
-    : process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_SBU;
-
-export const API_GLOBAL_COMPANY_URL =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_COMPANY
-    : process.env.NEXT_PUBLIC_SERVER_API_GLOBAL_COMPANY;
-
-export const API_GLOBAL_INSPECTION =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_SERVER_API_INSPECTION
-    : process.env.NEXT_PUBLIC_SERVER_API_INSPECTION;
 
 export const API_ROLES =
   // "http://kf-asd-role-development-kf-asd-apiglobal-dev.apps.alpha.kalbe.co.id/api/Role/GetBySearchKey";

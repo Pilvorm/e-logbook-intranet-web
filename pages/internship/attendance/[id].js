@@ -14,7 +14,6 @@ import {
   Check,
   ExternalLink,
 } from "react-feather";
-import ReactPaginate from "react-paginate";
 import {
   Button,
   Card,
@@ -58,19 +57,15 @@ const InternshipAttendance = (props) => {
 
   console.log(dataMasterUser);
 
-  const pageSizeOptions = ["February 2023", "March", "April"];
-  const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
-  const [pageNumber, setPageNumber] = useState(query?.pageNumber ?? 1);
-  const [searchQuery, setSearchQuery] = useState(query?.search ?? "");
-
-  const [visibleFilter, setVisibleFilter] = useState(false);
-  const toggleFilterPopup = () => setVisibleFilter(!visibleFilter);
+  const monthOptions = ["February 2023", "March", "April"];
+  const [month, setMomnth] = useState(query?.month ?? "February");
 
   useEffect(() => {
     dispatch(reauthenticate(token));
   }, [dispatch]);
 
-  const handlePageSize = (value) => {
+
+  const handleMonthChange = (value) => {
     setPageSize(value);
 
     router.push({
@@ -84,32 +79,6 @@ const InternshipAttendance = (props) => {
     });
   };
 
-  const handlePagination = (page) => {
-    setPageNumber(page.selected + 1);
-
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...dataFilter,
-        pageSize: pageSize,
-        pageNumber: page.selected + 1,
-        search: searchQuery,
-      },
-    });
-  };
-
-  const handleSearchQuery = () => {
-    router.push({
-      pathname: router.pathname,
-      query: {
-        ...dataFilter,
-        pageSize: pageSize,
-        pageNumber: "",
-        search: searchQuery,
-      },
-    });
-  };
-
   const handleDelete = (e, data) => {
     e.preventDefault();
     confirmAlertNotification(
@@ -118,27 +87,7 @@ const InternshipAttendance = (props) => {
       () => {
         dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
           (res) => {
-            console.log(res);
-            if (res.status === HTTP_CODE.UNAUTHORIZED) {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            } else if (res.status === 200) {
-              successAlertNotification(
-                "Deleted Success",
-                "Successfully Deleted Item"
-              );
-              router.push({
-                pathname: router.pathname,
-                query: { pageSize, pageNumber, searchQuery },
-              });
-            } else {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            }
+            
           }
         );
       }
@@ -195,10 +144,10 @@ const InternshipAttendance = (props) => {
             className="form-control ml-1 pr-5"
             type="select"
             id="rows-per-page"
-            value={pageSize}
-            onChange={(e) => handlePageSize(e.target.value)}
+            value={month}
+            onChange={(e) => handleMonthChange(e.target.value)}
           >
-            {pageSizeOptions.map((opt) => (
+            {monthOptions.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
@@ -294,33 +243,12 @@ const InternshipAttendance = (props) => {
           md="9"
           sm="12"
         >
-          <p className="mb-0" style={{ color: "#b9b9c3" }}>
-            Showing 1 to {pageSize} of {dataMasterUser.totalData} entries
-          </p>
         </Col>
         <Col
           className="d-flex align-items-center justify-content-end"
           md="3"
           sm="12"
         >
-          <ReactPaginate
-            onPageChange={(page) => handlePagination(page)}
-            forcePage={pageNumber - 1}
-            pageCount={dataMasterUser.totalPage || 1}
-            nextLabel={""}
-            breakLabel={"..."}
-            activeClassName={"active"}
-            pageClassName={"page-item"}
-            previousLabel={""}
-            nextLinkClassName={"page-link"}
-            nextClassName={"page-item next-item"}
-            previousClassName={"page-item prev-item"}
-            previousLinkClassName={"page-link"}
-            pageLinkClassName={"page-link"}
-            breakClassName="page-item"
-            breakLinkClassName="page-link"
-            containerClassName={"pagination react-paginate m-0"}
-          />
         </Col>
       </Row>
     </div>
@@ -367,20 +295,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
       !isSuperUser && !isSystemAdmin ? sessionData.user.UserPrincipalName : "";
 
     store.dispatch(reauthenticate(token));
-
-    await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 10,
-        query.search || "",
-        query.name || "",
-        query.username || "",
-        userCompCode || query.companyCode,
-        query.email || "",
-        query.roleName || "",
-        userUPN || query.creator
-      )
-    );
 
     const dataMasterUser = store.getState().masterUserReducers;
 

@@ -241,13 +241,52 @@ const MasterIntern = (props) => {
             <th>Name</th>
             <th>Department</th>
             <th>Company</th>
-            <th>Supervisor</th>
+            <th>Mentor</th>
             <th>School/College</th>
             <th>Faculty</th>
             <th>Internship Period</th>
           </tr>
         </thead>
         <tbody className="text-center text-break">
+          <tr>
+            <td>
+              <UncontrolledDropdown>
+                <DropdownToggle
+                  className="icon-btn hide-arrow"
+                  id="optionsSelect"
+                  color="transparent"
+                  size="sm"
+                  caret
+                >
+                  <MoreVertical size={15} />
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem
+                    className="w-100"
+                    id="editBtn"
+                  >
+                    <Edit className="mr-50" size={15} />
+                    <span className="align-middle">Edit</span>
+                  </DropdownItem>
+                  {/* //{data.status === "DRAFT" && ( */}
+                  <DropdownItem
+                    className="w-100"
+                  >
+                    <Trash className="mr-50" size={15} />
+                    <span className="align-middle">Delete</span>
+                  </DropdownItem>
+                  {/* )} */}
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </td>
+            <td>Daniel Emerald Sumarly</td>
+            <td>CIT</td>
+            <td>PT XYZ</td>
+            <td>Joko Chandra</td>
+            <td>Binus University</td>
+            <td>Computer Science</td>
+            <td>February 2023 - February 2024</td>
+          </tr>
         </tbody>
       </Table>
       <Row className="mt-1 mb-3">
@@ -320,10 +359,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
     }
 
     const isSuperUser = userRoles.some((role) => role.RoleCode === SUPER_USER);
-    const isSystemAdmin = userRoles.some((role) => role.RoleCode === SYSTEM_ADMIN);
+    const isSystemAdmin = userRoles.some(
+      (role) => role.RoleCode === SYSTEM_ADMIN
+    );
 
     let userCompCode = isSuperUser ? sessionData.user.CompCode : "";
-    let userUPN = (!isSuperUser && !isSystemAdmin) ? sessionData.user.UserPrincipalName : "";
+    let userUPN =
+      !isSuperUser && !isSystemAdmin ? sessionData.user.UserPrincipalName : "";
 
     store.dispatch(reauthenticate(token));
 
@@ -337,7 +379,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userCompCode || query.companyCode,
         query.email || "",
         query.roleName || "",
-        userUPN || query.creator,
+        userUPN || query.creator
       )
     );
 
