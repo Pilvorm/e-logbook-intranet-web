@@ -226,9 +226,9 @@ const MasterInternDetail = (props) => {
 
   return (
     <div className="min-vh-100">
-      <BreadCrumbs breadCrumbParent="Master" breadCrumbActive="Role" />
+      <BreadCrumbs breadCrumbParent="Master" breadCrumbParent2="Intern" breadCrumbActive="Edit" />
       <div className="d-flex align-items-center my-3">
-        <h2>Add User</h2>
+        <h2>Edit Intern</h2>
       </div>
 
       <Card>
