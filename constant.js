@@ -50,6 +50,21 @@ export const DEPARTMENT_DATA = [
   }
 ]
 
+export const ROLE_DATA = [
+  {
+    roleCode: 'ELB-MENTOR',
+    roleName: 'MENTOR'
+  },
+  {
+    roleCode: 'ELB-HR',
+    roleName: 'HUMAN RESOURCES'
+  },
+  {
+    roleCode: 'ELB-SYSADMIN',
+    roleName: 'SYSTEM ADMIN'
+  }
+]
+
 export const SUPER_USER = "HSSE-SU";
 export const SYSTEM_ADMIN = "HSSE-SYSADMIN";
 
@@ -89,21 +104,6 @@ export const API_MASTER =
 export const API_USER_PROFILE =
   "http://kf-asd-userprofile-development-kf-asd-apiglobal-dev.apps.alpha.kalbe.co.id/api/UserProfile";
 
-export const API_MASTER_AREA =
-  "http://hsseonline-master-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id";
-
-export const API_MASTER_LOKASI =
-  "http://hsseonline-master-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id";
-
-export const API_KECELAKAAN_KERJA =
-  "http://hsseonline-kecelakaankerja-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id/api/HsseOnlineKecelakaanKerja";
-
-export const API_INVENTORY =
-  "http://hsseonline-inventory-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id/api/Inventory";
-
-export const API_NEARMISS =
-  "http://hsseonline-nearmiss-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id/api/HsseOnlineNearmiss";
-
 export const API_ROLES =
   // "http://kf-asd-role-development-kf-asd-apiglobal-dev.apps.alpha.kalbe.co.id/api/Role/GetBySearchKey";
   USER_ROLE_URL + "/api/Role/GetBySearchKey";
@@ -118,8 +118,3 @@ export const NEXT_PUBLIC_GLOBAL_LOGGER_API =
   typeof window === "undefined"
     ? process.env.NEXT_PUBLIC_GLOBAL_LOGGER_API
     : process.env.NEXT_PUBLIC_GLOBAL_LOGGER_API;
-
-export const NEXT_PUBLIC_SERVER_API_PENGADUAN =
-  typeof window === "undefined"
-    ? process.env.NEXT_PUBLIC_SERVER_API_PENGADUAN
-    : process.env.NEXT_PUBLIC_SERVER_API_PENGADUAN;

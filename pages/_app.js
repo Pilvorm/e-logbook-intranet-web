@@ -85,8 +85,8 @@ const App = ({ Component, pageProps: { session, ...pageProps } }) => {
     <>
       <SessionProvider session={pageProps.session}>
         <Head>
-          <title>HSSE - Kalbe Farma</title>
-          <meta property="og:title" content="HSSE - Kalbe Farma" key="title" />
+          <title>E-Logbook - XYZ</title>
+          <meta property="og:title" content="E-Logbook - XYZ" key="title" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>

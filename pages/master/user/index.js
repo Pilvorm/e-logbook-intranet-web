@@ -241,7 +241,7 @@ const MasterUser = (props) => {
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
-            <th>Company</th>
+            <th>Site</th>
             <th>Jabatan</th>
             <th>Role</th>
           </tr>

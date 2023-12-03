@@ -163,7 +163,7 @@ const MasterUser = (props) => {
           </span>
         </Button.Ripple>
 
-        <h2 className={`ml-2 pl-2 border-left-dark`}>Intern List</h2>
+        <h2 className={`ml-2 pl-2 border-left-dark`}>Internship Attendance</h2>
       </div>
 
       <Card className="p-2">

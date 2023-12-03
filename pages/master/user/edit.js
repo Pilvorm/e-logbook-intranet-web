@@ -226,9 +226,9 @@ const MasterUserDetail = (props) => {
 
   return (
     <div className="min-vh-100">
-      <BreadCrumbs breadCrumbParent="Master" breadCrumbActive="Role" />
+      <BreadCrumbs breadCrumbParent="Master" breadCrumbParent2="User" breadCrumbActive="Edit" />
       <div className="d-flex align-items-center my-3">
-        <h2>Edit User - cek format master user hsse</h2>
+        <h2>Edit User</h2>
       </div>
 
       <Card>
@@ -360,6 +360,9 @@ const MasterUserDetail = (props) => {
                             /> */}
                       </FormGroup>
                     </Col>
+                    <Col md="6"></Col>
+                  </Row>
+                  <Row>
                     <Col md="6">
                       <FormGroup tag={Col} md="12">
                         <Label className="form-label font-weight-bold">
@@ -370,6 +373,25 @@ const MasterUserDetail = (props) => {
                           type="text"
                           placeholder="User Principal Name"
                           value={"joko.chandra@xyz.co.id"}
+                          // defaultValue={selectedName?.email}
+                          onChange={handleChange("upn")}
+                          disabled
+                        />
+                        {errors.email && (
+                          <div className="text-danger">{errors.email}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup tag={Col} md="12">
+                        <Label className="form-label font-weight-bold">
+                          Email
+                        </Label>
+                        <Input
+                          id="upn"
+                          type="text"
+                          placeholder="User Principal Name"
+                          value={"jokochndr@gmail.com"}
                           // defaultValue={selectedName?.email}
                           onChange={handleChange("upn")}
                           disabled
@@ -401,7 +423,7 @@ const MasterUserDetail = (props) => {
                       </FormGroup>
                     </Col>
                     <Col md="6">
-                    <FormGroup tag={Col} md="12">
+                      <FormGroup tag={Col} md="12">
                         <Label className="form-label font-weight-bold">
                           Jabatan
                         </Label>
@@ -418,17 +440,6 @@ const MasterUserDetail = (props) => {
                           <div className="text-danger">{errors.email}</div>
                         )}
                       </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col md="6">
-                      <FormGroup tag={Col} md="12">
-                        <Label className="form-label font-weight-bold">
-                          Mentor
-                        </Label>
-                      </FormGroup>
-                    </Col>
-                    <Col md="6">
                     </Col>
                   </Row>
                 </Container>

@@ -30,20 +30,21 @@ const MyCustomRadio = ({
                     <div
                       className={
                         isRow
-                          ? `col-4 d-flex flex align-items-center mb-0 mt-0 w-100`
+                          ? `d-flex flex align-items-center mb-0 mt-0`
                           : `col-12 d-flex flex align-items-center mb-0 mt-0`
                       }
+                      style={isRow && {marginRight: 20}}
                     >
                       <input
                         type="radio"
                         id={option.key}
                         {...field}
-                        style={{ height: 20, width: 20 }}
+                        style={{ height: 20, width: 20}}
                         value={option.value}
                         checked={field.value === option.value}
                       />
                       <span className="d-flex w-full" style={{ marginLeft: 10 }} htmlFor={option.key}>
-                        {option.value}
+                        {option.label}
                       </span>
                     </div>
                   </React.Fragment>
