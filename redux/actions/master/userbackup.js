@@ -49,7 +49,7 @@ export const getAllMasterUser =
           name: name ?? "",
           username: username ?? "",
           email: email ?? "",
-          creator: creator ?? "",
+          creator: creator ?? ""
         },
       });
 
@@ -59,29 +59,35 @@ export const getAllMasterUser =
     }
   };
 
-export const getAllMasterUserInternal = (param) => async (dispatch) => {
-  const header = getHeaders(store.getState().authReducers.token);
+export const getMasterUser =
+  (upn, applicationCode = "HSSEONLINE", companyCode = "") =>
+  async (dispatch) => {
+    const header = getHeaders(store.getState().authReducers.token);
 
-  try {
-    const response = await axios({
-      url: API_MASTER + "/UserInternal/GetUserInternal",
-      method: "GET",
-      headers: { ...header, ...param },
-    });
+    try {
+      const response = await axios({
+        url: `${API_USER_ROLES}/GetUserMultipleRolesByUPNAppCode`,
+        method: "GET",
+        params: {
+          UPN: `${upn}`,
+          ApplicationCode: `${applicationCode}`,
+          CompanyCode: companyCode,
+        },
+        headers: { ...header },
+      });
 
-    dispatch({ type: GET_ALL_MASTER_USER, payload: response.data });
-    return response;
-  } catch (error) {
-    return error.response;
-  }
-};
+      return response;
+    } catch (error) {
+      return error.response;
+    }
+  };
 
 export const createMasterUser = (data) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
   try {
     const response = await axios({
-      url: API_MASTER + "/UserInternal",
+      url: USER_ROLE_URL + "/api/UserRoles/SaveRoleWithApprovalChanges",
       method: "POST",
       headers: header,
       data,

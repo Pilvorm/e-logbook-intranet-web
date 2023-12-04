@@ -98,8 +98,10 @@ export const API_GLOBAL_COMPANY_URL =
     ? process.env.NEXT_PUBLIC_CLIENT_API_GLOBAL_COMPANY
     : process.env.NEXT_PUBLIC_SERVER_API_GLOBAL_COMPANY;
 
-export const API_MASTER =
-  "http://hsseonline-master-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id";
+export const API_MASTER = "https://goshawk-trusty-vertically.ngrok-free.app/api"
+
+// export const API_MASTER =
+//   "http://hsseonline-master-development-kf-asd-hsseonline-dev.apps.alpha.kalbe.co.id";
 
 export const API_USER_PROFILE =
   "http://kf-asd-userprofile-development-kf-asd-apiglobal-dev.apps.alpha.kalbe.co.id/api/UserProfile";

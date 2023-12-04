@@ -141,7 +141,7 @@ const LoginPage = (props) => {
                 tag="h2"
                 className="text-center font-weight-bold mt-2 mb-4"
               >
-                HSSE
+                E-Logbook
               </CardTitle>
               <Form
                 className="auth-login-form mt-2"
@@ -207,9 +207,9 @@ const LoginPage = (props) => {
               </Form>
             </div>
             <div className="auth-footer-btn d-flex flex-column justify-content-center align-items-center my-2">
-              <p className="m-0">HSSE Version {metadata.appVersion}</p>
+              <p className="m-0">E-Logbook Version {metadata.appVersion}</p>
               <p className="m-0">
-                &#169;{new Date().getFullYear()} - PT. Kalbe Farma Tbk.
+                &#169;{new Date().getFullYear()} - PT. XYZ Tbk.
               </p>
             </div>
           </Col>
@@ -314,7 +314,7 @@ const LoginPage = (props) => {
                   tag="h2"
                   className="text-center font-weight-bold mt-2 mb-4"
                 >
-                  HSSE
+                  E-Logbook
                 </CardTitle>
                 <Form
                   method="POST"
@@ -390,9 +390,9 @@ const LoginPage = (props) => {
                 </Form>
               </div>
               <div className="auth-footer-btn d-flex flex-column justify-content-center align-items-center my-2">
-                <p className="m-0">HSSE Version {metadata.appVersion}</p>
+                <p className="m-0">E-Logbook Version {metadata.appVersion}</p>
                 <p className="m-0">
-                  &#169;{new Date().getFullYear()} - PT. Kalbe Farma Tbk.
+                  &#169;{new Date().getFullYear()} - PT. XYZ Tbk.
                 </p>
               </div>
             </Col>
@@ -440,7 +440,7 @@ const LoginPage = (props) => {
                   tag="h2"
                   className="text-center font-weight-bold mt-2 mb-4"
                 >
-                  HSSE
+                  E-Logbook
                 </CardTitle>
                 <Form
                   className="auth-login-form mt-2"
@@ -540,9 +540,9 @@ const LoginPage = (props) => {
                 </Col>
               </div>
               <div className="auth-footer-btn d-flex flex-column justify-content-center align-items-center my-2">
-                <p className="m-0">HSSE Version {metadata.appVersion}</p>
+                <p className="m-0">E-Logbook Version {metadata.appVersion}</p>
                 <p className="m-0">
-                  &#169;{new Date().getFullYear()} - PT. Kalbe Farma Tbk.
+                  &#169;{new Date().getFullYear()} - PT. XYZ Tbk.
                 </p>
               </div>
             </Col>

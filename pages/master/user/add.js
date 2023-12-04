@@ -44,10 +44,10 @@ import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
 import { searchRole, searchUser } from "helpers/master/masterRole";
-import { getAllMasterUser, createMasterUser } from "redux/actions/master/user";
+import { getAllMasterUser, createMasterUser, getAllMasterUserInternal, } from "redux/actions/master/user";
 import debounce from "lodash/debounce";
 
-const MasterRole = (props) => {
+const AddMasterUser = (props) => {
   const { dataRoles, dataMasterUser, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -96,31 +96,6 @@ const MasterRole = (props) => {
     []
   );
 
-  // Handling role
-  const [role, setRole] = useState([]);
-
-  const addRole = (data) => {
-    let tempRole = role;
-
-    tempRole.push({
-      roleCode: data.roleCode,
-      roleName: data.roleName,
-    });
-
-    setRole(tempRole);
-  };
-
-  const removeRole = (data) => {
-    let tempRole = role;
-
-    tempRole.splice(
-      tempRole.findIndex((dataRole) => dataRole.roleCode === data.roleCode),
-      1
-    );
-
-    setRole(tempRole);
-  };
-
   const [checkedItems, setCheckedItems] = useState({});
 
   useEffect(() => {
@@ -153,33 +128,35 @@ const MasterRole = (props) => {
       userPrincipalName,
       name,
       email,
-      companyCode,
-      companyName,
-      jabatan,
+      jobTitle,
+      deptName,
+      compCode,
+      compName,
     } = values;
 
     let bodyData = {
-      nik,
       userPrincipalName,
+      nik,
       name,
       email,
-      userRoles: role,
-      companyCode,
-      companyName,
-      applicationCode: "HSSEONLINE",
-      jabatan,
-      notes: "-",
-      isActive: true,
+      jobTitle,
+      deptName,
+      userRoles,
+      compCode,
+      compName,
       createdDate: new Date(),
       createdBy: sessionData?.user?.UserPrincipalName || "",
       updatedDate: new Date(),
       updatedBy: sessionData?.user?.UserPrincipalName || "",
     };
 
+    console.log("BODYYY")
+    console.log(bodyData)
+
     if (bodyData.userRoles.length === 0) {
       return errorAlertNotification(
         "Validation Error",
-        `Please select at least one role`
+        `Please select a role`
       );
     }
 
@@ -192,20 +169,20 @@ const MasterRole = (props) => {
 
     confirmAlertNotification(
       "Add New User",
-      "Apakah Anda yakin submit data ini?",
+      "Are you sure to add new user?",
       () => {
         actions.setSubmitting(true);
         dispatch(createMasterUser(bodyData)).then((res) => {
           if (res.status >= 200 && res.status <= 300) {
             actions.setSubmitting(false);
-            successAlertNotification("Success", "Data berhasil disimpan");
-            router.push("/hsse/master/user");
+            successAlertNotification("Success", "Data saved succesfully");
+            router.push("/master/user");
           } else {
             actions.setSubmitting(false);
             console.error(res);
             errorAlertNotification(
               "Error",
-              res?.data?.message ? res?.data?.message : "Data gagal disimpan."
+              res?.data?.message ? res?.data?.message : "Failed to save data"
             );
           }
         });
@@ -268,18 +245,15 @@ const MasterRole = (props) => {
               <Formik
                 enableReinitialize
                 initialValues={{
-                  nik: selectedName?.nik ?? "",
                   userPrincipalName: selectedName?.userPrincipalName ?? "",
+                  nik: selectedName?.nik ?? "",
                   name: selectedName?.name ?? "",
                   email: selectedName?.email ?? "",
+                  jobTitle: selectedName?.jobTtlName ?? "",
+                  deptName: selectedName?.divName ?? "",
+                  compCode: selectedName?.compCode ?? "",
+                  compName: selectedName?.compName ?? "",
                   userRoles: [],
-                  applicationCode: selectedName?.applicationCode ?? "",
-                  companyCode: selectedName?.compCode ?? "",
-                  companyName: selectedName?.compName ?? "",
-                  clusterCode: selectedName?.clusterCode ?? "",
-                  orgType: selectedName?.orgType ?? "",
-                  jabatan: selectedName?.jobTtlName ?? "",
-                  notes: "",
                 }}
                 validationSchema={validationSchema}
                 onSubmit={onSubmit}
@@ -371,8 +345,8 @@ const MasterRole = (props) => {
                                 setFieldValue("name", e.name);
                                 setSelectedName(e);
                                 findUser(e.name);
-                                setRole([]);
-                                setFieldValue("userRoles", []);
+                                // setRole([]);
+                                // setFieldValue("userRoles", []);
                               }}
                               placeholder={
                                 selectedName?.name || "Search by name or email"
@@ -465,9 +439,9 @@ const MasterRole = (props) => {
                               onChange={handleChange("jabatan")}
                               disabled
                             />
-                            {errors.jobTtlName && (
+                            {errors.jobTitle && (
                               <div className="text-danger">
-                                {errors.jobTtlName}
+                                {errors.jobTitle}
                               </div>
                             )}
                           </FormGroup>
@@ -484,20 +458,20 @@ const MasterRole = (props) => {
                             <h5>Role</h5>
                             <div className="demo-inline-spacing">
                               <CustomRadio
-                                name="jenisInsiden"
+                                name="userRoles"
                                 options={[
                                   {
-                                    value: "ELB-MENTOR",
+                                    value: "Mentor",
                                     label: "MENTOR",
                                     key: "mentor",
                                   },
                                   {
-                                    value: "ELB-HR",
+                                    value: "HR",
                                     label: "HUMAN RESOURCES",
                                     key: "HR",
                                   },
                                   {
-                                    value: "ELB-SYSADMIN",
+                                    value: "Admin",
                                     label: "SYSTEM ADMIN",
                                     key: "admin",
                                   },
@@ -529,7 +503,7 @@ const MasterRole = (props) => {
   );
 };
 
-MasterRole.getLayout = function getLayout(page) {
+AddMasterUser.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -555,12 +529,21 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const dataRoles = store.getState().masterRoleReducers;
 
     await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 1000,
-        query.search || "",
-        query.name || ""
-      )
+      getAllMasterUserInternal({
+        "CSTM-COMPID": sessionData.user.CompCode,
+        "CSTM-NAME": sessionData.user.Name,
+        "CSTM-EMAIL": sessionData.user.Email,
+        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-UPN": sessionData.user.UserPrincipalName,
+        "X-PAGINATION": true,
+        "X-PAGE": query.pageNumber || 1,
+        "X-PAGESIZE": query.pageSize || 10,
+        "X-ORDERBY": "createdDate",
+        "X-SEARCH": `*${query.search || ""}*`,
+        // "X-FILTER": `${
+        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        // }`,
+      })
     );
 
     const dataMasterUser = store.getState().masterUserReducers;
@@ -576,4 +559,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default MasterRole;
+export default AddMasterUser;

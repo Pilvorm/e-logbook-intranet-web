@@ -48,7 +48,7 @@ import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 import debounce from "lodash/debounce";
 
-const MasterUserDetail = (props) => {
+const EditMasterUser = (props) => {
   const { dataRoles, dataMasterUser, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -186,14 +186,14 @@ const MasterUserDetail = (props) => {
         dispatch(createMasterUser(bodyData)).then((res) => {
           if (res.status >= 200 && res.status <= 300) {
             actions.setSubmitting(false);
-            successAlertNotification("Success", "Data berhasil disimpan");
-            router.push("/hsse/master/user");
+            successAlertNotification("Success", "Data saved succesfully");
+            router.push("/master/user");
           } else {
             actions.setSubmitting(false);
             console.error(res);
             errorAlertNotification(
               "Error",
-              res?.data?.message ? res?.data?.message : "Data gagal disimpan."
+              res?.data?.message ? res?.data?.message : "Failed to save data"
             );
           }
         });
@@ -461,7 +461,7 @@ const MasterUserDetail = (props) => {
   );
 };
 
-MasterUserDetail.getLayout = function getLayout(page) {
+EditMasterUser.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -508,4 +508,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default MasterUserDetail;
+export default EditMasterUser;

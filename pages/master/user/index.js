@@ -34,6 +34,7 @@ import {
   getAllMasterUser,
   deleteMasterUser,
   getSbuAsyncSelect,
+  getAllMasterUserInternal,
 } from "redux/actions/master/user";
 import { wrapper } from "redux/store";
 
@@ -54,6 +55,7 @@ const MasterUser = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log("MASTER USER");
   console.log(dataMasterUser);
 
   const pageSizeOptions = [5, 10, 15, 20];
@@ -247,7 +249,7 @@ const MasterUser = (props) => {
           </tr>
         </thead>
         <tbody className="text-center text-break">
-          {/* {dataMasterUser &&
+          {dataMasterUser &&
             dataMasterUser.data.map((user) => (
               <tr key={user.nik}>
                 <td>
@@ -264,11 +266,11 @@ const MasterUser = (props) => {
                     <DropdownMenu>
                       <DropdownItem
                         className="w-100"
-                        onClick={() =>
-                          router.push(
-                            `/hsse/master/user/edit?UPN=${user.userPrincipalName}&ApplicationCode=HSSEONLINE&CompanyCode=`
-                          )
-                        }
+                        // onClick={() =>
+                        //   router.push(
+                        //     `/hsse/master/user/edit?UPN=${user.userPrincipalName}&ApplicationCode=HSSEONLINE&CompanyCode=`
+                        //   )
+                        // }
                         id="editBtn"
                       >
                         <Edit className="mr-50" size={15} />
@@ -288,8 +290,8 @@ const MasterUser = (props) => {
                 <td className="text-uppercase">{user.name}</td>
                 <td className="text-lowercase">{user.userPrincipalName}</td>
                 <td className="text-lowercase">{user.email}</td>
-                <td>{user.companyName}</td>
-                <td>{user.jabatan}</td>
+                <td>{user.compName}</td>
+                <td>{user.jobTitle}</td>
                 <td>
                   {user.userRoles.map((users, index, obj) => (
                     <small key={users.nik}>
@@ -299,7 +301,7 @@ const MasterUser = (props) => {
                   ))}
                 </td>
               </tr>
-            ))} */}
+            ))}
         </tbody>
       </Table>
       <Row className="mt-1 mb-3">
@@ -363,34 +365,38 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const token = sessionData.user.token;
 
-    let userRoles = [];
-
-    try {
-      userRoles = JSON.parse(sessionData.user.Roles);
-    } catch (error) {
-      console.error("Error parsing user roles JSON:", error);
-    }
-
-    const isSuperUser = userRoles.some((role) => role.RoleCode === SUPER_USER);
-    const isSystemAdmin = userRoles.some((role) => role.RoleCode === SYSTEM_ADMIN);
-
-    let userCompCode = isSuperUser ? sessionData.user.CompCode : "";
-    let userUPN = (!isSuperUser && !isSystemAdmin) ? sessionData.user.UserPrincipalName : "";
-
     store.dispatch(reauthenticate(token));
 
+    // await store.dispatch(
+    //   getAllMasterUser(
+    //     query.pageNumber || 1,
+    //     query.pageSize || 10,
+    //     query.search || "",
+    //     query.name || "",
+    //     query.username || "",
+    //     userCompCode || query.companyCode,
+    //     query.email || "",
+    //     query.roleName || "",
+    //     userUPN || query.creator,
+    //   )
+    // );
+
     await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 10,
-        query.search || "",
-        query.name || "",
-        query.username || "",
-        userCompCode || query.companyCode,
-        query.email || "",
-        query.roleName || "",
-        userUPN || query.creator,
-      )
+      getAllMasterUserInternal({
+        "CSTM-COMPID": sessionData.user.CompCode,
+        "CSTM-NAME": sessionData.user.Name,
+        "CSTM-EMAIL": sessionData.user.Email,
+        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-UPN": sessionData.user.UserPrincipalName,
+        "X-PAGINATION": true,
+        "X-PAGE": query.pageNumber || 1,
+        "X-PAGESIZE": query.pageSize || 10,
+        "X-ORDERBY": "createdDate",
+        "X-SEARCH": `*${query.search || ""}*`,
+        // "X-FILTER": `${
+        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        // }`,
+      })
     );
 
     const dataMasterUser = store.getState().masterUserReducers;

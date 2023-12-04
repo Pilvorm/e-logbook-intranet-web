@@ -16,7 +16,7 @@ const LoadingIndicator = () => {
           height={logoScalingFactor * 1154}
         />
         <div className="border-left ml-4 pl-4 py-2">
-          <h1 className="m-0">HSSE</h1>
+          <h1 className="m-0">E-Logbook</h1>
           <p className="m-0">{`v${metadata.appVersion}`}</p>
         </div>
       </div>
