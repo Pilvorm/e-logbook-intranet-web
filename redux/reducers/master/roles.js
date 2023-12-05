@@ -9,11 +9,11 @@ const masterRoleReducers = (state = initialState, action) => {
     case GET_ALL_ROLES:
       return {
         ...state,
-        data: action.payload.data,
+        data: action.payload,
       };
     case RE_GET_ROLES:
       return {
-        data: action.payload.data,
+        data: action.payload,
       };
     default:
       return state;

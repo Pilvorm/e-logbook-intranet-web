@@ -226,7 +226,7 @@ const MasterUser = (props) => {
               id="buttonCreate"
               name="buttonCreate"
               className="btn-next mr-1"
-              onClick={() => router.push("/hsse/master/user/add")}
+              onClick={() => router.push("/master/user/add")}
             >
               <Plus size={18} />
               <span className="align-middle ml-1 d-sm-inline-block d-none">
@@ -266,11 +266,11 @@ const MasterUser = (props) => {
                     <DropdownMenu>
                       <DropdownItem
                         className="w-100"
-                        // onClick={() =>
-                        //   router.push(
-                        //     `/hsse/master/user/edit?UPN=${user.userPrincipalName}&ApplicationCode=HSSEONLINE&CompanyCode=`
-                        //   )
-                        // }
+                        onClick={() =>
+                          router.push(
+                            `/master/user/${user.id}/edit`
+                          )
+                        }
                         id="editBtn"
                       >
                         <Edit className="mr-50" size={15} />
@@ -294,10 +294,10 @@ const MasterUser = (props) => {
                 <td>{user.jobTitle}</td>
                 <td>
                   {user.userRoles.map((users, index, obj) => (
-                    <small key={users.nik}>
+                    <span key={users.nik}>
                       {users.roleName}
                       {index + 1 !== obj.length && ", "}
-                    </small>
+                    </span>
                   ))}
                 </td>
               </tr>
@@ -386,7 +386,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,

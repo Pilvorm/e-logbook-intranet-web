@@ -19,10 +19,10 @@ const masterUserReducers = (state = initialState, { type, payload }) => {
       return {
         ...state,
         data: payload.data,
-        // currentPage: payload.page,
-        // totalPage: payload.totalPage,
-        // totalData: payload.totalItem,
-        // pageSize: payload.pageSize,
+        currentPage: payload.currentPage,
+        totalPage: payload.totalPage,
+        totalData: payload.totalData,
+        pageSize: payload.pageSize,
       };
     case DELETE_MASTER_USER:
       return payload;

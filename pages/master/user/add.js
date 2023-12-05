@@ -96,6 +96,31 @@ const AddMasterUser = (props) => {
     []
   );
 
+  // Handling role
+  const [role, setRole] = useState([]);
+
+  const addRole = (data) => {
+    let tempRole = role;
+
+    tempRole.push({
+      roleCode: data.roleCode,
+      roleName: data.roleName,
+    });
+
+    setRole(tempRole);
+  };
+
+  const removeRole = (data) => {
+    let tempRole = role;
+
+    tempRole.splice(
+      tempRole.findIndex((dataRole) => dataRole.roleCode === data.roleCode),
+      1
+    );
+
+    setRole(tempRole);
+  };
+
   const [checkedItems, setCheckedItems] = useState({});
 
   useEffect(() => {
@@ -141,7 +166,7 @@ const AddMasterUser = (props) => {
       email,
       jobTitle,
       deptName,
-      userRoles,
+      userRoles: role,
       compCode,
       compName,
       createdDate: new Date(),
@@ -149,9 +174,6 @@ const AddMasterUser = (props) => {
       updatedDate: new Date(),
       updatedBy: sessionData?.user?.UserPrincipalName || "",
     };
-
-    console.log("BODYYY")
-    console.log(bodyData)
 
     if (bodyData.userRoles.length === 0) {
       return errorAlertNotification(
@@ -457,27 +479,29 @@ const AddMasterUser = (props) => {
                           >
                             <h5>Role</h5>
                             <div className="demo-inline-spacing">
-                              <CustomRadio
-                                name="userRoles"
-                                options={[
-                                  {
-                                    value: "Mentor",
-                                    label: "MENTOR",
-                                    key: "mentor",
-                                  },
-                                  {
-                                    value: "HR",
-                                    label: "HUMAN RESOURCES",
-                                    key: "HR",
-                                  },
-                                  {
-                                    value: "Admin",
-                                    label: "SYSTEM ADMIN",
-                                    key: "admin",
-                                  },
-                                ]}
-                                isRow={true}
-                              />
+                              {dataRoles?.data.map((data) => (
+                                <CustomInput
+                                  key={data?.roleCode}
+                                  inline
+                                  className="mb-1 mr-2"
+                                  type="checkbox"
+                                  id={data?.roleCode}
+                                  name={data?.roleName}
+                                  label={data?.roleName}
+                                  onChange={handleCheckboxChange(data)}
+                                  checked={
+                                    checkedItems[data.roleCode] ||
+                                    role.find(
+                                      (dataRole) =>
+                                        data.roleCode === dataRole.roleCode
+                                    )
+                                  }
+                                  // disabled={
+                                  //   currentRole === "HRD-Admin" &&
+                                  //   data?.roleName !== "User-Interview"
+                                  // }
+                                />
+                              ))}
                             </div>
                           </div>
                         </Col>
@@ -533,7 +557,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,

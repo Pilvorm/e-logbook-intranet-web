@@ -13,51 +13,8 @@ import {
   DELETE_MASTER_USER,
   EDIT_MASTER_USER,
   GET_ALL_MASTER_USER,
+  GET_MASTER_USER_BY_ID
 } from "redux/types";
-
-export const getAllMasterUser =
-  (
-    pageNumber,
-    pageSize,
-    searchQuery,
-    name,
-    username,
-    companyCode,
-    email,
-    roleName,
-    creator
-  ) =>
-  async (dispatch) => {
-    try {
-      const header = getHeaders(store.getState().authReducers.token);
-
-      const response = await axios({
-        url: `${API_USER_ROLES}/GetListUserMultipleRolesByUPNAppCode/filter`,
-        method: "POST",
-        params: {
-          ApplicationCode: "HSSEONLINE",
-          Page: pageNumber,
-          PageSize: pageSize,
-          SortColumn: "CreatedDate",
-          SortOrder: "desc",
-          SearchValue: `${searchQuery}`,
-        },
-        headers: { ...header },
-        data: {
-          roleName: roleName ?? "",
-          companyCode: companyCode ?? "",
-          name: name ?? "",
-          username: username ?? "",
-          email: email ?? "",
-          creator: creator ?? "",
-        },
-      });
-
-      dispatch({ type: GET_ALL_MASTER_USER, payload: response.data });
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
 export const getAllMasterUserInternal = (param) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
@@ -70,6 +27,23 @@ export const getAllMasterUserInternal = (param) => async (dispatch) => {
     });
 
     dispatch({ type: GET_ALL_MASTER_USER, payload: response.data });
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const getMasterUserById = (id) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+
+  try {
+    const response = await axios({
+      url: API_MASTER + `/UserInternal/${id}`,
+      method: "GET",
+      headers: { ...header },
+    });
+
+    dispatch({ type: GET_MASTER_USER_BY_ID, payload: response.data });
     return response;
   } catch (error) {
     return error.response;
@@ -94,13 +68,13 @@ export const createMasterUser = (data) => async (dispatch) => {
   }
 };
 
-export const updateMasterUser = (data) => async (dispatch) => {
+export const updateMasterUser = (id, data) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
   try {
     const response = await axios({
-      url: `${API_USER_ROLES}/UpdateRoleWithApprovalChanges`,
-      method: "POST",
+      url: API_MASTER + `/UserInternal/${id}`,
+      method: "PUT",
       headers: { ...header },
       data,
     });

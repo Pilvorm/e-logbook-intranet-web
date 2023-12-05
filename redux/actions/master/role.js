@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_MASTER_USER, API_ROLES } from "constant";
+import { API_MASTER, API_MASTER_USER, API_ROLES } from "constant";
 import { getHeaders } from "helpers/utils";
 import { store } from "redux/store";
 import { GET_ALL_ROLES, RE_GET_ROLES } from "redux/types";
@@ -9,13 +9,11 @@ export const getAllRoles = () => async (dispatch) => {
     const header = getHeaders(store.getState().authReducers.token);
 
     const response = await axios({
-      url: API_ROLES,
-      method: "POST",
+      // url: API_ROLES,
+      url: API_MASTER + "/Role",
+      method: "GET",
       headers: {
         ...header,
-      },
-      data: {
-        searchKey: "HSSE",
       },
     });
 
@@ -28,20 +26,4 @@ export const getAllRoles = () => async (dispatch) => {
 
 export const reGetRoles = (data) => (dispatch) => {
   dispatch({ type: RE_GET_ROLES, payload: data });
-};
-
-export const getRolesByUPN = (upn) => async (dispatch) => {
-  const header = getHeaders(store.getState().authReducers.token);
-
-  try {
-    const response = await axios({
-      url: `${USER_ROLE_URL}/api/UserRoles/GetRolesByUPN?UPN=${upn}`,
-      headers: header,
-      method: "get",
-    });
-
-    return response.data;
-  } catch (error) {
-    return error.response;
-  }
 };
