@@ -62,6 +62,17 @@ const MasterUser = (props) => {
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
   const [pageNumber, setPageNumber] = useState(query?.pageNumber ?? 1);
   const [searchQuery, setSearchQuery] = useState(query?.search ?? "");
+  const [filterQuery, setFilterQuery] = useState(
+    query?.filter
+      ? { ...JSON.parse(query?.filter) }
+      : {
+          name: "",
+          userPrincipalName: "",
+          compName: "",
+          email: "",
+          roleName: "",
+        }
+  );
 
   const [visibleFilter, setVisibleFilter] = useState(false);
   const toggleFilterPopup = () => setVisibleFilter(!visibleFilter);
@@ -76,10 +87,10 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: value,
         pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -90,10 +101,10 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
         pageNumber: page.selected + 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -102,10 +113,22 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
-        pageNumber: "",
+        pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
+      },
+    });
+  };
+
+  const handleFilterQuery = (param) => {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        pageSize: pageSize,
+        pageNumber: 1,
+        search: searchQuery,
+        filter: JSON.stringify(param),
       },
     });
   };
@@ -114,33 +137,31 @@ const MasterUser = (props) => {
     e.preventDefault();
     confirmAlertNotification(
       "Delete Item",
-      "Are you sure to delete this document?",
+      "Are you sure to delete this user?",
       () => {
-        dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
-          (res) => {
-            console.log(res);
-            if (res.status === HTTP_CODE.UNAUTHORIZED) {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            } else if (res.status === 200) {
-              successAlertNotification(
-                "Deleted Success",
-                "Successfully Deleted Item"
-              );
-              router.push({
-                pathname: router.pathname,
-                query: { pageSize, pageNumber, searchQuery },
-              });
-            } else {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            }
+        dispatch(deleteMasterUser(data.id)).then((res) => {
+          console.log(res);
+          if (res.status === HTTP_CODE.UNAUTHORIZED) {
+            errorAlertNotification(
+              "Error",
+              "Something went wrong, Please try again later."
+            );
+          } else if (res.status === 200) {
+            successAlertNotification(
+              "Deleted Success",
+              "Successfully Deleted User"
+            );
+            router.push({
+              pathname: router.pathname,
+              query: { pageSize, pageNumber, searchQuery },
+            });
+          } else {
+            errorAlertNotification(
+              "Error",
+              "Something went wrong, Please try again later."
+            );
           }
-        );
+        });
       }
     );
   };
@@ -169,8 +190,10 @@ const MasterUser = (props) => {
         <ModalFilterUser
           visible={visibleFilter}
           toggle={toggleFilterPopup}
-          dataSBU={dataSBU}
           sessionData={sessionData}
+          handleFilterQuery={handleFilterQuery}
+          filterQuery={filterQuery}
+          setFilterQuery={setFilterQuery}
         />
         <div className="d-flex align-items-center">
           <Button.Ripple
@@ -267,9 +290,7 @@ const MasterUser = (props) => {
                       <DropdownItem
                         className="w-100"
                         onClick={() =>
-                          router.push(
-                            `/master/user/${user.id}/edit`
-                          )
+                          router.push(`/master/user/${user.id}/edit`)
                         }
                         id="editBtn"
                       >
@@ -367,35 +388,32 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     store.dispatch(reauthenticate(token));
 
-    // await store.dispatch(
-    //   getAllMasterUser(
-    //     query.pageNumber || 1,
-    //     query.pageSize || 10,
-    //     query.search || "",
-    //     query.name || "",
-    //     query.username || "",
-    //     userCompCode || query.companyCode,
-    //     query.email || "",
-    //     query.roleName || "",
-    //     userUPN || query.creator,
-    //   )
-    // );
+    const formatFilter = (filterData) => {
+      const filteredFilter = Object.entries(filterData).filter(
+        (data) => data[1] !== ""
+      );
+      const finalFilter = filteredFilter
+        .map((data) => `${data[0]}=${data[1]}`)
+        .join("|");
+
+      return finalFilter;
+    };
 
     await store.dispatch(
       getAllMasterUserInternal({
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,
         "X-PAGESIZE": query.pageSize || 10,
-        "X-ORDERBY": "createdDate",
+        "X-ORDERBY": "createdDate desc",
         "X-SEARCH": `*${query.search || ""}*`,
-        // "X-FILTER": `${
-        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
-        // }`,
+        "X-FILTER": `${
+          query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        }`,
       })
     );
 

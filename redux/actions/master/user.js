@@ -86,17 +86,13 @@ export const updateMasterUser = (id, data) => async (dispatch) => {
   }
 };
 
-export const deleteMasterUser = (nik, upn) => async (dispatch) => {
+export const deleteMasterUser = (id) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
   try {
     const response = await axios({
-      url: `${API_USER_ROLES}/DeleteRoleWithApprovalChanges/${nik}/${upn}/HSSEONLINE`,
+      url: API_MASTER + `/UserInternal/${id}`,
       method: "DELETE",
-      // params: {
-      //   nik: `${nik}`,
-      //   upn: `${upn}`,
-      // },
       headers: header,
     });
 

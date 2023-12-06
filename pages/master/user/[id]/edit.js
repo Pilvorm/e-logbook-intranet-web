@@ -119,10 +119,6 @@ function EditMasterUser(props) {
     }
   };
 
-  console.log(dataRoles);
-  console.log("USER ROLES")
-  console.log(data.userRoles)
-
   useEffect(() => {
     dispatch(reauthenticate(token));
   }, [dispatch]);
@@ -190,24 +186,24 @@ function EditMasterUser(props) {
 
                 confirmAlertNotification(
                   "Add New User",
-                  "Apakah Anda yakin perbaharui data ini?",
+                  "Are you sure to update this user?",
                   () => {
                     actions.setSubmitting(true);
-                    dispatch(updateMasterUser(payload)).then((res) => {
+                    dispatch(updateMasterUser(data.id, payload)).then((res) => {
                       if (res.status >= 200 && res.status <= 300) {
                         actions.setSubmitting(false);
                         successAlertNotification(
                           "Success",
-                          "Data berhasil disimpan"
+                          "User updated succesfully"
                         );
-                        router.push("/hsse/master/user");
+                        router.push("/master/user");
                       } else {
                         actions.setSubmitting(false);
                         errorAlertNotification(
                           "Error",
                           res?.data?.message
                             ? res?.data?.message
-                            : "Data gagal disimpan"
+                            : "Failed to save data"
                         );
                       }
                     });

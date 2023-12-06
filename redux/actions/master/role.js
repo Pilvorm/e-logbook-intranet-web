@@ -9,11 +9,11 @@ export const getAllRoles = () => async (dispatch) => {
     const header = getHeaders(store.getState().authReducers.token);
 
     const response = await axios({
-      // url: API_ROLES,
       url: API_MASTER + "/Role",
       method: "GET",
       headers: {
         ...header,
+        "X-ORDERBY": "id",
       },
     });
 

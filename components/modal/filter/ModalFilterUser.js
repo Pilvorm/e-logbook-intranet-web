@@ -19,24 +19,44 @@ import { Formik } from "formik";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import { wrapper } from "redux/store";
-import { getAsyncOptionsSBU } from "helpers/sbu";
+import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
-const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
+const ModalFilterUser = ({
+  visible,
+  toggle,
+  sessionData,
+  handleFilterQuery,
+  filterQuery,
+  setFilterQuery,
+}) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!dataSBU.find((data) => data.label === "All")) {
-      dataSBU.unshift({ value: "", label: "All" });
-    }
-  }, []);
-
-  const [selectedCompany, setSelectedCompany] = useState("");
   const isSystemAdmin = getPermissionComponentByRoles(["HSSE-SYSADMIN"]);
   const isSuperUser = getPermissionComponentByRoles(["HSSE-SU"]);
 
   const query = router.query ?? {};
+
+  // handling search site
+  const getAsyncOptionsCompany = (inputText) => {
+    return searchCompany(inputText).then((resp) => {
+      return resp.data.map((singleData) => ({
+        ...singleData,
+        value: singleData.companyName,
+        label: singleData.companyName,
+      }));
+    });
+  };
+
+  const loadOptionsCompany = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsCompany(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
+  );
 
   const loadOptionsSBU = useCallback(
     debounce((inputText, callback) => {
@@ -47,27 +67,13 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
     []
   );
 
-  const getCompanyQuery = dataSBU.filter(
-    (company) => company.idmCompCode === query.companyCode
-  );
+  const [selectedCompany, setSelectedCompany] = useState({
+    label: "Search...",
+    value: "",
+  });
 
-  const onSubmit = (values, actions) => {
-    const { name, username, companyCode, email, roleName } = values;
-
-    router.push({
-      pathname: router.pathname,
-      query: {
-        pageSize: 10,
-        pageNumber: 1,
-        search: "",
-        name: name ?? "",
-        username: username ?? "",
-        companyCode: companyCode ?? "",
-        email: email ?? "",
-        roleName: roleName ?? "",
-      },
-    });
-  };
+  console.log("COMPANY");
+  console.log(selectedCompany);
 
   return (
     <div className="demo-inline-spacing">
@@ -76,25 +82,16 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
           <ModalHeader className="text-secondary bg-light" toggle={toggle}>
             Filter User
           </ModalHeader>
-          <Formik
-            enableReinitialize
-            initialValues={{
-              name: query?.name ?? "",
-              username: query?.username ?? "",
-              companyCode: query?.companyCode ?? "",
-              email: query?.email ?? "",
-              roleName: query?.roleName ?? "",
-            }}
-            // validationSchema={validationSchema}
-            onSubmit={onSubmit}
-          >
+          <Formik enableReinitialize>
             {({
               values,
               errors,
               setFieldValue,
               handleSubmit,
               handleChange,
+              setSubmitting,
               isSubmitting,
+              resetForm,
             }) => (
               <>
                 <ModalBody>
@@ -106,8 +103,13 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
                           type="text"
                           placeholder="Name"
                           name="name"
-                          value={values.name}
-                          onChange={handleChange("name")}
+                          value={filterQuery.name}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              name: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -118,10 +120,15 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
                         </Label>
                         <Input
                           type="text"
-                          placeholder="Username"
-                          name="username"
-                          value={values.username}
-                          onChange={handleChange("username")}
+                          placeholder="User Principal Name"
+                          name="userPrincipalName"
+                          value={filterQuery.userPrincipalName}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              userPrincipalName: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -131,17 +138,32 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
                       <FormGroup className="custom-input-select" md="6">
                         <Label className="form-label">Company</Label>
                         <AsyncSelect
-                          id="company"
+                          id="companyCode"
                           name="companyCode"
                           classNamePrefix="select"
                           cacheOptions
-                          defaultValue={isSuperUser ? {label: sessionData.user.CompName, value: sessionData.user.CompCode} : {label: getCompanyQuery[0]?.name ?? "Search...", value: getCompanyQuery[0]?.idmCompCode}}
-                          defaultOptions={dataSBU}
-                          loadOptions={loadOptionsSBU}
-                          onChange={(e) => {
-                            setFieldValue("companyCode", e.idmCompCode);
-                            setSelectedCompany(e);
+                          value={{
+                            label: selectedCompany.label,
+                            value: selectedCompany.value,
                           }}
+                          // defaultOptions={dataSBU}
+                          loadOptions={loadOptionsCompany}
+                          onChange={(e) => {
+                            console.log(e);
+                            setSelectedCompany(e);
+                            if (e) {
+                              setFilterQuery({
+                                ...filterQuery,
+                                compName: e.compName,
+                              });
+                            } else {
+                              setFilterQuery({
+                                ...filterQuery,
+                                compName: "",
+                              });
+                            }
+                          }}
+                          placeholder="Search..."
                           isDisabled={isSuperUser}
                         />
                       </FormGroup>
@@ -153,8 +175,13 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
                           type="text"
                           placeholder="Email"
                           name="email"
-                          value={values.email}
-                          onChange={handleChange("email")}
+                          value={filterQuery.email}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              email: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -165,31 +192,63 @@ const ModalFilterUser = ({ visible, toggle, dataSBU, sessionData }) => {
                         <Label className="form-label">Role</Label>
                         <Input
                           type="text"
-                          placeholder="Role"
+                          placeholder="Role Name"
                           name="roleName"
-                          value={values.roleName}
-                          onChange={handleChange("roleName")}
+                          value={filterQuery.roleName}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              roleName: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                 </ModalBody>
                 <ModalFooter>
-                  <Button
-                    color="success"
-                    id="submitBtn"
-                    name="submitBtn"
-                    onClick={handleSubmit}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Spinner size="sm" color="white" />
-                        <span className="ml-50">Submitting...</span>
-                      </>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
+                  <div className="d-flex justify-content-between w-100">
+                    <Button
+                      color="danger"
+                      id="submitBtn"
+                      name="submitBtn"
+                      outline
+                      onClick={() => {
+                        resetForm();
+                        setSelectedCompany({
+                          label: "Search...",
+                          value: "",
+                        });
+                        setFilterQuery({
+                          name: "",
+                          userPrincipalName: "",
+                          compName: "",
+                          email: "",
+                          roleName: "",
+                        });
+                      }}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      color="success"
+                      id="submitBtn"
+                      name="submitBtn"
+                      onClick={() => {
+                        handleFilterQuery(filterQuery);
+                        setSubmitting(true);
+                      }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Spinner size="sm" color="white" />
+                          <span className="ml-50">Submitting...</span>
+                        </>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
                 </ModalFooter>
               </>
             )}
