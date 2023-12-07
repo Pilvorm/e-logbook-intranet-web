@@ -19,29 +19,6 @@ export const deauthenticate = () => (dispatch) => {
   dispatch({ type: DEAUTHENTICATE });
 };
 
-export const getSBUAll = (name) => async (dispatch) => {
-  try {
-    const response = await axios({
-      url: `${API_GLOBAL_SBU_URL}/api/BU/BuAndOrgGroupPharma`,
-      headers: getHeaders(),
-      method: "get",
-    });
-    // console.log(response, "ASLDKASLDK");
-    const sanitized = sortBy(
-      uniqBy(response.data, (el) => {
-        return el.idmCompCode;
-      }).filter((el) => el.idmCompCode),
-      (el) => {
-        return el.idmCompName;
-      }
-    );
-    return sanitized;
-  } catch (error) {
-    console.log(error, "ERROR");
-    return error.response;
-  }
-};
-
 export const storeUserRoles = (roles) => (dispatch) => {
   console.log(roles, "role <<<");
   if (typeof window !== "undefined") {

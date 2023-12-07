@@ -532,7 +532,7 @@ const MasterInternDetail = (props) => {
             )}
           </Formik>
           <ComboAlert
-            routerPath="/master/user"
+            routerPath="/master/intern"
             {...{
               isAlertModal,
               setIsAlertModal,
