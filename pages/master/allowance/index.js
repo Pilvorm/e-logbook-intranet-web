@@ -23,8 +23,21 @@ import {
   Label,
   Input,
   CustomInput,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  UncontrolledDropdown,
 } from "reactstrap";
-import { Search, Save, Edit, Check, Plus, Trash, ArrowLeft } from "react-feather";
+import {
+  Search,
+  Save,
+  Edit,
+  Check,
+  Plus,
+  Trash,
+  ArrowLeft,
+  MoreVertical,
+} from "react-feather";
 
 import {
   confirmAlertNotification,
@@ -50,22 +63,26 @@ import {
   getAllMasterUserInternal,
 } from "redux/actions/master/user";
 import { getAllAllowance } from "redux/actions/master/allowance";
+import EditAllowance from "components/ModalForm/EditAllowance";
 import debounce from "lodash/debounce";
 
-const AddMasterUser = (props) => {
+const MasterAllowance = (props) => {
   const { dataMasterAllowance, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log("ALLOWANCES");
   console.log(dataMasterAllowance);
 
   const { data: session, status } = useSession();
 
   const [isEditing, setEditing] = useState(false);
+  const [editPopup, setEditPopup] = useState(false);
+  const toggleEditPopup = () => setEditPopup(!editPopup);
 
   const [allowance, setAllowance] = useState({
-    wfh: dataMasterAllowance?.data[0].allowanceFee,
-    wfo: dataMasterAllowance?.data[1].allowanceFee,
+    wfh: 80000,
+    wfo: 10000,
   });
 
   useEffect(() => {
@@ -210,154 +227,103 @@ const AddMasterUser = (props) => {
                   isSubmitting,
                 }) => (
                   <>
-                    {/* ACTIONS */}
-                    <div className="d-flex justify-content-between w-100 flex-wrap">
-                      <div
-                        className="d-flex flex-wrap"
-                        style={{
-                          gap: 20,
-                          width: "70%",
-                          paddingTop: "1rem",
-                          paddingLeft: "2rem",
-                        }}
-                      >
-                        <Button.Ripple
-                          outline
-                          type="submit"
-                          color="danger"
-                          className="btn-next"
-                          onClick={() => router.back()}
-                        >
-                          <ArrowLeft size={18} />
-                          <span className="ml-50 align-middle d-sm-inline-block d-none">
-                            Back
-                          </span>
-                        </Button.Ripple>
-                      </div>
-                    </div>
-                    <Container>
-                      <Row className="mt-3">
-                        <Col md="6">
-                          <div className="d-flex flex-column mx-1">
-                            <span>Current</span>
-                            <span>
-                              WFH:{" "}
-                              {dataMasterAllowance?.data[0].allowanceFee.toLocaleString(
-                                "de-DE"
-                              )}
-                            </span>
-                            <span>
-                              WFO:{" "}
-                              {dataMasterAllowance?.data[1].allowanceFee.toLocaleString(
-                                "de-DE"
-                              )}
-                            </span>
-                          </div>
-                        </Col>
-                      </Row>
-                      <Row className="mt-2">
-                        <Col md="6">
-                          <FormGroup tag={Col} md="12">
-                            <Label className="form-label font-weight-bold">
-                              WFH (Work from Home) Allowance
-                            </Label>
-                            <div className="d-flex align-items-center">
-                              <Input
-                                id="wfhAllowance"
-                                type="text"
-                                placeholder="WFH Allowance"
-                                value={values.wfhAllowanceFee}
-                                onChange={(e) => {
-                                  setFieldValue(
-                                    "wfhAllowanceFee",
-                                    Number(
-                                      e.target.value.split(".").join("")
-                                    ).toLocaleString("de-DE")
-                                  );
-                                }}
-                                onKeyPress={(e) => {
-                                  if (!/[0-9]/.test(e.key)) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                disabled={!isEditing}
-                              />
-                              <Button.Ripple
-                                color="warning"
-                                className="btn-next ml-3"
-                                onClick={() => router.back()}
-                                height="100px"
+                    <Table responsive className="border">
+                      <thead className="text-center">
+                        <tr>
+                          <th>Action</th>
+                          <th>Education</th>
+                          <th>WFH</th>
+                          <th>WFO</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-center text-break">
+                        {/* {dataMasterAllowance &&
+                          dataMasterAllowance.data.map((data) => (
+                            <tr key={data.id}>
+                              <td>
+                                <UncontrolledDropdown>
+                                  <DropdownToggle
+                                    className="icon-btn hide-arrow"
+                                    id="optionsSelect"
+                                    color="transparent"
+                                    size="sm"
+                                    caret
+                                  >
+                                    <MoreVertical size={15} />
+                                  </DropdownToggle>
+                                  <DropdownMenu>
+                                    <DropdownItem
+                                      className="w-100"
+                                      id="editBtn"
+                                      onClick={toggleEditPopup}
+                                    >
+                                      <Edit className="mr-50" size={15} />
+                                      <span className="align-middle">Edit</span>
+                                      <EditAllowance
+                                        visible={editPopup}
+                                        toggle={toggleEditPopup}
+                                        data={data}
+                                      />
+                                    </DropdownItem>
+                                  </DropdownMenu>
+                                </UncontrolledDropdown>
+                              </td>
+                              <td>{data.educationName}</td>
+                              <td>
+                                Rp{" "}
+                                {data.allowances[0].allowanceFee.toLocaleString(
+                                  "de-DE"
+                                )}
+                              </td>
+                              <td>
+                                Rp{" "}
+                                {data.allowances[1].allowanceFee.toLocaleString(
+                                  "de-DE"
+                                )}
+                              </td>
+                            </tr>
+                          ))} */}
+                        <tr>
+                          <td>
+                            <UncontrolledDropdown>
+                              <DropdownToggle
+                                className="icon-btn hide-arrow"
+                                id="optionsSelect"
+                                color="transparent"
+                                size="sm"
+                                caret
                               >
-                                <Edit size={18} />
-                              </Button.Ripple>
-                              <Button.Ripple
-                                color="primary"
-                                className="btn-next ml-1"
-                                onClick={() => router.back()}
-                                height="100px"
-                              >
-                                <Check size={18} />
-                              </Button.Ripple>
-                            </div>
-                            {errors.userPrincipalName && (
-                              <div className="text-danger">
-                                {errors.userPrincipalName}
-                              </div>
-                            )}
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col md="6">
-                          <FormGroup tag={Col} md="12">
-                            <Label className="form-label font-weight-bold">
-                              WFO (Work from Office) Allowance
-                            </Label>
-                            <div className="d-flex align-items-center">
-                              <Input
-                                id="wfoAllowance"
-                                type="text"
-                                placeholder="WFO Allowance"
-                                value={values.wfoAllowanceFee}
-                                onChange={(e) => {
-                                  setFieldValue(
-                                    "wfhAllowanceFee",
-                                    Number(
-                                      e.target.value.split(".").join("")
-                                    ).toLocaleString("de-DE")
-                                  );
-                                }}
-                                onKeyPress={(e) => {
-                                  if (!/[0-9]/.test(e.key)) {
-                                    e.preventDefault();
-                                  }
-                                }}
-                                disabled={!isEditing}
-                              />
-                              <Button.Ripple
-                                color="warning"
-                                className="btn-next ml-3"
-                                onClick={() => router.back()}
-                                height="100px"
-                              >
-                                <Edit size={18} />
-                              </Button.Ripple>
-                              <Button.Ripple
-                                color="primary"
-                                className="btn-next ml-1"
-                                onClick={() => router.back()}
-                                height="100px"
-                              >
-                                <Check size={18} />
-                              </Button.Ripple>
-                            </div>
-                            {errors.email && (
-                              <div className="text-danger">{errors.email}</div>
-                            )}
-                          </FormGroup>
-                        </Col>
-                      </Row>
-                    </Container>
+                                <MoreVertical size={15} />
+                              </DropdownToggle>
+                              <DropdownMenu>
+                                <DropdownItem
+                                  className="w-100"
+                                  id="editBtn"
+                                  onClick={toggleEditPopup}
+                                >
+                                  <Edit className="mr-50" size={15} />
+                                  <span className="align-middle">Edit</span>
+                                  <EditAllowance
+                                    visible={editPopup}
+                                    toggle={toggleEditPopup}
+                                    // data={data}
+                                  />
+                                </DropdownItem>
+                              </DropdownMenu>
+                            </UncontrolledDropdown>
+                          </td>
+                          <td>S1</td>
+                          <td>
+                            Rp{" "}
+                            80.000
+                          </td>
+                          <td>
+                            Rp{" "}
+                            100.000
+                          </td>
+                        </tr>
+                      </tbody>
+                    </Table>
                   </>
                 )}
               </Formik>
@@ -378,7 +344,7 @@ const AddMasterUser = (props) => {
   );
 };
 
-AddMasterUser.getLayout = function getLayout(page) {
+MasterAllowance.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -414,4 +380,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default AddMasterUser;
+export default MasterAllowance;
