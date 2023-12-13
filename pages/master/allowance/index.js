@@ -66,6 +66,49 @@ import { getAllAllowance } from "redux/actions/master/allowance";
 import EditAllowance from "components/ModalForm/EditAllowance";
 import debounce from "lodash/debounce";
 
+const CreateTableRow = ({ dispatch, data }) => {
+  const { data: session, status } = useSession();
+
+  const [editPopup, setEditPopup] = useState(false);
+  const toggleEditPopup = () => setEditPopup(!editPopup);
+
+  return (
+    <tr>
+      <td>
+        <UncontrolledDropdown>
+          <DropdownToggle
+            className="icon-btn hide-arrow"
+            id="optionsSelect"
+            color="transparent"
+            size="sm"
+            caret
+          >
+            <MoreVertical size={15} />
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem
+              className="w-100"
+              onClick={toggleEditPopup}
+              id="editBtn"
+            >
+              <Edit className="mr-50" size={15} />
+              <span className="align-middle">Edit</span>
+              <EditAllowance
+                visible={editPopup}
+                toggle={toggleEditPopup}
+                data={data}
+              />
+            </DropdownItem>
+          </DropdownMenu>
+        </UncontrolledDropdown>
+      </td>
+      <td>{data.educationName}</td>
+      <td>Rp {data.allowances[0].allowanceFee.toLocaleString("de-DE")}</td>
+      <td>Rp {data.allowances[1].allowanceFee.toLocaleString("de-DE")}</td>
+    </tr>
+  );
+};
+
 const MasterAllowance = (props) => {
   const { dataMasterAllowance, sessionData, token } = props;
   const dispatch = useDispatch();
@@ -79,11 +122,6 @@ const MasterAllowance = (props) => {
   const [isEditing, setEditing] = useState(false);
   const [editPopup, setEditPopup] = useState(false);
   const toggleEditPopup = () => setEditPopup(!editPopup);
-
-  const [allowance, setAllowance] = useState({
-    wfh: 80000,
-    wfo: 10000,
-  });
 
   useEffect(() => {
     dispatch(reauthenticate(token));
@@ -209,124 +247,38 @@ const MasterAllowance = (props) => {
         <div className="px-2 py-2 mb-2">
           <TabContent className="ml-1 py-50" activeTab={active}>
             <TabPane tabId="1">
-              <Formik
-                enableReinitialize
-                initialValues={{
-                  wfhAllowanceFee: allowance.wfh.toLocaleString("de-DE") ?? "",
-                  wfoAllowanceFee: allowance.wfo.toLocaleString("de-DE") ?? "",
-                }}
-                validationSchema={validationSchema}
-                onSubmit={onSubmit}
+              <Button.Ripple
+                outline
+                type="submit"
+                color="danger"
+                className="btn-next"
+                onClick={() => router.back()}
               >
-                {({
-                  values,
-                  errors,
-                  setFieldValue,
-                  handleSubmit,
-                  handleChange,
-                  isSubmitting,
-                }) => (
-                  <>
-                    <Table responsive className="border">
-                      <thead className="text-center">
-                        <tr>
-                          <th>Action</th>
-                          <th>Education</th>
-                          <th>WFH</th>
-                          <th>WFO</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-center text-break">
-                        {/* {dataMasterAllowance &&
-                          dataMasterAllowance.data.map((data) => (
-                            <tr key={data.id}>
-                              <td>
-                                <UncontrolledDropdown>
-                                  <DropdownToggle
-                                    className="icon-btn hide-arrow"
-                                    id="optionsSelect"
-                                    color="transparent"
-                                    size="sm"
-                                    caret
-                                  >
-                                    <MoreVertical size={15} />
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    <DropdownItem
-                                      className="w-100"
-                                      id="editBtn"
-                                      onClick={toggleEditPopup}
-                                    >
-                                      <Edit className="mr-50" size={15} />
-                                      <span className="align-middle">Edit</span>
-                                      <EditAllowance
-                                        visible={editPopup}
-                                        toggle={toggleEditPopup}
-                                        data={data}
-                                      />
-                                    </DropdownItem>
-                                  </DropdownMenu>
-                                </UncontrolledDropdown>
-                              </td>
-                              <td>{data.educationName}</td>
-                              <td>
-                                Rp{" "}
-                                {data.allowances[0].allowanceFee.toLocaleString(
-                                  "de-DE"
-                                )}
-                              </td>
-                              <td>
-                                Rp{" "}
-                                {data.allowances[1].allowanceFee.toLocaleString(
-                                  "de-DE"
-                                )}
-                              </td>
-                            </tr>
-                          ))} */}
-                        <tr>
-                          <td>
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="icon-btn hide-arrow"
-                                id="optionsSelect"
-                                color="transparent"
-                                size="sm"
-                                caret
-                              >
-                                <MoreVertical size={15} />
-                              </DropdownToggle>
-                              <DropdownMenu>
-                                <DropdownItem
-                                  className="w-100"
-                                  id="editBtn"
-                                  onClick={toggleEditPopup}
-                                >
-                                  <Edit className="mr-50" size={15} />
-                                  <span className="align-middle">Edit</span>
-                                  <EditAllowance
-                                    visible={editPopup}
-                                    toggle={toggleEditPopup}
-                                    // data={data}
-                                  />
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          </td>
-                          <td>S1</td>
-                          <td>
-                            Rp{" "}
-                            80.000
-                          </td>
-                          <td>
-                            Rp{" "}
-                            100.000
-                          </td>
-                        </tr>
-                      </tbody>
-                    </Table>
-                  </>
-                )}
-              </Formik>
+                <ArrowLeft size={18} />
+                <span className="ml-50 align-middle d-sm-inline-block d-none">
+                  Back
+                </span>
+              </Button.Ripple>
+              <Table responsive className="border mt-1">
+                <thead className="text-center">
+                  <tr>
+                    <th>Action</th>
+                    <th>Education</th>
+                    <th>WFH</th>
+                    <th>WFO</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center text-break">
+                  {dataMasterAllowance &&
+                    dataMasterAllowance.data.map((data) => (
+                      <CreateTableRow
+                        key={data.id}
+                        dispatch={dispatch}
+                        data={data}
+                      />
+                    ))}
+                </tbody>
+              </Table>
               <ComboAlert
                 routerPath="/master/allowance"
                 {...{

@@ -26,7 +26,7 @@ export const editAllowance = (id, data) => async (dispatch) => {
 
   try {
     const response = await axios({
-      url: API_MASTER + `/Allowance/${id}`,
+      url: API_MASTER + `/Education/${id}`,
       method: "PUT",
       headers: { ...header },
       data

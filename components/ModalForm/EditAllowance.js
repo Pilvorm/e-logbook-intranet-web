@@ -22,11 +22,8 @@ import * as yup from "yup";
 
 const validationSchema = yup
   .object({
-    attachmentType: yup
-      .string()
-      // .matches(/^[a-zA-Z0-9 ]*$/, "Special characters are not allowed")
-      .required("Attachment Type is required"),
-    // siteName: yup.string().required("Site Name is required"),
+    wfhAllowanceFee: yup.number().min(1, "Must be greather than 0").required(),
+    wfoAllowanceFee: yup.number().min(1, "Must be greather than 0").required(),
   })
   .required();
 
@@ -34,62 +31,75 @@ const EditAllowance = ({ visible, toggle, data }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  //   const onSubmit = (values, actions) => {
-  //     const { attachmentType, siteName } = values;
+  const onSubmit = (values, actions) => {
+    const { educationCode, educationName, wfhAllowanceFee, wfoAllowanceFee } =
+      values;
 
-  //     dispatch(
-  //       editMasterAttachmentType(data.id, {
-  //         ...data,
-  //         id: data.id,
-  //         type: attachmentType,
-  //         // site: siteName,
-  //       })
-  //     ).then((res) => {
-  //       if (res.status === HTTP_CODE.OK) {
-  //         actions.setSubmitting(false);
-  //         successAlertNotification("Success", "Data Updated Successfully");
-  //         router.push({
-  //           pathname: router.pathname,
-  //         });
-  //       } else if (res.status === 409) {
-  //         actions.setSubmitting(false);
-  //         errorAlertNotification(
-  //           "Duplicate",
-  //           "Duplicate Data, Please check your data."
-  //         );
-  //       } else {
-  //         actions.setSubmitting(false);
-  //         console.error(res);
-  //         let errorMessages = [];
+    dispatch(
+      editAllowance(data.id, {
+        ...data,
+        id: data.id,
+        allowances: [
+          {
+            ...data.allowances[0],
+            id: data.allowances[0].id,
+            workType: "WFH",
+            allowanceFee: Number(wfhAllowanceFee.split(".").join("")),
+          },
+          {
+            ...data.allowances[1],
+            id: data.allowances[1].id,
+            workType: "WFO",
+            allowanceFee: Number(wfoAllowanceFee.split(".").join("")),
+          },
+        ],
+      })
+    ).then((res) => {
+      if (res.status === HTTP_CODE.OK) {
+        actions.setSubmitting(false);
+        successAlertNotification("Success", "Data Updated Successfully");
+        router.push({
+          pathname: router.pathname,
+        });
+      } else if (res.status === 409) {
+        actions.setSubmitting(false);
+        errorAlertNotification(
+          "Duplicate",
+          "Duplicate Data, Please check your data."
+        );
+      } else {
+        actions.setSubmitting(false);
+        console.error(res);
+        let errorMessages = [];
 
-  //         try {
-  //           errorMessages = Object.entries(res.data.errors).flatMap(
-  //             ([field, messages]) => {
-  //               return messages.map((message) => ({ field, message }));
-  //             }
-  //           );
-  //         } catch (error) {
-  //           // Handle the error appropriately
-  //           errorMessages = [
-  //             {
-  //               field: "Error",
-  //               message: "Something went wrong, Please try again later.",
-  //             },
-  //           ];
-  //         }
+        try {
+          errorMessages = Object.entries(res.data.errors).flatMap(
+            ([field, messages]) => {
+              return messages.map((message) => ({ field, message }));
+            }
+          );
+        } catch (error) {
+          // Handle the error appropriately
+          errorMessages = [
+            {
+              field: "Error",
+              message: "Something went wrong, Please try again later.",
+            },
+          ];
+        }
 
-  //         const title = "Error";
-  //         const message =
-  //           errorMessages.length > 0
-  //             ? errorMessages
-  //                 .map(({ field, message }) => `${field}: ${message}`)
-  //                 .join("\n")
-  //             : "";
+        const title = "Error";
+        const message =
+          errorMessages.length > 0
+            ? errorMessages
+                .map(({ field, message }) => `${field}: ${message}`)
+                .join("\n")
+            : "";
 
-  //         errorAlertNotification(title, message);
-  //       }
-  //     });
-  //   };
+        errorAlertNotification(title, message);
+      }
+    });
+  };
 
   return (
     <Modal isOpen={visible} toggle={toggle}>
@@ -98,11 +108,13 @@ const EditAllowance = ({ visible, toggle, data }) => {
       </ModalHeader>
       <Formik
         initialValues={{
-          attachmentType: data?.type ?? "",
-          siteName: data?.site ?? "",
+          educationCode: data?.educationCode ?? "",
+          educationName: data?.educationName ?? "",
+          wfhAllowanceFee: data?.allowances[0].allowanceFee ?? "",
+          wfoAllowanceFee: data?.allowances[1].allowanceFee ?? "",
         }}
         validationSchema={validationSchema}
-        // onSubmit={onSubmit}
+        onSubmit={onSubmit}
       >
         {({
           values,
@@ -121,19 +133,33 @@ const EditAllowance = ({ visible, toggle, data }) => {
                     id="education"
                     type="text"
                     placeholder="Education"
-                    value={values.education}
+                    defaultValue={values.educationName}
                     onChange={handleChange("education")}
                     disabled
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label className="form-label">WFH (Work from Home) Allowance</Label>
+                  <Label className="form-label">
+                    WFH (Work from Home) Allowance
+                  </Label>
                   <Input
                     id="wfhAllowance"
                     type="text"
                     placeholder="Rp 80.000"
-                    value={values.wfhAllowanceFee}
-                    onChange={handleChange("wfhAllowanceFee")}
+                    value={values.wfhAllowanceFee.toLocaleString("de-DE")}
+                    onChange={(e) => {
+                      setFieldValue(
+                        "wfhAllowanceFee",
+                        Number(
+                          e.target.value.split(".").join("")
+                        ).toLocaleString("de-DE")
+                      );
+                    }}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                   {errors.wfhAllowanceFee && (
                     <div className="text-danger">
@@ -142,13 +168,27 @@ const EditAllowance = ({ visible, toggle, data }) => {
                   )}
                 </FormGroup>
                 <FormGroup>
-                  <Label className="form-label">WFO (Work from Office) Allowance</Label>
+                  <Label className="form-label">
+                    WFO (Work from Office) Allowance
+                  </Label>
                   <Input
                     id="wfoAllowance"
                     type="text"
                     placeholder="Rp 100.000"
-                    value={values.wfoAllowanceFee}
-                    onChange={handleChange("wfoAllowanceFee")}
+                    value={values.wfoAllowanceFee.toLocaleString("de-DE")}
+                    onChange={(e) => {
+                      setFieldValue(
+                        "wfoAllowanceFee",
+                        Number(
+                          e.target.value.split(".").join("")
+                        ).toLocaleString("de-DE")
+                      );
+                    }}
+                    onKeyPress={(e) => {
+                      if (!/[0-9]/.test(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                   {errors.wfoAllowanceFee && (
                     <div className="text-danger">
