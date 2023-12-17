@@ -47,7 +47,10 @@ import {
 import ModalFilterUser from "components/modal/filter/ModalFilterUser";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
-import { getAllMasterIntern, deleteMasterIntern } from "redux/actions/master/intern";
+import {
+  getAllMasterIntern,
+  deleteMasterIntern,
+} from "redux/actions/master/intern";
 import moment from "moment";
 
 const MasterIntern = (props) => {
@@ -249,7 +252,6 @@ const MasterIntern = (props) => {
       <Table responsive className="border">
         <thead className="text-center">
           <tr>
-            <th>Action</th>
             <th>Name</th>
             <th>Department</th>
             <th>Company</th>
@@ -257,12 +259,23 @@ const MasterIntern = (props) => {
             <th>School/College</th>
             <th>Faculty</th>
             <th>Internship Period</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody className="text-center text-break">
           {dataMasterIntern &&
             dataMasterIntern.data.map((intern) => (
               <tr key={intern.id}>
+                <td className="text-uppercase">{intern.name}</td>
+                <td>{intern.dept}</td>
+                <td>{intern.companyName}</td>
+                <td>{intern.supervisorName}</td>
+                <td>{intern.schoolName}</td>
+                <td>{intern.faculty}</td>
+                <td>
+                  {moment(intern.joinDate).format("DD MMM YYYY")} -{" "}
+                  {moment(intern.endDate).format("DD MMM YYYY")}
+                </td>
                 <td>
                   <UncontrolledDropdown>
                     <DropdownToggle
@@ -296,13 +309,6 @@ const MasterIntern = (props) => {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </td>
-                <td className="text-uppercase">{intern.name}</td>
-                <td>{intern.dept}</td>
-                <td>{intern.companyName}</td>
-                <td>{intern.supervisorName}</td>
-                <td>{intern.schoolName}</td>
-                <td>{intern.faculty}</td>
-                <td>{moment(intern.joinDate).format("DD MMM YYYY")} - {moment(intern.endDate).format("DD MMM YYYY")}</td>
               </tr>
             ))}
         </tbody>

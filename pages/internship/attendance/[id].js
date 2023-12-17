@@ -1,7 +1,7 @@
 import { HTTP_CODE, SYSTEM_ADMIN, SUPER_USER } from "constant";
 
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
-import { getSession } from "next-auth/react";
+import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import {
@@ -48,22 +48,76 @@ import {
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import { InternDetailCard } from "components/Card/InternDetailCard";
+import moment from "moment";
+
+const CreateTableRow = ({ dispatch, data, index }) => {
+  const { data: session, status } = useSession();
+
+  const [editPopup, setEditPopup] = useState(false);
+  const toggleEditPopup = () => setEditPopup(!editPopup);
+  const isWeekend = moment(data).day() == 6 || moment(data).day() == 0;
+
+  return (
+    <tr>
+      <td>{index + 1}</td>
+      <td>{data.format("DD/MM/YY")}</td>
+      <td className="text-left" style={{ width: "40%", color: isWeekend && "#DAD8DF" }}>
+        {isWeekend ? "OFF" : "Lorem"}
+      </td>
+      <td>{isWeekend ? "" : "WFH"}</td>
+      <td style={{ color: "#46A583" }}>{isWeekend ? "" : "Approved by ..."}</td>
+      <td>{isWeekend ? "" : "Action"}</td>
+    </tr>
+  );
+};
 
 const InternshipAttendance = (props) => {
-  const { dataMasterUser, dataSBU, query, token, dataFilter, sessionData } =
-    props;
+  const { query, dataFilter } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log(dataMasterUser);
+  const currentDate = new Date();
+  const startDate = moment("2023-02-20T12:00:00Z");
+  const endDate = moment("2024-02-16T12:00:00Z");
 
-  const monthOptions = ["February 2023", "March", "April"];
-  const [month, setMomnth] = useState(query?.month ?? "February");
+  const setPeriod = (start, end) => {
+    const period = [];
+    for (
+      var m = moment(start);
+      m.diff(end, "months") <= 0;
+      m.add(1, "months")
+    ) {
+      period.push(m.format("YYYY-MM-DD"));
+    }
+    return period;
+  };
 
-  useEffect(() => {
-    dispatch(reauthenticate(token));
-  }, [dispatch]);
+  const [internshipPeriod, setInternshipPeriod] = useState(
+    setPeriod(startDate, endDate)
+  );
+  const [monthQuery, setMonthQuery] = useState(
+    query?.month ?? moment(currentDate).format("MMMM YYYY")
+  );
 
+  const setDays = (month) => {
+    var daysInMonth = moment(month).daysInMonth();
+    var arrDays = [];
+
+    while (daysInMonth) {
+      var current = moment().date(daysInMonth);
+      arrDays.unshift(current);
+      daysInMonth--;
+    }
+    return arrDays;
+  };
+
+  const [monthDays, setMonthDays] = useState(setDays(monthQuery));
+  console.log("MONTH DAYS");
+  console.log(monthDays);
+
+  // useEffect(() => {
+  //   dispatch(reauthenticate(token));
+  // }, [dispatch]);
 
   const handleMonthChange = (value) => {
     setPageSize(value);
@@ -86,9 +140,7 @@ const InternshipAttendance = (props) => {
       "Are you sure to delete this document?",
       () => {
         dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
-          (res) => {
-            
-          }
+          (res) => {}
         );
       }
     );
@@ -144,12 +196,14 @@ const InternshipAttendance = (props) => {
             className="form-control ml-1 pr-5"
             type="select"
             id="rows-per-page"
-            value={month}
+            value={monthQuery}
             onChange={(e) => handleMonthChange(e.target.value)}
           >
-            {monthOptions.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
+            {internshipPeriod.map((month, index, obj) => (
+              <option key={month} value={moment(month).format("MMMM YYYY")}>
+                {index === 0 || moment(month).format(`MMMM`) === "January"
+                  ? moment(month).format(`MMMM YYYY`)
+                  : moment(month).format(`MMMM`)}
               </option>
             ))}
           </CustomInput>
@@ -178,7 +232,7 @@ const InternshipAttendance = (props) => {
           >
             <Check size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Sign All
+              Approve All
             </span>
           </Button.Ripple>
         </div>
@@ -195,46 +249,10 @@ const InternshipAttendance = (props) => {
           </tr>
         </thead>
         <tbody className="text-center text-break">
-          <tr>
-            <td>1</td>
-            <td>21-02-23</td>
-            <td className="text-left" style={{ width: "40%" }}>
-              Lorem ipsum dolor sit amet. Est repellendus quia ut nostrum quasi
-              est galisum deserunt ea dolores nemo eos totam recusandae. Sed
-              nihil amet At voluptate quia et dolorem quisquam non temporibus
-              atque ab magni sapiente est libero quasi. Quo atque sunt et
-              placeat odio nam quas incidunt.
-            </td>
-            <td>WFH</td>
-            <td style={{ color: "#46A583" }}>Signed by Supervisor</td>
-            <td>Action</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>22-02-23</td>
-            <td className="text-left" style={{ width: "40%" }}>
-              Lorem ipsum dolor sit amet. Est repellendus quia ut nostrum quasi
-              est galisum deserunt ea dolores nemo eos totam recusandae. Sed
-              nihil amet At voluptate quia et dolorem quisquam non temporibus
-              atque ab magni sapiente est libero quasi. Quo atque sunt et
-              placeat odio nam quas incidunt.
-            </td>
-            <td>WFH</td>
-            <td style={{ color: "#FF5B5C" }}>Waiting for Approval</td>
-            <td>
-              <Button.Ripple
-                id="saveBtn"
-                color="primary"
-                onClick={() => {
-                  onSaveHandler(transformAndValidation(formik.values));
-                }}
-              >
-                <span className="align-middle d-sm-inline-block d-none">
-                  Sign
-                </span>
-              </Button.Ripple>
-            </td>
-          </tr>
+          {monthDays &&
+            monthDays.map((data, index) => (
+              <CreateTableRow dispatch={dispatch} data={data} index={index} />
+            ))}
         </tbody>
       </Table>
       <Row className="mt-1 mb-3">
@@ -242,14 +260,12 @@ const InternshipAttendance = (props) => {
           className="d-flex align-items-center justify-content-start"
           md="9"
           sm="12"
-        >
-        </Col>
+        ></Col>
         <Col
           className="d-flex align-items-center justify-content-end"
           md="3"
           sm="12"
-        >
-        </Col>
+        ></Col>
       </Row>
     </div>
   );
@@ -262,50 +278,27 @@ InternshipAttendance.getLayout = function getLayout(page) {
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {
     const { query } = ctx;
-    const sessionData = await getSession(ctx);
+    // const sessionData = await getSession(ctx);
 
-    if (!sessionData) {
-      return {
-        redirect: {
-          destination: `/auth?url=${ctx.resolvedUrl}`,
-          permanent: false,
-        },
-      };
-    }
+    // if (!sessionData) {
+    //   return {
+    //     redirect: {
+    //       destination: `/auth?url=${ctx.resolvedUrl}`,
+    //       permanent: false,
+    //     },
+    //   };
+    // }
 
-    const dataSBU = await store.dispatch(getSbuAsyncSelect());
+    // const token = sessionData.user.token;
 
-    const token = sessionData.user.token;
-
-    let userRoles = [];
-
-    try {
-      userRoles = JSON.parse(sessionData.user.Roles);
-    } catch (error) {
-      console.error("Error parsing user roles JSON:", error);
-    }
-
-    const isSuperUser = userRoles.some((role) => role.RoleCode === SUPER_USER);
-    const isSystemAdmin = userRoles.some(
-      (role) => role.RoleCode === SYSTEM_ADMIN
-    );
-
-    let userCompCode = isSuperUser ? sessionData.user.CompCode : "";
-    let userUPN =
-      !isSuperUser && !isSystemAdmin ? sessionData.user.UserPrincipalName : "";
-
-    store.dispatch(reauthenticate(token));
-
-    const dataMasterUser = store.getState().masterUserReducers;
+    // store.dispatch(reauthenticate(token));
 
     return {
       props: {
-        dataMasterUser,
         query,
-        token,
-        dataSBU,
+        // token,
         dataFilter: query,
-        sessionData,
+        // sessionData,
       },
     };
   }

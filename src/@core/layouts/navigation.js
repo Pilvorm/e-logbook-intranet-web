@@ -15,6 +15,7 @@ import {
   Compass,
   PlusSquare,
   FileText,
+  DollarSign
 } from "react-feather";
 
 export const navigationData = [
@@ -51,6 +52,13 @@ export const navigationData = [
         icon: <Users size={24} />,
         roles: ["HSSE-SU", "HSSE-SYSADMIN", "HSSE-INSP", "HSSE-INSP-SUP", "HSSE-MAN", "HSSE-PIC-CAPA", "HSSE-USR"],
         href: "/master/user",
+      },
+      {
+        id: "allowance",
+        title: "Master Allowance",
+        icon: <DollarSign size={24} />,
+        roles: ["HSSE-SU", "HSSE-SYSADMIN", "HSSE-INSP", "HSSE-INSP-SUP", "HSSE-MAN", "HSSE-PIC-CAPA", "HSSE-USR"],
+        href: "/master/allowance",
       }
     ],
   },

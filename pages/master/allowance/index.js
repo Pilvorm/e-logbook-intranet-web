@@ -74,37 +74,25 @@ const CreateTableRow = ({ dispatch, data }) => {
 
   return (
     <tr>
-      <td>
-        <UncontrolledDropdown>
-          <DropdownToggle
-            className="icon-btn hide-arrow"
-            id="optionsSelect"
-            color="transparent"
-            size="sm"
-            caret
-          >
-            <MoreVertical size={15} />
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem
-              className="w-100"
-              onClick={toggleEditPopup}
-              id="editBtn"
-            >
-              <Edit className="mr-50" size={15} />
-              <span className="align-middle">Edit</span>
-              <EditAllowance
-                visible={editPopup}
-                toggle={toggleEditPopup}
-                data={data}
-              />
-            </DropdownItem>
-          </DropdownMenu>
-        </UncontrolledDropdown>
-      </td>
       <td>{data.educationName}</td>
       <td>Rp {data.allowances[0].allowanceFee.toLocaleString("de-DE")}</td>
       <td>Rp {data.allowances[1].allowanceFee.toLocaleString("de-DE")}</td>
+      <td>
+        <Button.Ripple
+          outline
+          type="submit"
+          color="warning"
+          className="btn-next"
+          onClick={toggleEditPopup}
+        >
+          <Edit size={18} />
+          <EditAllowance
+            visible={editPopup}
+            toggle={toggleEditPopup}
+            data={data}
+          />
+        </Button.Ripple>
+      </td>
     </tr>
   );
 };
@@ -259,10 +247,10 @@ const MasterAllowance = (props) => {
               <Table responsive className="border mt-1">
                 <thead className="text-center">
                   <tr>
-                    <th>Action</th>
                     <th>Education</th>
                     <th>WFH</th>
                     <th>WFO</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody className="text-center text-break">

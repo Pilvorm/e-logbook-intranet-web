@@ -49,8 +49,14 @@ import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 
 const MasterUser = (props) => {
-  const { dataMasterUserInternal, dataSBU, query, token, dataFilter, sessionData } =
-    props;
+  const {
+    dataMasterUserInternal,
+    dataSBU,
+    query,
+    token,
+    dataFilter,
+    sessionData,
+  } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -258,19 +264,32 @@ const MasterUser = (props) => {
       <Table responsive className="border">
         <thead className="text-center">
           <tr>
-            <th>Action</th>
             <th>Name</th>
             <th>Username</th>
             <th>Email</th>
             <th>Site</th>
             <th>Jabatan</th>
             <th>Role</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody className="text-center text-break">
           {dataMasterUserInternal &&
             dataMasterUserInternal.data.map((user) => (
               <tr key={user.nik}>
+                <td className="text-uppercase">{user.name}</td>
+                <td className="text-lowercase">{user.userPrincipalName}</td>
+                <td className="text-lowercase">{user.email}</td>
+                <td>{user.compName}</td>
+                <td>{user.jobTitle}</td>
+                <td>
+                  {user.userRoles.map((users, index, obj) => (
+                    <span key={users.nik}>
+                      {users.roleName}
+                      {index + 1 !== obj.length && ", "}
+                    </span>
+                  ))}
+                </td>
                 <td>
                   <UncontrolledDropdown>
                     <DropdownToggle
@@ -304,19 +323,6 @@ const MasterUser = (props) => {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </td>
-                <td className="text-uppercase">{user.name}</td>
-                <td className="text-lowercase">{user.userPrincipalName}</td>
-                <td className="text-lowercase">{user.email}</td>
-                <td>{user.compName}</td>
-                <td>{user.jobTitle}</td>
-                <td>
-                  {user.userRoles.map((users, index, obj) => (
-                    <span key={users.nik}>
-                      {users.roleName}
-                      {index + 1 !== obj.length && ", "}
-                    </span>
-                  ))}
-                </td>
               </tr>
             ))}
         </tbody>
@@ -328,7 +334,8 @@ const MasterUser = (props) => {
           sm="12"
         >
           <p className="mb-0" style={{ color: "#b9b9c3" }}>
-            Showing 1 to {pageSize} of {dataMasterUserInternal.totalData} entries
+            Showing 1 to {pageSize} of {dataMasterUserInternal.totalData}{" "}
+            entries
           </p>
         </Col>
         <Col
