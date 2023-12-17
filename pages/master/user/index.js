@@ -31,11 +31,10 @@ import {
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
 import {
-  getAllMasterUser,
-  deleteMasterUser,
-  getSbuAsyncSelect,
   getAllMasterUserInternal,
-} from "redux/actions/master/user";
+  deleteMasterUserInternal,
+  getSbuAsyncSelect,
+} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
 import {
@@ -50,13 +49,10 @@ import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 
 const MasterUser = (props) => {
-  const { dataMasterUser, dataSBU, query, token, dataFilter, sessionData } =
+  const { dataMasterUserInternal, dataSBU, query, token, dataFilter, sessionData } =
     props;
   const dispatch = useDispatch();
   const router = useRouter();
-
-  console.log("MASTER USER");
-  console.log(dataMasterUser);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
@@ -70,7 +66,7 @@ const MasterUser = (props) => {
           userPrincipalName: "",
           compName: "",
           email: "",
-          roleName: "",
+          userRoles: "",
         }
   );
 
@@ -139,7 +135,7 @@ const MasterUser = (props) => {
       "Delete Item",
       "Are you sure to delete this user?",
       () => {
-        dispatch(deleteMasterUser(data.id)).then((res) => {
+        dispatch(deleteMasterUserInternal(data.id)).then((res) => {
           console.log(res);
           if (res.status === HTTP_CODE.UNAUTHORIZED) {
             errorAlertNotification(
@@ -205,7 +201,7 @@ const MasterUser = (props) => {
           >
             <Filter size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Filter
+              Filter - FIX COMPANY
             </span>
           </Button.Ripple>
         </div>
@@ -272,8 +268,8 @@ const MasterUser = (props) => {
           </tr>
         </thead>
         <tbody className="text-center text-break">
-          {dataMasterUser &&
-            dataMasterUser.data.map((user) => (
+          {dataMasterUserInternal &&
+            dataMasterUserInternal.data.map((user) => (
               <tr key={user.nik}>
                 <td>
                   <UncontrolledDropdown>
@@ -332,7 +328,7 @@ const MasterUser = (props) => {
           sm="12"
         >
           <p className="mb-0" style={{ color: "#b9b9c3" }}>
-            Showing 1 to {pageSize} of {dataMasterUser.totalData} entries
+            Showing 1 to {pageSize} of {dataMasterUserInternal.totalData} entries
           </p>
         </Col>
         <Col
@@ -343,7 +339,7 @@ const MasterUser = (props) => {
           <ReactPaginate
             onPageChange={(page) => handlePagination(page)}
             forcePage={pageNumber - 1}
-            pageCount={dataMasterUser.totalPage || 1}
+            pageCount={dataMasterUserInternal.totalPage || 1}
             nextLabel={""}
             breakLabel={"..."}
             activeClassName={"active"}
@@ -417,11 +413,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
       })
     );
 
-    const dataMasterUser = store.getState().masterUserReducers;
+    const dataMasterUserInternal = store.getState().masterUserInternalReducers;
 
     return {
       props: {
-        dataMasterUser,
+        dataMasterUserInternal,
         query,
         token,
         dataSBU,

@@ -61,7 +61,7 @@ import {
   getAllMasterUser,
   createMasterUser,
   getAllMasterUserInternal,
-} from "redux/actions/master/user";
+} from "redux/actions/master/userInternal";
 import { getAllAllowance } from "redux/actions/master/allowance";
 import EditAllowance from "components/ModalForm/EditAllowance";
 import debounce from "lodash/debounce";
@@ -113,9 +113,6 @@ const MasterAllowance = (props) => {
   const { dataMasterAllowance, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
-
-  console.log("ALLOWANCES");
-  console.log(dataMasterAllowance);
 
   const { data: session, status } = useSession();
 

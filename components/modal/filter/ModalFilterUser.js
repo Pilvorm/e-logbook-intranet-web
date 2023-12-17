@@ -193,12 +193,12 @@ const ModalFilterUser = ({
                         <Input
                           type="text"
                           placeholder="Role Name"
-                          name="roleName"
-                          value={filterQuery.roleName}
+                          name="userRoles"
+                          value={filterQuery.userRoles}
                           onChange={(e) => {
                             setFilterQuery({
                               ...filterQuery,
-                              roleName: e.target.value,
+                              userRoles: e.target.value,
                             });
                           }}
                         />
@@ -224,7 +224,7 @@ const ModalFilterUser = ({
                           userPrincipalName: "",
                           compName: "",
                           email: "",
-                          roleName: "",
+                          userRoles: "",
                         });
                       }}
                     >

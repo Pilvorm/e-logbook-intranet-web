@@ -43,13 +43,17 @@ import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
 import { searchRole, searchUser } from "helpers/master/masterRole";
-import { getAllMasterUser, createMasterUser } from "redux/actions/master/user";
+import {
+  getAllMasterUser,
+  createMasterUser,
+} from "redux/actions/master/userInternal";
+import { getMasterInternById } from "redux/actions/master/intern";
 import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 import debounce from "lodash/debounce";
 
-const MasterInternDetail = (props) => {
-  const { dataRoles, dataMasterUser, sessionData, token } = props;
+const EditMasterIntern = (props) => {
+  const { data, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -226,7 +230,11 @@ const MasterInternDetail = (props) => {
 
   return (
     <div className="min-vh-100">
-      <BreadCrumbs breadCrumbParent="Master" breadCrumbParent2="Intern" breadCrumbActive="Edit" />
+      <BreadCrumbs
+        breadCrumbParent="Master"
+        breadCrumbParent2="Intern"
+        breadCrumbActive="Edit"
+      />
       <div className="d-flex align-items-center my-3">
         <h2>Edit Intern</h2>
       </div>
@@ -236,18 +244,11 @@ const MasterInternDetail = (props) => {
           <Formik
             enableReinitialize
             initialValues={{
-              nik: selectedName?.nik ?? "",
-              userPrincipalName: selectedName?.userPrincipalName ?? "",
-              name: selectedName?.name ?? "",
-              email: selectedName?.email ?? "",
-              userRoles: [],
-              applicationCode: selectedName?.applicationCode ?? "",
-              companyCode: selectedName?.compCode ?? "",
-              companyName: selectedName?.compName ?? "",
-              clusterCode: selectedName?.clusterCode ?? "",
-              orgType: selectedName?.orgType ?? "",
-              jabatan: selectedName?.jobTtlName ?? "",
-              notes: "",
+              name: data?.name ?? "",
+              userPrincipalName: data?.userPrincipalName ?? "",
+              schoolName: data?.schoolName ?? "",
+              faculty: data?.faculty ?? "",
+
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -318,8 +319,7 @@ const MasterInternDetail = (props) => {
                           id="name"
                           type="text"
                           placeholder="Name"
-                          value={"Daniel Emerald Sumarly"}
-                          //   defaultValue={selectedName?.userPrincipalName}
+                          value={values.name}
                           onChange={handleChange("name")}
                           disabled
                         />
@@ -369,9 +369,8 @@ const MasterInternDetail = (props) => {
                           id="email"
                           type="text"
                           placeholder="Email"
-                          value={"daniel.sumarly@binus.ac.id"}
-                          // defaultValue={selectedName?.email}
-                          onChange={handleChange("email")}
+                          value={values.userPrincipalName}
+                          onChange={handleChange("userPrincipalName")}
                           disabled
                         />
                         {errors.email && (
@@ -390,13 +389,12 @@ const MasterInternDetail = (props) => {
                           id="school"
                           type="text"
                           placeholder="School/College"
-                          value={"Binus University"}
-                          //   defaultValue={selectedName?.userPrincipalName}
-                          onChange={handleChange("school")}
+                          value={values.schoolName}
+                          onChange={handleChange("schoolName")}
                           disabled
                         />
-                        {errors.school && (
-                          <div className="text-danger">{errors.school}</div>
+                        {errors.schoolName && (
+                          <div className="text-danger">{errors.schoolName}</div>
                         )}
                       </FormGroup>
                     </Col>
@@ -409,8 +407,7 @@ const MasterInternDetail = (props) => {
                           id="faculty"
                           type="text"
                           placeholder="Job Title Name"
-                          value={"Computer Science"}
-                          //   defaultValue={selectedName?.jobTtlName}
+                          value={values.faculty}
                           onChange={handleChange("faculty")}
                           disabled
                         />
@@ -546,7 +543,7 @@ const MasterInternDetail = (props) => {
   );
 };
 
-MasterInternDetail.getLayout = function getLayout(page) {
+EditMasterIntern.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -568,29 +565,25 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const token = sessionData.user.token;
     store.dispatch(reauthenticate(token));
 
-    await store.dispatch(getAllRoles());
-    const dataRoles = store.getState().masterRoleReducers;
+    const response = await store.dispatch(getMasterInternById(query.id));
 
-    await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 1000,
-        query.search || "",
-        query.name || ""
-      )
-    );
-
-    const dataMasterUser = store.getState().masterUserReducers;
+    if (response.status !== 200) {
+      return {
+        redirect: {
+          destination: "/master/intern",
+          permanent: false,
+        },
+      };
+    }
 
     return {
       props: {
         token: sessionData.user.token,
-        dataRoles,
-        dataMasterUser,
+        data: response.data,
         sessionData,
       },
     };
   }
 );
 
-export default MasterInternDetail;
+export default connect((state) => state)(EditMasterIntern);

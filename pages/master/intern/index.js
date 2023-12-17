@@ -31,10 +31,10 @@ import {
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
 import {
-  getAllMasterUser,
-  deleteMasterUser,
+  getAllMasterUserInternal,
+  deleteMasterUserInternal,
   getSbuAsyncSelect,
-} from "redux/actions/master/user";
+} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
 import {
@@ -44,22 +44,36 @@ import {
   deleteAlertNotification,
 } from "components/notification";
 
-import ModalFilterMasterIntern from "components/modal/filter/ModalFilterMasterIntern";
+import ModalFilterUser from "components/modal/filter/ModalFilterUser";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
+import { getAllMasterIntern, deleteMasterIntern } from "redux/actions/master/intern";
+import moment from "moment";
 
 const MasterIntern = (props) => {
-  const { dataMasterUser, dataSBU, query, token, dataFilter, sessionData } =
+  const { dataMasterIntern, dataSBU, query, token, dataFilter, sessionData } =
     props;
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log(dataMasterUser);
+  console.log("DATA MASTER INTERN");
+  console.log(dataMasterIntern);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
   const [pageNumber, setPageNumber] = useState(query?.pageNumber ?? 1);
   const [searchQuery, setSearchQuery] = useState(query?.search ?? "");
+  const [filterQuery, setFilterQuery] = useState(
+    query?.filter
+      ? { ...JSON.parse(query?.filter) }
+      : {
+          name: "",
+          userPrincipalName: "",
+          compName: "",
+          email: "",
+          userRoles: "",
+        }
+  );
 
   const [visibleFilter, setVisibleFilter] = useState(false);
   const toggleFilterPopup = () => setVisibleFilter(!visibleFilter);
@@ -74,10 +88,10 @@ const MasterIntern = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: value,
         pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -88,10 +102,10 @@ const MasterIntern = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
         pageNumber: page.selected + 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -100,10 +114,22 @@ const MasterIntern = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
-        pageNumber: "",
+        pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
+      },
+    });
+  };
+
+  const handleFilterQuery = (param) => {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        pageSize: pageSize,
+        pageNumber: 1,
+        search: searchQuery,
+        filter: JSON.stringify(param),
       },
     });
   };
@@ -112,33 +138,31 @@ const MasterIntern = (props) => {
     e.preventDefault();
     confirmAlertNotification(
       "Delete Item",
-      "Are you sure to delete this document?",
+      "Are you sure to delete this user?",
       () => {
-        dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
-          (res) => {
-            console.log(res);
-            if (res.status === HTTP_CODE.UNAUTHORIZED) {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            } else if (res.status === 200) {
-              successAlertNotification(
-                "Deleted Success",
-                "Successfully Deleted Item"
-              );
-              router.push({
-                pathname: router.pathname,
-                query: { pageSize, pageNumber, searchQuery },
-              });
-            } else {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            }
+        dispatch(deleteMasterIntern(data.id)).then((res) => {
+          console.log(res);
+          if (res.status === HTTP_CODE.UNAUTHORIZED) {
+            errorAlertNotification(
+              "Error",
+              "Something went wrong, Please try again later."
+            );
+          } else if (res.status === 200) {
+            successAlertNotification(
+              "Deleted Success",
+              "Successfully Deleted User"
+            );
+            router.push({
+              pathname: router.pathname,
+              query: { pageSize, pageNumber, searchQuery },
+            });
+          } else {
+            errorAlertNotification(
+              "Error",
+              "Something went wrong, Please try again later."
+            );
           }
-        );
+        });
       }
     );
   };
@@ -164,11 +188,13 @@ const MasterIntern = (props) => {
       </div>
 
       <Card className="p-2">
-        <ModalFilterMasterIntern
+        <ModalFilterUser
           visible={visibleFilter}
           toggle={toggleFilterPopup}
-          dataSBU={dataSBU}
           sessionData={sessionData}
+          handleFilterQuery={handleFilterQuery}
+          filterQuery={filterQuery}
+          setFilterQuery={setFilterQuery}
         />
         <div className="d-flex align-items-center">
           <Button.Ripple
@@ -218,20 +244,6 @@ const MasterIntern = (props) => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <div className="d-flex align-items-center">
-            <Button.Ripple
-              color="primary"
-              id="buttonCreate"
-              name="buttonCreate"
-              className="btn-next mr-1"
-              onClick={() => router.push("/hsse/master/user/add")}
-            >
-              <Plus size={18} />
-              <span className="align-middle ml-1 d-sm-inline-block d-none">
-                ???
-              </span>
-            </Button.Ripple>
-          </div>
         </div>
       </div>
       <Table responsive className="border">
@@ -248,45 +260,51 @@ const MasterIntern = (props) => {
           </tr>
         </thead>
         <tbody className="text-center text-break">
-          <tr>
-            <td>
-              <UncontrolledDropdown>
-                <DropdownToggle
-                  className="icon-btn hide-arrow"
-                  id="optionsSelect"
-                  color="transparent"
-                  size="sm"
-                  caret
-                >
-                  <MoreVertical size={15} />
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem
-                    className="w-100"
-                    id="editBtn"
-                  >
-                    <Edit className="mr-50" size={15} />
-                    <span className="align-middle">Edit</span>
-                  </DropdownItem>
-                  {/* //{data.status === "DRAFT" && ( */}
-                  <DropdownItem
-                    className="w-100"
-                  >
-                    <Trash className="mr-50" size={15} />
-                    <span className="align-middle">Delete</span>
-                  </DropdownItem>
-                  {/* )} */}
-                </DropdownMenu>
-              </UncontrolledDropdown>
-            </td>
-            <td>Daniel Emerald Sumarly</td>
-            <td>CIT</td>
-            <td>PT XYZ</td>
-            <td>Joko Chandra</td>
-            <td>Binus University</td>
-            <td>Computer Science</td>
-            <td>February 2023 - February 2024</td>
-          </tr>
+          {dataMasterIntern &&
+            dataMasterIntern.data.map((intern) => (
+              <tr key={intern.id}>
+                <td>
+                  <UncontrolledDropdown>
+                    <DropdownToggle
+                      className="icon-btn hide-arrow"
+                      id="optionsSelect"
+                      color="transparent"
+                      size="sm"
+                      caret
+                    >
+                      <MoreVertical size={15} />
+                    </DropdownToggle>
+                    <DropdownMenu>
+                      <DropdownItem
+                        className="w-100"
+                        onClick={() =>
+                          router.push(`/master/intern/${intern.id}/edit`)
+                        }
+                        id="editBtn"
+                      >
+                        <Edit className="mr-50" size={15} />
+                        <span className="align-middle">Edit</span>
+                      </DropdownItem>
+                      <DropdownItem
+                        className="w-100"
+                        onClick={(e) => handleDelete(e, intern)}
+                        id="deleteBtn"
+                      >
+                        <Trash className="mr-50" size={15} />
+                        <span className="align-middle">Delete</span>
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </td>
+                <td className="text-uppercase">{intern.name}</td>
+                <td>{intern.dept}</td>
+                <td>{intern.companyName}</td>
+                <td>{intern.supervisorName}</td>
+                <td>{intern.schoolName}</td>
+                <td>{intern.faculty}</td>
+                <td>{moment(intern.joinDate).format("DD MMM YYYY")} - {moment(intern.endDate).format("DD MMM YYYY")}</td>
+              </tr>
+            ))}
         </tbody>
       </Table>
       <Row className="mt-1 mb-3">
@@ -296,7 +314,7 @@ const MasterIntern = (props) => {
           sm="12"
         >
           <p className="mb-0" style={{ color: "#b9b9c3" }}>
-            Showing 1 to {pageSize} of {dataMasterUser.totalData} entries
+            Showing 1 to {pageSize} of {dataMasterIntern.totalData} entries
           </p>
         </Col>
         <Col
@@ -307,7 +325,7 @@ const MasterIntern = (props) => {
           <ReactPaginate
             onPageChange={(page) => handlePagination(page)}
             forcePage={pageNumber - 1}
-            pageCount={dataMasterUser.totalPage || 1}
+            pageCount={dataMasterIntern.totalPage || 1}
             nextLabel={""}
             breakLabel={"..."}
             activeClassName={"active"}
@@ -350,44 +368,42 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const token = sessionData.user.token;
 
-    let userRoles = [];
-
-    try {
-      userRoles = JSON.parse(sessionData.user.Roles);
-    } catch (error) {
-      console.error("Error parsing user roles JSON:", error);
-    }
-
-    const isSuperUser = userRoles.some((role) => role.RoleCode === SUPER_USER);
-    const isSystemAdmin = userRoles.some(
-      (role) => role.RoleCode === SYSTEM_ADMIN
-    );
-
-    let userCompCode = isSuperUser ? sessionData.user.CompCode : "";
-    let userUPN =
-      !isSuperUser && !isSystemAdmin ? sessionData.user.UserPrincipalName : "";
-
     store.dispatch(reauthenticate(token));
 
+    const formatFilter = (filterData) => {
+      const filteredFilter = Object.entries(filterData).filter(
+        (data) => data[1] !== ""
+      );
+      const finalFilter = filteredFilter
+        .map((data) => `${data[0]}=${data[1]}`)
+        .join("|");
+
+      return finalFilter;
+    };
+
     await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 10,
-        query.search || "",
-        query.name || "",
-        query.username || "",
-        userCompCode || query.companyCode,
-        query.email || "",
-        query.roleName || "",
-        userUPN || query.creator
-      )
+      getAllMasterIntern({
+        "CSTM-COMPID": sessionData.user.CompCode,
+        "CSTM-NAME": sessionData.user.Name,
+        "CSTM-EMAIL": sessionData.user.Email,
+        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-UPN": sessionData.user.UserPrincipalName,
+        "X-PAGINATION": true,
+        "X-PAGE": query.pageNumber || 1,
+        "X-PAGESIZE": query.pageSize || 10,
+        "X-ORDERBY": "createdDate desc",
+        "X-SEARCH": `*${query.search || ""}*`,
+        // "X-FILTER": `${
+        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        // }`,
+      })
     );
 
-    const dataMasterUser = store.getState().masterUserReducers;
+    const dataMasterIntern = store.getState().masterInternReducers;
 
     return {
       props: {
-        dataMasterUser,
+        dataMasterIntern,
         query,
         token,
         dataSBU,

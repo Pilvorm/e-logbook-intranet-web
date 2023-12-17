@@ -44,7 +44,7 @@ import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
 import { searchRole, searchUser } from "helpers/master/masterRole";
-import { getAllMasterUser, createMasterUser, getAllMasterUserInternal, } from "redux/actions/master/user";
+import { getAllMasterUser, createMasterUserInternal, getAllMasterUserInternal, } from "redux/actions/master/userInternal";
 import debounce from "lodash/debounce";
 
 const AddMasterUser = (props) => {
@@ -194,7 +194,7 @@ const AddMasterUser = (props) => {
       "Are you sure to add new user?",
       () => {
         actions.setSubmitting(true);
-        dispatch(createMasterUser(bodyData)).then((res) => {
+        dispatch(createMasterUserInternal(bodyData)).then((res) => {
           if (res.status >= 200 && res.status <= 300) {
             actions.setSubmitting(false);
             successAlertNotification("Success", "Data saved succesfully");
@@ -570,7 +570,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
       })
     );
 
-    const dataMasterUser = store.getState().masterUserReducers;
+    const dataMasterUser = store.getState().masterUserInternalReducers;
 
     return {
       props: {

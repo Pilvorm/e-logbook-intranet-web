@@ -27,9 +27,9 @@ import { reauthenticate } from "redux/actions/auth";
 import { getAllRoles } from "redux/actions/master/role";
 import {
   getMasterUser,
-  getMasterUserById,
-  updateMasterUser,
-} from "redux/actions/master/user";
+  getMasterUserInternalById,
+  updateMasterUserInternal,
+} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 import * as yup from "yup";
 
@@ -107,7 +107,7 @@ function RoleCheckboxes({ name, roles, ...props }) {
   ));
 }
 
-function EditMasterUser(props) {
+function EditMasterUserInternal(props) {
   const { token, query, data, dataRoles } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -189,7 +189,7 @@ function EditMasterUser(props) {
                   "Are you sure to update this user?",
                   () => {
                     actions.setSubmitting(true);
-                    dispatch(updateMasterUser(data.id, payload)).then((res) => {
+                    dispatch(updateMasterUserInternal(data.id, payload)).then((res) => {
                       if (res.status >= 200 && res.status <= 300) {
                         actions.setSubmitting(false);
                         successAlertNotification(
@@ -355,7 +355,7 @@ function EditMasterUser(props) {
   );
 }
 
-EditMasterUser.getLayout = function getLayout(page) {
+EditMasterUserInternal.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -376,7 +376,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const token = sessionData.user.token;
     store.dispatch(reauthenticate(token));
 
-    const response = await store.dispatch(getMasterUserById(query.id));
+    const response = await store.dispatch(getMasterUserInternalById(query.id));
 
     if (response.status !== 200) {
       return {
@@ -400,4 +400,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default connect((state) => state)(EditMasterUser);
+export default connect((state) => state)(EditMasterUserInternal);
