@@ -13,7 +13,7 @@ import {
   DELETE_MASTER_USER_INTERNAL,
   EDIT_MASTER_USER_INTERNAL,
   GET_ALL_MASTER_USER_INTERNAL,
-  GET_MASTER_USER_INTERNAL_BY_ID
+  GET_MASTER_USER_INTERNAL_BY_ID,
 } from "redux/types";
 
 export const getAllMasterUserInternal = (param) => async (dispatch) => {
@@ -100,46 +100,6 @@ export const deleteMasterUserInternal = (id) => async (dispatch) => {
     return response;
   } catch (error) {
     console.error(error);
-    return error.response;
-  }
-};
-
-export const getAllSBU = (name) => async (dispatch) => {
-  const header = getHeaders(store.getState().authReducers.token);
-  try {
-    const response = await axios({
-      url: `${API_GLOBAL_SBU_URL}/api/BU/BuAndOrgGroupPharma`,
-      headers: header,
-      method: "GET",
-    });
-
-    return response.data;
-  } catch (error) {
-    return error.response;
-  }
-};
-
-export const getSbuAsyncSelect = (name) => async (dispatch) => {
-  const header = getHeaders(store.getState().authReducers.token);
-
-  try {
-    const response = await axios({
-      url: `${API_GLOBAL_SBU_URL}/api/BU/BuAndOrgGroupPharma`,
-      headers: header,
-      method: "GET",
-    });
-
-    // Map the value inside the try block
-    const updatedData = response.data.map((item) => ({
-      ...item,
-      label: item.name,
-      value: item.name,
-    }));
-
-    return updatedData;
-
-    // return response.data;
-  } catch (error) {
     return error.response;
   }
 };

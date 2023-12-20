@@ -44,7 +44,7 @@ import {
   deleteAlertNotification,
 } from "components/notification";
 
-import ModalFilterUser from "components/modal/filter/ModalFilterUser";
+import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import {
@@ -53,9 +53,25 @@ import {
 } from "redux/actions/master/intern";
 import moment from "moment";
 
+import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
+import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
+import { getAsyncOptionsDepartment } from "helpers/master/masterDepartment";
+
+import { getSchoolAsyncSelect } from "redux/actions/master/school";
+import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
+import { getDepartmentAsyncSelect } from "redux/actions/master/department";
+
 const MasterIntern = (props) => {
-  const { dataMasterIntern, dataSBU, query, token, dataFilter, sessionData } =
-    props;
+  const {
+    dataMasterIntern,
+    dataSchool,
+    dataFaculty,
+    dataDepartment,
+    query,
+    token,
+    dataFilter,
+    sessionData,
+  } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -191,13 +207,16 @@ const MasterIntern = (props) => {
       </div>
 
       <Card className="p-2">
-        <ModalFilterUser
+        <ModalFilterIntern
           visible={visibleFilter}
           toggle={toggleFilterPopup}
           sessionData={sessionData}
           handleFilterQuery={handleFilterQuery}
           filterQuery={filterQuery}
           setFilterQuery={setFilterQuery}
+          dataSchool={dataSchool}
+          dataFaculty={dataFaculty}
+          dataDepartment={dataDepartment}
         />
         <div className="d-flex align-items-center">
           <Button.Ripple
@@ -269,7 +288,7 @@ const MasterIntern = (props) => {
                 <td className="text-uppercase">{intern.name}</td>
                 <td>{intern.dept}</td>
                 <td>{intern.companyName}</td>
-                <td>{intern.supervisorName}</td>
+                <td className="text-uppercase">{intern.mentorName}</td>
                 <td>{intern.schoolName}</td>
                 <td>{intern.faculty}</td>
                 <td>
@@ -370,8 +389,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
-    const dataSBU = await store.dispatch(getSbuAsyncSelect());
-
     const token = sessionData.user.token;
 
     store.dispatch(reauthenticate(token));
@@ -407,14 +424,20 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const dataMasterIntern = store.getState().masterInternReducers;
 
+    const dataSchool = await store.dispatch(getSchoolAsyncSelect());
+    const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
+    const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
+
     return {
       props: {
         dataMasterIntern,
         query,
         token,
-        dataSBU,
         dataFilter: query,
         sessionData,
+        dataSchool,
+        dataFaculty,
+        dataDepartment,
       },
     };
   }

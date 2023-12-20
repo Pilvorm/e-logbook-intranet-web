@@ -13,7 +13,7 @@ import {
   DELETE_MASTER_INTERN,
   EDIT_MASTER_INTERN,
   GET_ALL_MASTER_INTERN,
-  GET_MASTER_INTERN_BY_ID
+  GET_MASTER_INTERN_BY_ID,
 } from "redux/types";
 
 export const getAllMasterIntern = (param) => async (dispatch) => {
@@ -21,7 +21,7 @@ export const getAllMasterIntern = (param) => async (dispatch) => {
 
   try {
     const response = await axios({
-      url: API_MASTER + "/UserExternal",
+      url: API_MASTER + "/UserExternal/GetUserExternal",
       method: "GET",
       headers: { ...header, ...param },
     });
@@ -50,35 +50,17 @@ export const getMasterInternById = (id) => async (dispatch) => {
   }
 };
 
-export const createMasterUserInternal = (data) => async (dispatch) => {
+export const updateMasterIntern = (id, data) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
   try {
     const response = await axios({
-      url: API_MASTER + "/UserInternal",
-      method: "POST",
-      headers: header,
-      data,
-    });
-
-    dispatch({ type: CREATE_MASTER_USER_INTERNAL, payload: response.data });
-    return response;
-  } catch (error) {
-    return error.response;
-  }
-};
-
-export const updateMasterUserInternal = (id, data) => async (dispatch) => {
-  const header = getHeaders(store.getState().authReducers.token);
-
-  try {
-    const response = await axios({
-      url: API_MASTER + `/UserInternal/${id}`,
+      url: API_MASTER + `/UserExternal/${id}`,
       method: "PUT",
       headers: { ...header },
       data,
     });
-    dispatch({ type: EDIT_MASTER_USER_INTERNAL, payload: response.data });
+    dispatch({ type: EDIT_MASTER_INTERN, payload: response.data });
 
     return response;
   } catch (error) {
@@ -101,5 +83,25 @@ export const deleteMasterIntern = (id) => async (dispatch) => {
   } catch (error) {
     console.error(error);
     return error.response;
+  }
+};
+
+export const approveMasterIntern = (id) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+
+  try {
+    const response = await axios({
+      url: API_MASTER + `/UserExternal/ConfirmUser/${id}`,
+      method: "PUT",
+      headers: {
+        ...header,
+      },
+    });
+
+    return response;
+  } catch (error) {
+    console.log(error.response);
+    console.error(error.response);
+    return error;
   }
 };

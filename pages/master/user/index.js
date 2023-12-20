@@ -51,7 +51,6 @@ import VerticalLayout from "src/@core/layouts/VerticalLayout";
 const MasterUser = (props) => {
   const {
     dataMasterUserInternal,
-    dataSBU,
     query,
     token,
     dataFilter,
@@ -385,8 +384,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
-    const dataSBU = await store.dispatch(getSbuAsyncSelect());
-
     const token = sessionData.user.token;
 
     store.dispatch(reauthenticate(token));
@@ -427,7 +424,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
         dataMasterUserInternal,
         query,
         token,
-        dataSBU,
         dataFilter: query,
         sessionData,
       },

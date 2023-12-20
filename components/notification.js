@@ -226,7 +226,6 @@ export const confirmAlertNotification = (
         newButton={true}
         onClose={() => {
           MySwal.close();
-          onClose();
         }}
         onConfirm={async () => {
           MySwal.close();

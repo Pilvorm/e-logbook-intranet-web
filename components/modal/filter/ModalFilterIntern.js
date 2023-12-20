@@ -19,60 +19,86 @@ import { Formik } from "formik";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import { wrapper } from "redux/store";
-import { getAsyncOptionsSBU } from "helpers/sbu";
+import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
-const STATUS_OPTIONS = [
-    { value: "Waiting", label: "Waiting for Approval" },
-    { value: "Signed", label: "Signed by Supervisor" },
-  ];
+import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
+import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
+import { getAsyncOptionsDepartment } from "helpers/master/masterDepartment";
 
-const ModalFilterIntern = ({ visible, toggle, dataSBU, sessionData }) => {
+const ModalFilterIntern = ({
+  visible,
+  toggle,
+  sessionData,
+  handleFilterQuery,
+  filterQuery,
+  setFilterQuery,
+  ...props
+}) => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!dataSBU.find((data) => data.label === "All")) {
-      dataSBU.unshift({ value: "", label: "All" });
-    }
-  }, []);
-
-  const [selectedCompany, setSelectedCompany] = useState("");
   const isSystemAdmin = getPermissionComponentByRoles(["HSSE-SYSADMIN"]);
   const isSuperUser = getPermissionComponentByRoles(["HSSE-SU"]);
 
   const query = router.query ?? {};
 
-  const loadOptionsSBU = useCallback(
+  // handling search site
+  const getAsyncOptionsCompany = (inputText) => {
+    return searchCompany(inputText).then((resp) => {
+      return resp.data.map((singleData) => ({
+        ...singleData,
+        value: singleData.companyName,
+        label: singleData.companyName,
+      }));
+    });
+  };
+
+  const loadOptionsCompany = useCallback(
     debounce((inputText, callback) => {
       if (inputText) {
-        getAsyncOptionsSBU(inputText).then((options) => callback(options));
+        getAsyncOptionsCompany(inputText).then((options) => callback(options));
       }
     }, 1000),
     []
   );
 
-  const getCompanyQuery = dataSBU.filter(
-    (company) => company.idmCompCode === query.companyCode
+  const loadOptionsSchool = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsSchool(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
   );
 
-  const onSubmit = (values, actions) => {
-    const { name, username, companyCode, email, roleName } = values;
+  const loadOptionsFaculty = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsFaculty(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
+  );
 
-    router.push({
-      pathname: router.pathname,
-      query: {
-        pageSize: 10,
-        pageNumber: 1,
-        search: "",
-        name: name ?? "",
-        username: username ?? "",
-        companyCode: companyCode ?? "",
-        email: email ?? "",
-        roleName: roleName ?? "",
-      },
-    });
-  };
+  const loadOptionsDepartment = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsDepartment(inputText).then((options) =>
+          callback(options)
+        );
+      }
+    }, 1000),
+    []
+  );
+
+  const [selectedCompany, setSelectedCompany] = useState({
+    label: "Search...",
+    value: "",
+  });
+
+  console.log("COMPANY");
+  console.log(selectedCompany);
 
   return (
     <div className="demo-inline-spacing">
@@ -81,25 +107,16 @@ const ModalFilterIntern = ({ visible, toggle, dataSBU, sessionData }) => {
           <ModalHeader className="text-secondary bg-light" toggle={toggle}>
             Filter Intern
           </ModalHeader>
-          <Formik
-            enableReinitialize
-            initialValues={{
-              name: query?.name ?? "",
-              username: query?.username ?? "",
-              companyCode: query?.companyCode ?? "",
-              email: query?.email ?? "",
-              roleName: query?.roleName ?? "",
-            }}
-            // validationSchema={validationSchema}
-            onSubmit={onSubmit}
-          >
+          <Formik enableReinitialize>
             {({
               values,
               errors,
               setFieldValue,
               handleSubmit,
               handleChange,
+              setSubmitting,
               isSubmitting,
+              resetForm,
             }) => (
               <>
                 <ModalBody>
@@ -111,20 +128,32 @@ const ModalFilterIntern = ({ visible, toggle, dataSBU, sessionData }) => {
                           type="text"
                           placeholder="Name"
                           name="name"
-                          value={values.name}
-                          onChange={handleChange("name")}
+                          value={filterQuery.name}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              name: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">Department</Label>
+                        <Label className="form-label">
+                          User Principal Name
+                        </Label>
                         <Input
                           type="text"
-                          placeholder="Username"
-                          name="username"
-                          value={values.username}
-                          onChange={handleChange("username")}
+                          placeholder="User Principal Name"
+                          name="userPrincipalName"
+                          value={filterQuery.userPrincipalName}
+                          onChange={(e) => {
+                            setFilterQuery({
+                              ...filterQuery,
+                              userPrincipalName: e.target.value,
+                            });
+                          }}
                         />
                       </FormGroup>
                     </Col>
@@ -134,42 +163,54 @@ const ModalFilterIntern = ({ visible, toggle, dataSBU, sessionData }) => {
                       <FormGroup className="custom-input-select" md="6">
                         <Label className="form-label">Company</Label>
                         <AsyncSelect
-                          id="company"
+                          id="companyCode"
                           name="companyCode"
                           classNamePrefix="select"
                           cacheOptions
-                          defaultValue={
-                            isSuperUser
-                              ? {
-                                  label: sessionData.user.CompName,
-                                  value: sessionData.user.CompCode,
-                                }
-                              : {
-                                  label:
-                                    getCompanyQuery[0]?.name ?? "Search...",
-                                  value: getCompanyQuery[0]?.idmCompCode,
-                                }
-                          }
-                          defaultOptions={dataSBU}
-                          loadOptions={loadOptionsSBU}
-                          onChange={(e) => {
-                            setFieldValue("companyCode", e.idmCompCode);
-                            setSelectedCompany(e);
+                          value={{
+                            label: selectedCompany.label,
+                            value: selectedCompany.value,
                           }}
+                          // defaultOptions={dataSBU}
+                          loadOptions={loadOptionsCompany}
+                          onChange={(e) => {
+                            console.log(e);
+                            setSelectedCompany(e);
+                            if (e) {
+                              setFilterQuery({
+                                ...filterQuery,
+                                compName: e.compName,
+                              });
+                            } else {
+                              setFilterQuery({
+                                ...filterQuery,
+                                compName: "",
+                              });
+                            }
+                          }}
+                          placeholder="Search..."
                           isDisabled={isSuperUser}
                         />
                       </FormGroup>
                     </Col>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">Supervisor</Label>
-                        <Input
+                        <Label className="form-label font-weight-bold">
+                          Department
+                        </Label>
+                        <AsyncSelect
+                          id="school"
                           type="text"
-                          placeholder="Supervisor"
-                          name="email"
-                          value={values.email}
-                          onChange={handleChange("email")}
+                          placeholder="School/College"
+                          classNamePrefix="select"
+                          value={filterQuery.email}
+                          defaultOptions={props.dataDepartment}
+                          loadOptions={loadOptionsDepartment}
+                          onChange={handleChange("schoolName")}
                         />
+                        {errors.schoolName && (
+                          <div className="text-danger">{errors.schoolName}</div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -177,63 +218,84 @@ const ModalFilterIntern = ({ visible, toggle, dataSBU, sessionData }) => {
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
                         <Label className="form-label">School/College</Label>
-                        <Input
+                        <AsyncSelect
+                          id="school"
                           type="text"
                           placeholder="School/College"
-                          name="roleName"
-                          value={values.roleName}
-                          onChange={handleChange("roleName")}
+                          classNamePrefix="select"
+                          value={filterQuery.email}
+                          defaultOptions={props.dataSchool}
+                          loadOptions={loadOptionsSchool}
+                          onChange={handleChange("schoolName")}
                         />
+                        {errors.schoolName && (
+                          <div className="text-danger">{errors.schoolName}</div>
+                        )}
                       </FormGroup>
                     </Col>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
                         <Label className="form-label">Faculty</Label>
-                        <Input
+                        <AsyncSelect
+                          id="faculty"
                           type="text"
                           placeholder="Faculty"
-                          name="roleName"
-                          value={values.roleName}
-                          onChange={handleChange("roleName")}
-                        />
-                      </FormGroup>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col sm="6">
-                    <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">Status</Label>
-                        <AsyncSelect
-                          id="company"
-                          name="status"
                           classNamePrefix="select"
-                          defaultOptions={STATUS_OPTIONS}
-                          loadOptions={STATUS_OPTIONS}
-                          onChange={(e) => {
-                            setFieldValue("companyCode", e.idmCompCode);
-                            setSelectedCompany(e);
-                          }}
+                          value={filterQuery.email}
+                          defaultOptions={props.dataFaculty}
+                          loadOptions={loadOptionsFaculty}
+                          onChange={handleChange("schoolName")}
                         />
+                        {errors.schoolName && (
+                          <div className="text-danger">{errors.schoolName}</div>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
                 </ModalBody>
                 <ModalFooter>
-                  <Button
-                    color="success"
-                    id="submitBtn"
-                    name="submitBtn"
-                    onClick={handleSubmit}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Spinner size="sm" color="white" />
-                        <span className="ml-50">Submitting...</span>
-                      </>
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
+                  <div className="d-flex justify-content-between w-100">
+                    <Button
+                      color="danger"
+                      id="submitBtn"
+                      name="submitBtn"
+                      outline
+                      onClick={() => {
+                        resetForm();
+                        setSelectedCompany({
+                          label: "Search...",
+                          value: "",
+                        });
+                        setFilterQuery({
+                          name: "",
+                          userPrincipalName: "",
+                          compName: "",
+                          email: "",
+                          userRoles: "",
+                        });
+                      }}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      color="success"
+                      id="submitBtn"
+                      name="submitBtn"
+                      onClick={() => {
+                        handleFilterQuery(filterQuery);
+                        setSubmitting(true);
+                      }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Spinner size="sm" color="white" />
+                          <span className="ml-50">Submitting...</span>
+                        </>
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </div>
                 </ModalFooter>
               </>
             )}

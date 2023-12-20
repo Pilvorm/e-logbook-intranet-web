@@ -24,7 +24,7 @@ import {
   Input,
   CustomInput,
 } from "reactstrap";
-import { Search, Save, Plus, Trash, ArrowLeft } from "react-feather";
+import { Search, Save, Plus, Check, Trash, ArrowLeft } from "react-feather";
 
 import {
   confirmAlertNotification,
@@ -44,16 +44,38 @@ import { connect, useDispatch } from "react-redux";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
 import { searchRole, searchUser } from "helpers/master/masterRole";
 import {
-  getAllMasterUser,
-  createMasterUser,
+  getAllMasterUserInternal,
+  deleteMasterUserInternal,
+  getSbuAsyncSelect,
 } from "redux/actions/master/userInternal";
-import { getMasterInternById } from "redux/actions/master/intern";
+import {
+  getMasterInternById,
+  updateMasterIntern,
+  approveMasterIntern,
+} from "redux/actions/master/intern";
 import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 import debounce from "lodash/debounce";
+import moment from "moment";
+
+import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
+import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
+import { getAsyncOptionsDepartment } from "helpers/master/masterDepartment";
+
+import { getSchoolAsyncSelect } from "redux/actions/master/school";
+import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
+import { getDepartmentAsyncSelect } from "redux/actions/master/department";
 
 const EditMasterIntern = (props) => {
-  const { data, sessionData, token } = props;
+  const {
+    data,
+    dataSchool,
+    dataFaculty,
+    dataDepartment,
+    dataMentor,
+    sessionData,
+    token,
+  } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -69,9 +91,17 @@ const EditMasterIntern = (props) => {
   const [values, setValues] = useState(null);
   const toggle = (key) => setActive(key);
 
-  // Handling user profile search
-  const [selectedName, setSelectedName] = useState([]);
+  const [selectedFaculty, setSelectedFaculty] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  const [selectedMentor, setSelectedMentor] = useState([]);
   const [userExist, setUserExist] = useState(false);
+
+  // Map the value inside the try block
+  const mentorList = dataMentor.data.map((mentor) => ({
+    ...mentor,
+    label: mentor.name,
+    value: mentor.userPrincipalName,
+  }));
 
   const findUser = (name) => {
     const result = dataMasterUser.data.find(
@@ -123,15 +153,34 @@ const EditMasterIntern = (props) => {
     []
   );
 
-  const [selectedCompany, setSelectedCompany] = useState({
-    label: "Search...",
-    value: "",
-  });
+  const loadOptionsSchool = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsSchool(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
+  );
 
-  const [selectedDepartment, setSelectedDepartment] = useState({
-    label: "Search...",
-    value: "",
-  });
+  const loadOptionsFaculty = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsFaculty(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
+  );
+
+  const loadOptionsDepartment = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsDepartment(inputText).then((options) =>
+          callback(options)
+        );
+      }
+    }, 1000),
+    []
+  );
 
   // Combo alert states
   const [isAlertModal, setIsAlertModal] = useState(false);
@@ -141,63 +190,44 @@ const EditMasterIntern = (props) => {
   // onSubmit
   const onSubmit = (values, actions) => {
     const {
-      nik,
-      userPrincipalName,
-      name,
-      email,
       companyCode,
       companyName,
-      jabatan,
+      deptCode,
+      dept,
+      mentorUpn,
+      mentorName,
+      joinDate,
+      endDate,
     } = values;
 
     let bodyData = {
-      nik,
-      userPrincipalName,
-      name,
-      email,
-      userRoles: role,
+      ...data,
       companyCode,
       companyName,
-      applicationCode: "HSSEONLINE",
-      jabatan,
-      notes: "-",
-      isActive: true,
-      createdDate: new Date(),
-      createdBy: sessionData?.user?.UserPrincipalName || "",
-      updatedDate: new Date(),
-      updatedBy: sessionData?.user?.UserPrincipalName || "",
+      deptCode,
+      dept,
+      mentorUpn,
+      mentorName,
+      joinDate,
+      endDate,
     };
 
-    if (bodyData.userRoles.length === 0) {
-      return errorAlertNotification(
-        "Validation Error",
-        `Please select at least one role`
-      );
-    }
-
-    if (bodyData.userPrincipalName.length === 0) {
-      return errorAlertNotification(
-        "Validation Error",
-        `Username for ${bodyData.name} is not found, please contact helpdesk for further information.`
-      );
-    }
-
     confirmAlertNotification(
-      "Add New User",
-      "Apakah Anda yakin submit data ini?",
+      "Update User",
+      "Are you sure to update this user?",
       () => {
         actions.setSubmitting(true);
-        dispatch(createMasterUser(bodyData)).then((res) => {
+        dispatch(updateMasterIntern(data.id, bodyData)).then((res) => {
           if (res.status >= 200 && res.status <= 300) {
             actions.setSubmitting(false);
-            successAlertNotification("Success", "Data berhasil disimpan");
-            router.push("/hsse/master/user");
+            successAlertNotification("Success", "Data updated successfully");
+            router.push("/master/intern");
           } else {
             actions.setSubmitting(false);
             console.error(res);
             errorAlertNotification(
               "Error",
-              res?.data?.message ? res?.data?.message : "Data gagal disimpan."
+              res?.data?.message ? res?.data?.message : "Failed to save data"
             );
           }
         });
@@ -217,6 +247,44 @@ const EditMasterIntern = (props) => {
       // companyName: yup.string().required("Company name is required"),
     })
     .required();
+
+  const onApproveHandler = async () => {
+    const id = data.id;
+    dispatch(approveMasterIntern(id))
+      .then((res) => {
+        console.log(res, "rsponsee");
+
+        if (res.status >= 200 && res.status < 300) {
+          successAlertNotification("Success", "User approved succesfully");
+          router.push(`/master/intern/${id}/edit`);
+        } else {
+          const { title, message } = formatAxiosErrorMessage(
+            res,
+            "Something went wrong, Please try again later."
+          );
+          errorAlertNotification(title, message);
+        }
+        return res;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    // .finally(() => setIsActionBtnLoading(false));
+  };
+
+  // approval-related handler
+  const notificationHandler = (state) => {
+    if (state == "Approve") {
+      confirmAlertNotification(
+        "Confirmation",
+        `Apakah Anda yakin untuk approve data ini?`,
+        () => {
+          onApproveHandler();
+        },
+        () => {}
+      );
+    }
+  };
 
   const DropdownIndicator = (props) => {
     return (
@@ -246,9 +314,18 @@ const EditMasterIntern = (props) => {
             initialValues={{
               name: data?.name ?? "",
               userPrincipalName: data?.userPrincipalName ?? "",
+              schoolCode: data?.schoolCode ?? "",
               schoolName: data?.schoolName ?? "",
+              facultyCode: data?.facultyCode ?? "",
               faculty: data?.faculty ?? "",
-
+              companyCode: data?.companyCode ?? "",
+              companyName: data?.companyName ?? "",
+              deptCode: data?.deptCode ?? "",
+              dept: data?.dept ?? "",
+              mentorUpn: data?.mentorUpn ?? "",
+              mentorName: data?.mentorName ?? "",
+              joinDate: data?.joinDate ?? new Date(),
+              endDate: data?.endDate ?? new Date(),
             }}
             validationSchema={validationSchema}
             onSubmit={onSubmit}
@@ -306,6 +383,51 @@ const EditMasterIntern = (props) => {
                         </div>
                       )}
                     </Button.Ripple>
+                    {data.status === "Unconfirmed" && (
+                      <Button.Ripple
+                        id="saveBtn"
+                        color="primary"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSubmit, notificationHandler("Approve");
+                        }}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Spinner size="sm" color="white" />
+                            <span className="ml-50">Approving...</span>
+                          </>
+                        ) : (
+                          <div
+                            className="d-flex"
+                            style={{ alignItems: "center" }}
+                          >
+                            <Check size={18} />
+                            <div className="ml-1">Approve</div>
+                          </div>
+                        )}
+                      </Button.Ripple>
+                    )}
+                  </div>
+                  <div
+                    className="d-flex justify-content-center align-items-center"
+                    style={{
+                      marginTop: "1rem",
+                      marginRight: "2rem",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    <Button.Ripple
+                      color={
+                        data.status === "Confirmed" ? "primary" : "warning"
+                      }
+                      style={{ cursor: "text" }}
+                    >
+                      <div className="d-flex" style={{ alignItems: "center" }}>
+                        <div>Status: {data.status}</div>
+                      </div>
+                    </Button.Ripple>
                   </div>
                 </div>
                 <Container>
@@ -326,38 +448,6 @@ const EditMasterIntern = (props) => {
                         {errors.name && (
                           <div className="text-danger">{errors.name}</div>
                         )}
-                        {/* <AsyncSelect
-                              // cacheOptions
-                              id="nameSearch"
-                              className="dropdownModal"
-                              isSearchable
-                              loadOptions={loadOptionsName}
-                              components={{ DropdownIndicator }}
-                              getOptionValue={(option) => option.value}
-                              value={selectedName?.name}
-                              formatOptionLabel={(data) => (
-                                <UserOptionItem
-                                  key={data?.id}
-                                  profilePicture={
-                                    data.profilePicturePath ||
-                                    "/images/avatars/avatar-blank.png"
-                                  }
-                                  // name={`${data?.name} (${data?.email ?? "UPN N/A"})`}
-                                  name={`${data?.name} (${data?.userPrincipalName})`}
-                                  subtitle={data?.compName}
-                                />
-                              )}
-                              onChange={(e) => {
-                                setFieldValue("name", e.name);
-                                setSelectedName(e);
-                                findUser(e.name);
-                                setRole([]);
-                                setFieldValue("userRoles", []);
-                              }}
-                              placeholder={
-                                selectedName?.name || "Search by name or email"
-                              }
-                            /> */}
                       </FormGroup>
                     </Col>
                     <Col md="6">
@@ -390,6 +480,8 @@ const EditMasterIntern = (props) => {
                           type="text"
                           placeholder="School/College"
                           value={values.schoolName}
+                          defaultOptions={dataSchool}
+                          loadOptions={loadOptionsSchool}
                           onChange={handleChange("schoolName")}
                           disabled
                         />
@@ -408,6 +500,8 @@ const EditMasterIntern = (props) => {
                           type="text"
                           placeholder="Job Title Name"
                           value={values.faculty}
+                          defaultOptions={dataFaculty}
+                          loadOptions={loadOptionsFaculty}
                           onChange={handleChange("faculty")}
                           disabled
                         />
@@ -421,7 +515,7 @@ const EditMasterIntern = (props) => {
                     <Col md="6">
                       <FormGroup tag={Col} md="12">
                         <Label className="form-label font-weight-bold">
-                          Site
+                          Company
                         </Label>
                         <AsyncSelect
                           id="companyCode"
@@ -429,8 +523,8 @@ const EditMasterIntern = (props) => {
                           classNamePrefix="select"
                           cacheOptions
                           value={{
-                            label: selectedDepartment.label,
-                            value: selectedDepartment.value,
+                            label: values.companyName,
+                            value: values.companyName,
                           }}
                           defaultOptions={SITE_DATA}
                           onChange={(e) => {
@@ -450,13 +544,16 @@ const EditMasterIntern = (props) => {
                           name="companyCode"
                           classNamePrefix="select"
                           cacheOptions
+                          defaultOptions={dataDepartment}
+                          loadOptions={loadOptionsDepartment}
                           value={{
-                            label: selectedCompany.label,
-                            value: selectedCompany.value,
+                            label: values.dept,
+                            value: values.deptCode,
                           }}
-                          defaultOptions={DEPARTMENT_DATA}
                           onChange={(e) => {
-                            setSelectedCompany(e);
+                            // setSelectedDepartment(e);
+                            setFieldValue("dept", e.departmentName);
+                            setFieldValue("deptCode", e.departmenetCode);
                           }}
                           placeholder="Search..."
                         />
@@ -473,11 +570,13 @@ const EditMasterIntern = (props) => {
                           // cacheOptions
                           id="nameSearch"
                           className="dropdownModal"
+                          classNamePrefix="select"
                           isSearchable
                           loadOptions={loadOptionsName}
+                          defaultOptions={mentorList}
                           components={{ DropdownIndicator }}
                           getOptionValue={(option) => option.value}
-                          value={selectedName?.name}
+                          value={values.mentorName}
                           formatOptionLabel={(data) => (
                             <UserOptionItem
                               key={data?.id}
@@ -491,14 +590,13 @@ const EditMasterIntern = (props) => {
                             />
                           )}
                           onChange={(e) => {
-                            setFieldValue("name", e.name);
-                            setSelectedName(e);
-                            findUser(e.name);
-                            setRole([]);
-                            setFieldValue("userRoles", []);
+                            setFieldValue("mentorName", e.name);
+                            setSelectedMentor(e);
                           }}
                           placeholder={
-                            selectedName?.name || "Search by name or email"
+                            values.mentorName ||
+                            selectedMentor?.name ||
+                            "Search by name or email"
                           }
                         />
                       </FormGroup>
@@ -509,7 +607,7 @@ const EditMasterIntern = (props) => {
                           <FormGroup tag={Col} md="12">
                             <FormikDatePicker
                               label="Internship Start Date"
-                              name="startDate"
+                              name="joinDate"
                             />
                           </FormGroup>
                         </Col>
@@ -576,11 +674,37 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
+    const dataSchool = await store.dispatch(getSchoolAsyncSelect());
+    const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
+    const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
+
+    await store.dispatch(
+      getAllMasterUserInternal({
+        "CSTM-COMPID": sessionData.user.CompCode,
+        "CSTM-NAME": sessionData.user.Name,
+        "CSTM-EMAIL": sessionData.user.Email,
+        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-UPN": sessionData.user.UserPrincipalName,
+        "X-PAGINATION": true,
+        "X-PAGE": query.pageNumber || 1,
+        "X-PAGESIZE": query.pageSize || 10,
+        "X-ORDERBY": "createdDate desc",
+        "X-SEARCH": `*${query.search || ""}*`,
+        "X-FILTER": `userRoles=mentor`,
+      })
+    );
+
+    const dataMentor = store.getState().masterUserInternalReducers;
+
     return {
       props: {
         token: sessionData.user.token,
         data: response.data,
         sessionData,
+        dataSchool,
+        dataFaculty,
+        dataDepartment,
+        dataMentor,
       },
     };
   }

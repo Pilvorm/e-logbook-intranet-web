@@ -59,7 +59,7 @@ const CreateTableRow = ({ dispatch, data, index }) => {
 
   return (
     <tr>
-      <td>{index + 1}</td>
+      <td>{index + 1}.</td>
       <td>{data.format("DD/MM/YY")}</td>
       <td className="text-left" style={{ width: "40%", color: isWeekend && "#DAD8DF" }}>
         {isWeekend ? "OFF" : "Lorem"}
