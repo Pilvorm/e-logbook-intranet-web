@@ -110,7 +110,6 @@ export default function CustomDatePicker({
           <Label
             for={props.name}
             style={{ fontSize: "12px" }}
-            className="font-weight-bold"
           >
             {label}
           </Label>

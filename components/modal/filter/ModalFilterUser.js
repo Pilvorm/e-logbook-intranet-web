@@ -1,3 +1,4 @@
+import { COMPANY_DATA } from "constant";
 import React, { useState, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -33,9 +34,6 @@ const ModalFilterUser = ({
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const isSystemAdmin = getPermissionComponentByRoles(["HSSE-SYSADMIN"]);
-  const isSuperUser = getPermissionComponentByRoles(["HSSE-SU"]);
-
   const query = router.query ?? {};
 
   // handling search site
@@ -67,13 +65,9 @@ const ModalFilterUser = ({
     []
   );
 
-  const [selectedCompany, setSelectedCompany] = useState({
-    label: "Search...",
-    value: "",
-  });
-
-  console.log("COMPANY");
-  console.log(selectedCompany);
+  const [selectedCompany, setSelectedCompany] = useState(
+    filterQuery.compName === "" ? "Search..." : filterQuery.compName
+  );
 
   return (
     <div className="demo-inline-spacing">
@@ -98,7 +92,7 @@ const ModalFilterUser = ({
                   <Row>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">Nama</Label>
+                        <Label className="form-label">Name</Label>
                         <Input
                           type="text"
                           placeholder="Name"
@@ -143,18 +137,18 @@ const ModalFilterUser = ({
                           classNamePrefix="select"
                           cacheOptions
                           value={{
-                            label: selectedCompany.label,
-                            value: selectedCompany.value,
+                            label: selectedCompany ?? "Search...",
+                            value: selectedCompany ?? "",
                           }}
-                          // defaultOptions={dataSBU}
-                          loadOptions={loadOptionsCompany}
+                          // loadOptions={loadOptionsCompany}
+                          defaultOptions={COMPANY_DATA}
                           onChange={(e) => {
                             console.log(e);
-                            setSelectedCompany(e);
+                            setSelectedCompany(e.label);
                             if (e) {
                               setFilterQuery({
                                 ...filterQuery,
-                                compName: e.compName,
+                                compName: e.name,
                               });
                             } else {
                               setFilterQuery({
@@ -164,7 +158,6 @@ const ModalFilterUser = ({
                             }
                           }}
                           placeholder="Search..."
-                          isDisabled={isSuperUser}
                         />
                       </FormGroup>
                     </Col>
@@ -215,10 +208,7 @@ const ModalFilterUser = ({
                       outline
                       onClick={() => {
                         resetForm();
-                        setSelectedCompany({
-                          label: "Search...",
-                          value: "",
-                        });
+                        setSelectedCompany("Search...");
                         setFilterQuery({
                           name: "",
                           userPrincipalName: "",

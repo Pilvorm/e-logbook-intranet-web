@@ -1,3 +1,4 @@
+import { COMPANY_DATA } from "constant";
 import React, { useState, useCallback, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -15,12 +16,17 @@ import {
   Spinner,
 } from "reactstrap";
 import Select from "react-select";
+import { Search, Save, Check, ArrowLeft } from "react-feather";
 import { Formik } from "formik";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import { wrapper } from "redux/store";
 import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
+import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
+
+import { searchMentor } from "redux/actions/master/userInternal";
+import UserOptionItem from "components/UserOptionItem";
 
 import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
 import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
@@ -38,26 +44,30 @@ const ModalFilterIntern = ({
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const isSystemAdmin = getPermissionComponentByRoles(["HSSE-SYSADMIN"]);
-  const isSuperUser = getPermissionComponentByRoles(["HSSE-SU"]);
-
   const query = router.query ?? {};
 
-  // handling search site
-  const getAsyncOptionsCompany = (inputText) => {
-    return searchCompany(inputText).then((resp) => {
+  const [selectedMentor, setSelectedMentor] = useState([]);
+
+  const mentorList = props.dataMentor.data.map((mentor) => ({
+    ...mentor,
+    label: mentor.name,
+    value: mentor.userPrincipalName,
+  }));
+
+  const getAsyncOptionsMentor = (inputText) => {
+    return searchMentor(inputText).then((resp) => {
       return resp.data.map((singleData) => ({
         ...singleData,
-        value: singleData.companyName,
-        label: singleData.companyName,
+        value: singleData.nik,
+        label: singleData.name,
       }));
     });
   };
 
-  const loadOptionsCompany = useCallback(
+  const loadOptionsMentor = useCallback(
     debounce((inputText, callback) => {
       if (inputText) {
-        getAsyncOptionsCompany(inputText).then((options) => callback(options));
+        getAsyncOptionsMentor(inputText).then((options) => callback(options));
       }
     }, 1000),
     []
@@ -92,13 +102,19 @@ const ModalFilterIntern = ({
     []
   );
 
-  const [selectedCompany, setSelectedCompany] = useState({
-    label: "Search...",
-    value: "",
-  });
+  const [selectedCompany, setSelectedCompany] = useState(
+    filterQuery.compName === "" ? "Search..." : filterQuery.compName
+  );
 
-  console.log("COMPANY");
-  console.log(selectedCompany);
+  const DropdownIndicator = (props) => {
+    return (
+      <Search
+        set="light"
+        primaryColor="blueviolet"
+        style={{ padding: "4px", marginRight: "2px" }}
+      />
+    );
+  };
 
   return (
     <div className="demo-inline-spacing">
@@ -123,7 +139,7 @@ const ModalFilterIntern = ({
                   <Row>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">Nama</Label>
+                        <Label className="form-label">Name</Label>
                         <Input
                           type="text"
                           placeholder="Name"
@@ -140,20 +156,39 @@ const ModalFilterIntern = ({
                     </Col>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label">
-                          User Principal Name
-                        </Label>
-                        <Input
-                          type="text"
-                          placeholder="User Principal Name"
-                          name="userPrincipalName"
-                          value={filterQuery.userPrincipalName}
+                        <Label className="form-label">Mentor</Label>
+                        <AsyncSelect
+                          // cacheOptions
+                          id="nameSearch"
+                          // className="dropdownModal"
+                          classNamePrefix="select"
+                          isSearchable
+                          loadOptions={loadOptionsMentor}
+                          defaultOptions={mentorList}
+                          components={{ DropdownIndicator }}
+                          getOptionValue={(option) => option.value}
+                          value={filterQuery.mentorName}
+                          formatOptionLabel={(data) => (
+                            <UserOptionItem
+                              key={data?.id}
+                              profilePicture={
+                                data.profilePicturePath ||
+                                "/images/avatars/avatar-blank.png"
+                              }
+                              // name={`${data?.name} (${data?.email ?? "UPN N/A"})`}
+                              name={`${data?.name} (${data?.userPrincipalName})`}
+                              subtitle={data?.compName}
+                            />
+                          )}
                           onChange={(e) => {
-                            setFilterQuery({
-                              ...filterQuery,
-                              userPrincipalName: e.target.value,
-                            });
+                            setFieldValue("mentorName", e.name);
+                            setSelectedMentor(e);
                           }}
+                          placeholder={
+                            filterQuery.mentorName ||
+                            selectedMentor?.name ||
+                            "Search by name or email"
+                          }
                         />
                       </FormGroup>
                     </Col>
@@ -168,11 +203,11 @@ const ModalFilterIntern = ({
                           classNamePrefix="select"
                           cacheOptions
                           value={{
-                            label: selectedCompany.label,
-                            value: selectedCompany.value,
+                            label: selectedCompany ?? "Search...",
+                            value: selectedCompany ?? "",
                           }}
                           // defaultOptions={dataSBU}
-                          loadOptions={loadOptionsCompany}
+                          defaultOptions={COMPANY_DATA}
                           onChange={(e) => {
                             console.log(e);
                             setSelectedCompany(e);
@@ -189,27 +224,37 @@ const ModalFilterIntern = ({
                             }
                           }}
                           placeholder="Search..."
-                          isDisabled={isSuperUser}
                         />
                       </FormGroup>
                     </Col>
                     <Col sm="6">
                       <FormGroup className="custom-input-select" md="6">
-                        <Label className="form-label font-weight-bold">
-                          Department
-                        </Label>
+                        <Label className="form-label">Department</Label>
                         <AsyncSelect
                           id="school"
                           type="text"
-                          placeholder="School/College"
+                          placeholder="Search..."
                           classNamePrefix="select"
-                          value={filterQuery.email}
+                          value={filterQuery.dept}
                           defaultOptions={props.dataDepartment}
                           loadOptions={loadOptionsDepartment}
-                          onChange={handleChange("schoolName")}
+                          onChange={(e) => {
+                            console.log(e);
+                            if (e) {
+                              setFilterQuery({
+                                ...filterQuery,
+                                dept: e.departmentName,
+                              });
+                            } else {
+                              setFilterQuery({
+                                ...filterQuery,
+                                dept: "",
+                              });
+                            }
+                          }}
                         />
-                        {errors.schoolName && (
-                          <div className="text-danger">{errors.schoolName}</div>
+                        {errors.dept && (
+                          <div className="text-danger">{errors.dept}</div>
                         )}
                       </FormGroup>
                     </Col>
@@ -221,12 +266,25 @@ const ModalFilterIntern = ({
                         <AsyncSelect
                           id="school"
                           type="text"
-                          placeholder="School/College"
+                          placeholder="Search..."
                           classNamePrefix="select"
-                          value={filterQuery.email}
+                          value={filterQuery.schoolName}
                           defaultOptions={props.dataSchool}
                           loadOptions={loadOptionsSchool}
-                          onChange={handleChange("schoolName")}
+                          onChange={(e) => {
+                            console.log(e);
+                            if (e) {
+                              setFilterQuery({
+                                ...filterQuery,
+                                schoolName: e.schoolName,
+                              });
+                            } else {
+                              setFilterQuery({
+                                ...filterQuery,
+                                schoolName: "",
+                              });
+                            }
+                          }}
                         />
                         {errors.schoolName && (
                           <div className="text-danger">{errors.schoolName}</div>
@@ -239,15 +297,52 @@ const ModalFilterIntern = ({
                         <AsyncSelect
                           id="faculty"
                           type="text"
-                          placeholder="Faculty"
+                          placeholder="Search..."
                           classNamePrefix="select"
                           value={filterQuery.email}
                           defaultOptions={props.dataFaculty}
                           loadOptions={loadOptionsFaculty}
-                          onChange={handleChange("schoolName")}
+                          onChange={(e) => {
+                            console.log(e);
+                            if (e) {
+                              setFilterQuery({
+                                ...filterQuery,
+                                faculty: e.facultyName,
+                              });
+                            } else {
+                              setFilterQuery({
+                                ...filterQuery,
+                                faculty: "",
+                              });
+                            }
+                          }}
                         />
-                        {errors.schoolName && (
-                          <div className="text-danger">{errors.schoolName}</div>
+                        {errors.faculty && (
+                          <div className="text-danger">{errors.faculty}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <Col md="6">
+                      <FormGroup className="custom-input-select" md="6">
+                        <FormikDatePicker
+                          label="Internship Start Date"
+                          name="joinDate"
+                        />
+                        {errors.joinDate && (
+                          <div className="text-danger">{errors.joinDate}</div>
+                        )}
+                      </FormGroup>
+                    </Col>
+                    <Col md="6">
+                      <FormGroup className="custom-input-select" md="6">
+                        <FormikDatePicker
+                          label="Internship End Date"
+                          name="endDate"
+                        />
+                        {errors.endDate && (
+                          <div className="text-danger">{errors.endDate}</div>
                         )}
                       </FormGroup>
                     </Col>
@@ -262,16 +357,16 @@ const ModalFilterIntern = ({
                       outline
                       onClick={() => {
                         resetForm();
-                        setSelectedCompany({
-                          label: "Search...",
-                          value: "",
-                        });
+                        setSelectedCompany("Search...");
                         setFilterQuery({
                           name: "",
-                          userPrincipalName: "",
+                          mentorName: "",
                           compName: "",
-                          email: "",
-                          userRoles: "",
+                          dept: "",
+                          schoolName: "",
+                          faculty: "",
+                          joinDate: "",
+                          endDate: ""
                         });
                       }}
                     >

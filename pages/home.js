@@ -25,7 +25,7 @@ import {
 } from "helpers/auth";
 import { useSelector } from "react-redux";
 
-const Home = ({ userRoles, query, roles }) => {
+const Home = ({ userRoles, query, roles, sessionData }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const isMobileWidth = useMobileDetector();
@@ -52,7 +52,11 @@ const Home = ({ userRoles, query, roles }) => {
   }, [dispatch]);
 
   const { data: session } = useSession();
+  console.log("SESSION")
   console.log(session);
+
+  console.log("SESSION DATA")
+  console.log(sessionData)
 
   return (
     <>
@@ -135,6 +139,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         userRoles: sessionData,
         query: ctx.query,
         roles: temp,
+        sessionData,
       },
     };
   }

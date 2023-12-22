@@ -35,9 +35,7 @@ const LoginPage = (props) => {
   const router = useRouter();
   const [loginLoading, setLoginLoading] = useState(false);
   const [isError, setIsError] = useState(query.error == "true" ? true : false);
-  const [isErrorValidate, setIsErrorValidate] = useState(
-    query.isError == "true" || query.invalid == "true" ? true : false
-  );
+
   const [username, setUsername] = useState(null);
   const [password, setPassword] = useState(null);
   const [emailUser, setEmailUser] = useState(null);
@@ -61,48 +59,16 @@ const LoginPage = (props) => {
       "Error",
       <div
         dangerouslySetInnerHTML={{
-          __html: `Error: Anda gagal login. Mohon dicoba login ke <a href="https://sentinel.onekalbe.com/identity" target="_blank">Sentinel</a>, jika berhasil silakan menghubungi tim helpdesk untuk pembuatan ticket incident untuk apps ini, 
-      sedangkan jika gagal login di sentinel mohon menghubungi helpdesk untuk pengecekan user domain anda. helpdesk dapat dihubungi dengan cara sbb :</br>
-      <ul><li>helpdesk.kalbe.co.id</li><li>WA : 0811-1528-080</li><li>phone : 021-42873888 ext 2222</li></ul>terima kasih.`,
+          __html: `Login failed, please contact administrator or helpdesk.`,
         }}
       ></div>
     );
     return <div />;
   };
 
-  const onResendCode = async () => {
-    if (typeof window !== "undefined") {
-      const nameEncode = localStorage.getItem("name");
-      const emailEncode = localStorage.getItem("email");
-      const name = jwt_decode(nameEncode);
-      const email = jwt_decode(emailEncode);
-      await onLoginGuest({ name, email })
-        .then((res) => {
-          return successAlertNotification(
-            "Success",
-            "Security code telah dikirimkan ke email anda, silakan masukkan security code yang telah dikirimkan tersebut."
-          );
-        })
-        .catch((err) => console.log(err, "ini err <<<<<"));
-    }
-  };
-
-  const AlertErrorValidate = () => {
-    if (query.invalid == "true") {
-      errorAlertNotification(
-        "Error",
-        "Silahkan input security code dengan benar"
-      );
-    } else {
-      errorAlertNotificationCode("Error", "", () => onResendCode());
-    }
-    return <div />;
-  };
-
   return (
     <div className="auth-wrapper auth-v2">
       {isError == true ? <AlertError /> : null}
-      {isErrorValidate == true ? <AlertErrorValidate /> : null}
       <Row className="auth-inner m-0">
         <Col
           className="d-flex align-items-center auth-bg px-2 p-lg-5"
@@ -147,7 +113,7 @@ const LoginPage = (props) => {
                       setLoginLoading(false);
                       return errorAlertNotification(
                         "Error",
-                        "Username atau password tidak boleh kosong!"
+                        "Username or password must be filled"
                       );
                     }
                     const response = await signIn("credentials", {
@@ -157,7 +123,7 @@ const LoginPage = (props) => {
                       redirect: true,
                       username,
                       password,
-                      applicationCode: "HSSE",
+                      applicationCode: "ELOGBOOK",
                       getProfile: true,
                       isMobileWidth: isMobileWidth,
                     });
@@ -170,7 +136,7 @@ const LoginPage = (props) => {
                       );
                     }
                   } catch (err) {
-                    // console.log(err, 'di 335');
+                    console.log(err, "error");
                   }
                   setLoginLoading(false);
                 }}

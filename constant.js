@@ -8,24 +8,30 @@ export const HTTP_CODE = {
   CONFLICT: 409,
 };
 
-export const SITE_DATA = [
+export const COMPANY_DATA = [
+  {
+    id: 4,
+    value: '0',
+    name: '',
+    label: 'All'
+  },
   {
     id: 1,
+    value: '01',
+    name: 'PT XYZ, Tbk.',
+    label: 'PT XYZ, Tbk.'
+  },
+  {
+    id: 2,
     value: 'PT ABC',
     name: 'PT ABC',
     label: 'PT ABC'
   },
   {
-    id: 2,
+    id: 3,
     value: 'PT DEF',
     name: 'PT DEF',
     label: 'PT DEF'
-  },
-  {
-    id: 3,
-    value: 'PT XYZ',
-    name: 'PT XYZ',
-    label: 'PT XYZ'
   }
 ]
 

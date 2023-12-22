@@ -3,7 +3,8 @@ import { HTTP_CODE, SYSTEM_ADMIN, SUPER_USER } from "constant";
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import debounce from "lodash/debounce";
 import {
   ArrowLeft,
   Edit,
@@ -34,6 +35,7 @@ import {
   getAllMasterUserInternal,
   deleteMasterUserInternal,
   getSbuAsyncSelect,
+  searchMentor,
 } from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
@@ -67,6 +69,7 @@ const MasterIntern = (props) => {
     dataSchool,
     dataFaculty,
     dataDepartment,
+    dataMentor,
     query,
     token,
     dataFilter,
@@ -75,8 +78,34 @@ const MasterIntern = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log("DATA MASTER INTERN");
-  console.log(dataMasterIntern);
+  useEffect(() => {
+    dispatch(reauthenticate(token));
+  }, [dispatch]);
+
+  const mentorList = dataMentor.data.map((mentor) => ({
+    ...mentor,
+    label: mentor.name,
+    value: mentor.userPrincipalName,
+  }));
+
+  const getAsyncOptionsMentor = (inputText) => {
+    return searchMentor(inputText).then((resp) => {
+      return resp.data.map((singleData) => ({
+        ...singleData,
+        value: singleData.nik,
+        label: singleData.name,
+      }));
+    });
+  };
+
+  const loadOptionsMentor = useCallback(
+    debounce((inputText, callback) => {
+      if (inputText) {
+        getAsyncOptionsMentor(inputText).then((options) => callback(options));
+      }
+    }, 1000),
+    []
+  );
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
@@ -87,19 +116,18 @@ const MasterIntern = (props) => {
       ? { ...JSON.parse(query?.filter) }
       : {
           name: "",
-          userPrincipalName: "",
+          mentorName: "",
           compName: "",
-          email: "",
-          userRoles: "",
+          dept: "",
+          schoolName: "",
+          faculty: "",
+          joinDate: "",
+          endDate: "",
         }
   );
 
   const [visibleFilter, setVisibleFilter] = useState(false);
   const toggleFilterPopup = () => setVisibleFilter(!visibleFilter);
-
-  useEffect(() => {
-    dispatch(reauthenticate(token));
-  }, [dispatch]);
 
   const handlePageSize = (value) => {
     setPageSize(value);
@@ -217,6 +245,7 @@ const MasterIntern = (props) => {
           dataSchool={dataSchool}
           dataFaculty={dataFaculty}
           dataDepartment={dataDepartment}
+          dataMentor={dataMentor}
         />
         <div className="d-flex align-items-center">
           <Button.Ripple
@@ -310,7 +339,7 @@ const MasterIntern = (props) => {
                       <DropdownItem
                         className="w-100"
                         onClick={() =>
-                          router.push(`/master/intern/${intern.id}/edit`)
+                          router.push(`/master/intern/edit/${intern.id}/`)
                         }
                         id="editBtn"
                       >
@@ -409,21 +438,32 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,
         "X-PAGESIZE": query.pageSize || 10,
         "X-ORDERBY": "createdDate desc",
         "X-SEARCH": `*${query.search || ""}*`,
-        // "X-FILTER": `${
-        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
-        // }`,
+        "X-FILTER": `${
+          query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        }`,
+      })
+    );
+
+    await store.dispatch(
+      getAllMasterUserInternal({
+        "X-PAGINATION": true,
+        "X-PAGE": 1,
+        "X-PAGESIZE": 10,
+        "X-ORDERBY": "createdDate desc",
+        "X-FILTER": `userRoles=mentor`,
       })
     );
 
     const dataMasterIntern = store.getState().masterInternReducers;
 
+    const dataMentor = store.getState().masterUserInternalReducers;
     const dataSchool = await store.dispatch(getSchoolAsyncSelect());
     const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
     const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
@@ -438,6 +478,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         dataSchool,
         dataFaculty,
         dataDepartment,
+        dataMentor,
       },
     };
   }

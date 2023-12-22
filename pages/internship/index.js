@@ -30,10 +30,12 @@ import {
 
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
+
 import {
-  getAllMasterUser,
-  deleteMasterUser,
+  getAllMasterUserInternal,
+  deleteMasterUserInternal,
   getSbuAsyncSelect,
+  searchMentor,
 } from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
@@ -48,13 +50,26 @@ import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 
+import { getSchoolAsyncSelect } from "redux/actions/master/school";
+import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
+import { getDepartmentAsyncSelect } from "redux/actions/master/department";
+
 const MasterUser = (props) => {
-  const { dataMasterUser, dataSBU, query, token, dataFilter, sessionData } =
-    props;
+  const {
+    dataMasterIntern,
+    dataSchool,
+    dataFaculty,
+    dataDepartment,
+    dataMentor,
+    query,
+    token,
+    dataFilter,
+    sessionData,
+  } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log(dataMasterUser);
+  console.log(dataMasterIntern);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
@@ -170,8 +185,14 @@ const MasterUser = (props) => {
         <ModalFilterIntern
           visible={visibleFilter}
           toggle={toggleFilterPopup}
-          dataSBU={dataSBU}
           sessionData={sessionData}
+          handleFilterQuery={handleFilterQuery}
+          filterQuery={filterQuery}
+          setFilterQuery={setFilterQuery}
+          dataSchool={dataSchool}
+          dataFaculty={dataFaculty}
+          dataDepartment={dataDepartment}
+          dataMentor={dataMentor}
         />
         <div className="d-flex align-items-center">
           <Button.Ripple
@@ -239,13 +260,15 @@ const MasterUser = (props) => {
         <tbody className="text-center text-break">
           <tr>
             <td>1</td>
-            <td className="cursor-pointer" style={{color: '#3e11ff'}}>Daniel</td>
+            <td className="cursor-pointer" style={{ color: "#3e11ff" }}>
+              Daniel
+            </td>
             <td>IT</td>
             <td>PT XYZ</td>
             <td>Joko Chandra</td>
             <td>Binus University</td>
             <td>Computer Science</td>
-            <td style={{color: '#46A583'}}>Signed by Supervisor</td>
+            <td style={{ color: "#46A583" }}>Signed by Supervisor</td>
           </tr>
         </tbody>
       </Table>
@@ -256,7 +279,7 @@ const MasterUser = (props) => {
           sm="12"
         >
           <p className="mb-0" style={{ color: "#b9b9c3" }}>
-            Showing 1 to {pageSize} of {dataMasterUser.totalData} entries
+            Showing 1 to {pageSize} of {dataMasterIntern.totalData} entries
           </p>
         </Col>
         <Col
@@ -267,7 +290,7 @@ const MasterUser = (props) => {
           <ReactPaginate
             onPageChange={(page) => handlePagination(page)}
             forcePage={pageNumber - 1}
-            pageCount={dataMasterUser.totalPage || 1}
+            pageCount={dataMasterIntern.totalPage || 1}
             nextLabel={""}
             breakLabel={"..."}
             activeClassName={"active"}
@@ -306,51 +329,36 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
-    const dataSBU = await store.dispatch(getSbuAsyncSelect());
-
     const token = sessionData.user.token;
-
-    let userRoles = [];
-
-    try {
-      userRoles = JSON.parse(sessionData.user.Roles);
-    } catch (error) {
-      console.error("Error parsing user roles JSON:", error);
-    }
-
-    const isSuperUser = userRoles.some((role) => role.RoleCode === SUPER_USER);
-    const isSystemAdmin = userRoles.some(
-      (role) => role.RoleCode === SYSTEM_ADMIN
-    );
-
-    let userCompCode = isSuperUser ? sessionData.user.CompCode : "";
-    let userUPN =
-      !isSuperUser && !isSystemAdmin ? sessionData.user.UserPrincipalName : "";
 
     store.dispatch(reauthenticate(token));
 
     await store.dispatch(
-      getAllMasterUser(
-        query.pageNumber || 1,
-        query.pageSize || 10,
-        query.search || "",
-        query.name || "",
-        query.username || "",
-        userCompCode || query.companyCode,
-        query.email || "",
-        query.roleName || "",
-        userUPN || query.creator
-      )
+      getAllMasterUserInternal({
+        "X-PAGINATION": true,
+        "X-PAGE": 1,
+        "X-PAGESIZE": 10,
+        "X-ORDERBY": "createdDate desc",
+        "X-FILTER": `userRoles=mentor`,
+      })
     );
 
-    const dataMasterUser = store.getState().masterUserReducers;
+    const dataMasterIntern = store.getState().masterInternReducers;
+
+    const dataMentor = store.getState().masterUserInternalReducers;
+    const dataSchool = await store.dispatch(getSchoolAsyncSelect());
+    const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
+    const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
 
     return {
       props: {
-        dataMasterUser,
         query,
         token,
-        dataSBU,
+        dataMasterIntern,
+        dataSchool,
+        dataFaculty,
+        dataDepartment,
+        dataMentor,
         dataFilter: query,
         sessionData,
       },

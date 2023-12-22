@@ -1,4 +1,4 @@
-import { SITE_DATA, DEPARTMENT_DATA } from "constant";
+import { SITE_DATA } from "constant";
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import React, { useState, useCallback, useEffect } from "react";
 import { ComboAlert } from "components/Alert";
@@ -6,25 +6,17 @@ import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import {
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
   Button,
   Spinner,
-  Table,
   Row,
   Col,
   Card,
   Container,
-  Form,
   FormGroup,
   Label,
   Input,
-  CustomInput,
 } from "reactstrap";
-import { Search, Save, Plus, Check, Trash, ArrowLeft } from "react-feather";
+import { Search, Save, Check, ArrowLeft } from "react-feather";
 
 import {
   confirmAlertNotification,
@@ -47,6 +39,7 @@ import {
   getAllMasterUserInternal,
   deleteMasterUserInternal,
   getSbuAsyncSelect,
+  searchMentor
 } from "redux/actions/master/userInternal";
 import {
   getMasterInternById,
@@ -78,10 +71,7 @@ const EditMasterIntern = (props) => {
   } = props;
   const dispatch = useDispatch();
   const router = useRouter();
-
   const { data: session, status } = useSession();
-  console.log("Session Data");
-  console.log(sessionData);
 
   useEffect(() => {
     dispatch(reauthenticate(token));
@@ -90,53 +80,22 @@ const EditMasterIntern = (props) => {
   const [active, setActive] = useState("1");
   const [values, setValues] = useState(null);
   const toggle = (key) => setActive(key);
-
+  
+  const [selectedCompany, setSelectedCompany] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [selectedMentor, setSelectedMentor] = useState([]);
   const [userExist, setUserExist] = useState(false);
 
-  // Map the value inside the try block
   const mentorList = dataMentor.data.map((mentor) => ({
     ...mentor,
     label: mentor.name,
     value: mentor.userPrincipalName,
   }));
 
-  const findUser = (name) => {
-    const result = dataMasterUser.data.find(
-      (user) => user.name.toUpperCase() == name
-    );
-    if (result) {
-      setUserExist(true);
-    } else {
-      setUserExist(false);
-    }
-  };
-
-  // handling search site
-  const getAsyncOptionsCompany = (inputText) => {
-    return searchCompany(inputText).then((resp) => {
+  const getAsyncOptionsMentor = (inputText) => {
+    return searchMentor(inputText).then((resp) => {
       return resp.data.map((singleData) => ({
-        ...singleData,
-        value: singleData.companyName,
-        label: singleData.companyName,
-      }));
-    });
-  };
-
-  const loadOptionsCompany = useCallback(
-    debounce((inputText, callback) => {
-      if (inputText) {
-        getAsyncOptionsCompany(inputText).then((options) => callback(options));
-      }
-    }, 1000),
-    []
-  );
-
-  const getAsyncOptionsName = (inputText) => {
-    return searchUser(inputText).then((resp) => {
-      return resp.data.items.map((singleData) => ({
         ...singleData,
         value: singleData.nik,
         label: singleData.name,
@@ -144,10 +103,10 @@ const EditMasterIntern = (props) => {
     });
   };
 
-  const loadOptionsName = useCallback(
+  const loadOptionsMentor = useCallback(
     debounce((inputText, callback) => {
       if (inputText) {
-        getAsyncOptionsName(inputText).then((options) => callback(options));
+        getAsyncOptionsMentor(inputText).then((options) => callback(options));
       }
     }, 1000),
     []
@@ -241,10 +200,10 @@ const EditMasterIntern = (props) => {
   const validationSchema = yup
     .object({
       name: yup.string().required("Name is required"),
-      // userPrincipalName: yup.string().required("User principal name is required"),
-      // jabatan: yup.string().required("Job title is required"),
-      // email: yup.string().required("Email is required"),
-      // companyName: yup.string().required("Company name is required"),
+      joinDate: yup.date(), 
+      endDate: yup
+        .date()
+        .min(yup.ref("StartDate"), "End date can't be before Start date"),
     })
     .required();
 
@@ -256,7 +215,7 @@ const EditMasterIntern = (props) => {
 
         if (res.status >= 200 && res.status < 300) {
           successAlertNotification("Success", "User approved succesfully");
-          router.push(`/master/intern/${id}/edit`);
+          router.push(`/master/intern/edit/${id}/`);
         } else {
           const { title, message } = formatAxiosErrorMessage(
             res,
@@ -463,8 +422,10 @@ const EditMasterIntern = (props) => {
                           onChange={handleChange("userPrincipalName")}
                           disabled
                         />
-                        {errors.email && (
-                          <div className="text-danger">{errors.email}</div>
+                        {errors.userPrincipalName && (
+                          <div className="text-danger">
+                            {errors.userPrincipalName}
+                          </div>
                         )}
                       </FormGroup>
                     </Col>
@@ -498,7 +459,7 @@ const EditMasterIntern = (props) => {
                         <Input
                           id="faculty"
                           type="text"
-                          placeholder="Job Title Name"
+                          placeholder="Faculty"
                           value={values.faculty}
                           defaultOptions={dataFaculty}
                           loadOptions={loadOptionsFaculty}
@@ -528,7 +489,7 @@ const EditMasterIntern = (props) => {
                           }}
                           defaultOptions={SITE_DATA}
                           onChange={(e) => {
-                            setSelectedDepartment(e);
+                            setSelectedCompany(e);
                           }}
                           placeholder="Search..."
                         />
@@ -551,7 +512,7 @@ const EditMasterIntern = (props) => {
                             value: values.deptCode,
                           }}
                           onChange={(e) => {
-                            // setSelectedDepartment(e);
+                            setSelectedDepartment(e);
                             setFieldValue("dept", e.departmentName);
                             setFieldValue("deptCode", e.departmenetCode);
                           }}
@@ -569,10 +530,10 @@ const EditMasterIntern = (props) => {
                         <AsyncSelect
                           // cacheOptions
                           id="nameSearch"
-                          className="dropdownModal"
+                          // className="dropdownModal"
                           classNamePrefix="select"
                           isSearchable
-                          loadOptions={loadOptionsName}
+                          loadOptions={loadOptionsMentor}
                           defaultOptions={mentorList}
                           components={{ DropdownIndicator }}
                           getOptionValue={(option) => option.value}
@@ -598,6 +559,7 @@ const EditMasterIntern = (props) => {
                             selectedMentor?.name ||
                             "Search by name or email"
                           }
+                          menuPlacement="top"
                         />
                       </FormGroup>
                     </Col>
@@ -608,7 +570,13 @@ const EditMasterIntern = (props) => {
                             <FormikDatePicker
                               label="Internship Start Date"
                               name="joinDate"
+                              isBold
                             />
+                            {errors.joinDate && (
+                              <div className="text-danger">
+                                {errors.joinDate}
+                              </div>
+                            )}
                           </FormGroup>
                         </Col>
                         <Col md="6">
@@ -616,7 +584,13 @@ const EditMasterIntern = (props) => {
                             <FormikDatePicker
                               label="Internship End Date"
                               name="endDate"
+                              isBold
                             />
+                            {errors.endDate && (
+                              <div className="text-danger">
+                                {errors.endDate}
+                              </div>
+                            )}
                           </FormGroup>
                         </Col>
                       </Row>
@@ -674,27 +648,20 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
-    const dataSchool = await store.dispatch(getSchoolAsyncSelect());
-    const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
-    const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
-
     await store.dispatch(
       getAllMasterUserInternal({
-        "CSTM-COMPID": sessionData.user.CompCode,
-        "CSTM-NAME": sessionData.user.Name,
-        "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
-        "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
-        "X-PAGE": query.pageNumber || 1,
-        "X-PAGESIZE": query.pageSize || 10,
+        "X-PAGE": 1,
+        "X-PAGESIZE": 10,
         "X-ORDERBY": "createdDate desc",
-        "X-SEARCH": `*${query.search || ""}*`,
         "X-FILTER": `userRoles=mentor`,
       })
     );
 
     const dataMentor = store.getState().masterUserInternalReducers;
+    const dataSchool = await store.dispatch(getSchoolAsyncSelect());
+    const dataFaculty = await store.dispatch(getFacultyAsyncSelect());
+    const dataDepartment = await store.dispatch(getDepartmentAsyncSelect());
 
     return {
       props: {

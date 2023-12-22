@@ -206,7 +206,7 @@ const MasterUser = (props) => {
           >
             <Filter size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Filter - FIX COMPANY
+              Filter
             </span>
           </Button.Ripple>
         </div>
@@ -304,7 +304,7 @@ const MasterUser = (props) => {
                       <DropdownItem
                         className="w-100"
                         onClick={() =>
-                          router.push(`/master/user/${user.id}/edit`)
+                          router.push(`/master/user/edit/${user.id}`)
                         }
                         id="editBtn"
                       >
@@ -404,7 +404,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,
