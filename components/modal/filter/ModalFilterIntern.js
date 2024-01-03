@@ -21,7 +21,6 @@ import { Formik } from "formik";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import { wrapper } from "redux/store";
-import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 
@@ -103,7 +102,16 @@ const ModalFilterIntern = ({
   );
 
   const [selectedCompany, setSelectedCompany] = useState(
-    filterQuery.compName === "" ? "Search..." : filterQuery.compName
+    filterQuery.companyName === "" ? "Search..." : filterQuery.companyName
+  );
+  const [selectedDepartment, setSelectedDepartment] = useState(
+    filterQuery.dept === "" ? "Search..." : filterQuery.dept
+  );
+  const [selectedSchool, setSelectedSchool] = useState(
+    filterQuery.schoolName === "" ? "Search..." : filterQuery.schoolName
+  );
+  const [selectedFaculty, setSelectedFaculty] = useState(
+    filterQuery.faculty === "" ? "Search..." : filterQuery.faculty
   );
 
   const DropdownIndicator = (props) => {
@@ -181,7 +189,10 @@ const ModalFilterIntern = ({
                             />
                           )}
                           onChange={(e) => {
-                            setFieldValue("mentorName", e.name);
+                            setFilterQuery({
+                              ...filterQuery,
+                              mentorName: e.name,
+                            });
                             setSelectedMentor(e);
                           }}
                           placeholder={
@@ -206,20 +217,19 @@ const ModalFilterIntern = ({
                             label: selectedCompany ?? "Search...",
                             value: selectedCompany ?? "",
                           }}
-                          // defaultOptions={dataSBU}
                           defaultOptions={COMPANY_DATA}
                           onChange={(e) => {
                             console.log(e);
-                            setSelectedCompany(e);
+                            setSelectedCompany(e.label);
                             if (e) {
                               setFilterQuery({
                                 ...filterQuery,
-                                compName: e.compName,
+                                companyName: e.name,
                               });
                             } else {
                               setFilterQuery({
                                 ...filterQuery,
-                                compName: "",
+                                companyName: "",
                               });
                             }
                           }}
@@ -235,12 +245,16 @@ const ModalFilterIntern = ({
                           type="text"
                           placeholder="Search..."
                           classNamePrefix="select"
-                          value={filterQuery.dept}
+                          value={{
+                            label: selectedDepartment ?? "Search...",
+                            value: selectedDepartment ?? "",
+                          }}
                           defaultOptions={props.dataDepartment}
                           loadOptions={loadOptionsDepartment}
                           onChange={(e) => {
                             console.log(e);
                             if (e) {
+                              setSelectedDepartment(e.departmentName);
                               setFilterQuery({
                                 ...filterQuery,
                                 dept: e.departmentName,
@@ -268,12 +282,16 @@ const ModalFilterIntern = ({
                           type="text"
                           placeholder="Search..."
                           classNamePrefix="select"
-                          value={filterQuery.schoolName}
+                          value={{
+                            label: selectedSchool ?? "Search...",
+                            value: selectedSchool ?? "",
+                          }}
                           defaultOptions={props.dataSchool}
                           loadOptions={loadOptionsSchool}
                           onChange={(e) => {
                             console.log(e);
                             if (e) {
+                              setSelectedSchool(e.label);
                               setFilterQuery({
                                 ...filterQuery,
                                 schoolName: e.schoolName,
@@ -299,12 +317,15 @@ const ModalFilterIntern = ({
                           type="text"
                           placeholder="Search..."
                           classNamePrefix="select"
-                          value={filterQuery.email}
+                          value={{
+                            label: selectedFaculty ?? "Search...",
+                            value: selectedFaculty ?? "",
+                          }}
                           defaultOptions={props.dataFaculty}
                           loadOptions={loadOptionsFaculty}
                           onChange={(e) => {
-                            console.log(e);
                             if (e) {
+                              setSelectedFaculty(e.facultyName);
                               setFilterQuery({
                                 ...filterQuery,
                                 faculty: e.facultyName,
@@ -358,15 +379,18 @@ const ModalFilterIntern = ({
                       onClick={() => {
                         resetForm();
                         setSelectedCompany("Search...");
+                        setSelectedDepartment("Search...");
+                        setSelectedSchool("Search...");
+                        setSelectedFaculty("Search...");
                         setFilterQuery({
                           name: "",
                           mentorName: "",
-                          compName: "",
+                          companyName: "",
                           dept: "",
                           schoolName: "",
                           faculty: "",
                           joinDate: "",
-                          endDate: ""
+                          endDate: "",
                         });
                       }}
                     >

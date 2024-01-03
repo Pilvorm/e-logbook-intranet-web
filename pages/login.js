@@ -70,9 +70,9 @@ const Login = (props) => {
               <Link href="/">
                 <a className="d-flex justify-content-center">
                   <Image
-                    src="/images/logo/kalbe-logo.png"
-                    width={113}
-                    height={51}
+                    src="/images/logo/xyz-logo.png"
+                    width={117}
+                    height={49}
                   />
                 </a>
               </Link>

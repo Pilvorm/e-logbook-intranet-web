@@ -59,7 +59,7 @@ const options = {
       },
     }),
   ],
-  // secret: "760195f445131d2fdb6af993548b76c6",
+  secret: "760195f445131d2fdb6af993548b76c6",
   session: {
     jwt: true,
     // maxAge: 1 * 24 * 60 * 60, // Expiration: 1 month

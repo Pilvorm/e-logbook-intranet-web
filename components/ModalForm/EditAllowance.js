@@ -44,13 +44,13 @@ const EditAllowance = ({ visible, toggle, data }) => {
             ...data.allowances[0],
             id: data.allowances[0].id,
             workType: "WFH",
-            allowanceFee: Number(wfhAllowanceFee.split(".").join("")),
+            allowanceFee: wfhAllowanceFee,
           },
           {
             ...data.allowances[1],
             id: data.allowances[1].id,
             workType: "WFO",
-            allowanceFee: Number(wfoAllowanceFee.split(".").join("")),
+            allowanceFee: wfoAllowanceFee,
           },
         ],
       })
@@ -152,7 +152,7 @@ const EditAllowance = ({ visible, toggle, data }) => {
                         "wfhAllowanceFee",
                         Number(
                           e.target.value.split(".").join("")
-                        ).toLocaleString("de-DE")
+                        )
                       );
                     }}
                     onKeyPress={(e) => {
@@ -181,7 +181,7 @@ const EditAllowance = ({ visible, toggle, data }) => {
                         "wfoAllowanceFee",
                         Number(
                           e.target.value.split(".").join("")
-                        ).toLocaleString("de-DE")
+                        )
                       );
                     }}
                     onKeyPress={(e) => {
@@ -208,7 +208,7 @@ const EditAllowance = ({ visible, toggle, data }) => {
                 {isSubmitting ? (
                   <>
                     <Spinner size="sm" color="white" />
-                    <span className="ml-50">Submitting...</span>
+                    <span className="ml-50">Saving...</span>
                   </>
                 ) : (
                   "Save"

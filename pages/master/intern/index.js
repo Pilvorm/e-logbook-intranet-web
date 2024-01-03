@@ -117,7 +117,7 @@ const MasterIntern = (props) => {
       : {
           name: "",
           mentorName: "",
-          compName: "",
+          companyName: "",
           dept: "",
           schoolName: "",
           faculty: "",

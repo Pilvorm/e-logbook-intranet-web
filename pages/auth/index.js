@@ -85,9 +85,9 @@ const LoginPage = (props) => {
               <Link href="/">
                 <a className="d-flex justify-content-center">
                   <Image
-                    src="/images/logo/kalbe-logo.png"
-                    width={113}
-                    height={51}
+                    src="/images/logo/xyz-logo.png"
+                    width={117}
+                    height={49}
                   />
                 </a>
               </Link>
@@ -195,7 +195,7 @@ const LoginPage = (props) => {
             <div className="auth-footer-btn d-flex flex-column justify-content-center align-items-center my-2">
               <p className="m-0">E-Logbook Version {metadata.appVersion}</p>
               <p className="m-0">
-                &#169;{new Date().getFullYear()} - PT. XYZ Tbk.
+                &#169;{new Date().getFullYear()} - PT XYZ Tbk.
               </p>
             </div>
           </Col>

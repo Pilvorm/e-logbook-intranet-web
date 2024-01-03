@@ -3,8 +3,8 @@ import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-import iconLogo from "/public/images/logo/logo-kalbe-icon.webp";
-import iconTypo from "/public/images/logo/logo-kalbe-typography.webp";
+import iconLogo from "/public/images/logo/logo-xyz-icon.png";
+import iconTypo from "/public/images/logo/logo-xyz-typography.png";
 
 const VerticalMenuHeader = (props) => {
   // ** Props

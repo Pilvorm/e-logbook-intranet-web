@@ -20,7 +20,6 @@ import { Formik } from "formik";
 import AsyncSelect from "react-select/async";
 import debounce from "lodash/debounce";
 import { wrapper } from "redux/store";
-import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 const ModalFilterUser = ({
@@ -35,35 +34,6 @@ const ModalFilterUser = ({
   const router = useRouter();
 
   const query = router.query ?? {};
-
-  // handling search site
-  const getAsyncOptionsCompany = (inputText) => {
-    return searchCompany(inputText).then((resp) => {
-      return resp.data.map((singleData) => ({
-        ...singleData,
-        value: singleData.companyName,
-        label: singleData.companyName,
-      }));
-    });
-  };
-
-  const loadOptionsCompany = useCallback(
-    debounce((inputText, callback) => {
-      if (inputText) {
-        getAsyncOptionsCompany(inputText).then((options) => callback(options));
-      }
-    }, 1000),
-    []
-  );
-
-  const loadOptionsSBU = useCallback(
-    debounce((inputText, callback) => {
-      if (inputText) {
-        getAsyncOptionsSBU(inputText).then((options) => callback(options));
-      }
-    }, 1000),
-    []
-  );
 
   const [selectedCompany, setSelectedCompany] = useState(
     filterQuery.compName === "" ? "Search..." : filterQuery.compName
@@ -140,7 +110,6 @@ const ModalFilterUser = ({
                             label: selectedCompany ?? "Search...",
                             value: selectedCompany ?? "",
                           }}
-                          // loadOptions={loadOptionsCompany}
                           defaultOptions={COMPANY_DATA}
                           onChange={(e) => {
                             console.log(e);

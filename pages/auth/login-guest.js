@@ -44,12 +44,12 @@ const Login = (props) => {
         .then((data) => {
           console.log(data);
           if (data.status === 400) {
-              console.log(data.errors);
+            console.log(data.errors);
             setLoginLoading(false);
             if (data.statusText.Name) {
-              setErrorMessage(data.statusText.Name[0] ?? "")
+              setErrorMessage(data.statusText.Name[0] ?? "");
             } else {
-              setErrorMessage(data.statusText.Email[0] ?? "")
+              setErrorMessage(data.statusText.Email[0] ?? "");
             }
             return setError(true);
           }
@@ -82,9 +82,9 @@ const Login = (props) => {
               <Link href="/">
                 <a className="d-flex justify-content-center">
                   <Image
-                    src="/images/logo/kalbe-logo.png"
-                    width={113}
-                    height={51}
+                    src="/images/logo/xyz-logo.png"
+                    width={117}
+                    height={49}
                   />
                 </a>
               </Link>

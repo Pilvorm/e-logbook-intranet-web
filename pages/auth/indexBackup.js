@@ -26,9 +26,9 @@ const LoginPage = (props) => {
             <Link href="/">
               <a className="brand-logo">
                 <Image
-                  src="/images/logo/kalbe-logo.png"
-                  width={113}
-                  height={51}
+                  src="/images/logo/xyz-logo.png"
+                  width={117}
+                  height={49}
                 />
               </a>
             </Link>

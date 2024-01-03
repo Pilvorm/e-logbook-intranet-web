@@ -23,7 +23,6 @@ import axios from "axios";
 import { AUTH_URL } from "constant";
 import { getHeaders } from "helpers/utils";
 
-
 const ValidateEmail = (props) => {
   const { csrfToken, authError } = props;
   const router = useRouter();
@@ -48,9 +47,9 @@ const ValidateEmail = (props) => {
               <Link href="/">
                 <a className="d-flex justify-content-center">
                   <Image
-                    src="/images/logo/kalbe-logo.png"
-                    width={113}
-                    height={51}
+                    src="/images/logo/xyz-logo.png"
+                    width={117}
+                    height={49}
                   />
                 </a>
               </Link>
@@ -77,11 +76,11 @@ const ValidateEmail = (props) => {
                       Security Code
                     </Label>
                     <Input
-                        type={"text"}
-                        id="code"
-                        name="code"
-                        value={code}
-                        onChange={(e) => setCode(e.target.value)}
+                      type={"text"}
+                      id="code"
+                      name="code"
+                      value={code}
+                      onChange={(e) => setCode(e.target.value)}
                     />
                     <p id="errorMsg" className="text-danger text-center my-2">
                       {authError &&
