@@ -146,18 +146,6 @@ const MasterAllowance = (props) => {
         <div className="px-2 py-2 mb-2">
           <TabContent className="ml-1 py-50" activeTab={active}>
             <TabPane tabId="1">
-              <Button.Ripple
-                outline
-                type="submit"
-                color="danger"
-                className="btn-next"
-                onClick={() => router.back()}
-              >
-                <ArrowLeft size={18} />
-                <span className="ml-50 align-middle d-sm-inline-block d-none">
-                  Back
-                </span>
-              </Button.Ripple>
               <Table responsive className="border mt-1">
                 <thead className="text-center">
                   <tr>

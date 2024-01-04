@@ -1,4 +1,4 @@
-import { SITE_DATA } from "constant";
+import { COMPANY_DATA } from "constant";
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import React, { useState, useCallback, useEffect } from "react";
 import { ComboAlert } from "components/Alert";
@@ -203,7 +203,7 @@ const EditMasterIntern = (props) => {
       joinDate: yup.date(), 
       endDate: yup
         .date()
-        .min(yup.ref("StartDate"), "End date can't be before Start date"),
+        .min(yup.ref("joinDate"), "End date can't be before join date"),
     })
     .required();
 
@@ -292,6 +292,7 @@ const EditMasterIntern = (props) => {
             {({
               values,
               errors,
+              touched,
               setFieldValue,
               handleSubmit,
               handleChange,
@@ -478,20 +479,14 @@ const EditMasterIntern = (props) => {
                         <Label className="form-label font-weight-bold">
                           Company
                         </Label>
-                        <AsyncSelect
+                        <Input
                           id="companyCode"
                           name="companyCode"
                           classNamePrefix="select"
                           cacheOptions
-                          value={{
-                            label: values.companyName,
-                            value: values.companyName,
-                          }}
-                          defaultOptions={SITE_DATA}
-                          onChange={(e) => {
-                            setSelectedCompany(e);
-                          }}
-                          placeholder="Search..."
+                          value={values.companyName}
+                          defaultOptions={COMPANY_DATA}
+                          disabled
                         />
                       </FormGroup>
                     </Col>
@@ -514,7 +509,7 @@ const EditMasterIntern = (props) => {
                           onChange={(e) => {
                             setSelectedDepartment(e);
                             setFieldValue("dept", e.departmentName);
-                            setFieldValue("deptCode", e.departmenetCode);
+                            setFieldValue("deptCode", e.departmentCode);
                           }}
                           placeholder="Search..."
                         />
@@ -568,7 +563,7 @@ const EditMasterIntern = (props) => {
                         <Col md="6">
                           <FormGroup tag={Col} md="12">
                             <FormikDatePicker
-                              label="Internship Start Date"
+                              label="Internship Join Date"
                               name="joinDate"
                               isBold
                             />

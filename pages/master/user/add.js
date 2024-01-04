@@ -302,7 +302,6 @@ const AddMasterUser = (props) => {
                       >
                         <Button.Ripple
                           outline
-                          type="submit"
                           color="danger"
                           className="btn-next"
                           onClick={() => router.back()}

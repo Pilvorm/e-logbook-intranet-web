@@ -112,24 +112,22 @@ const InternshipAttendance = (props) => {
   };
 
   const [monthDays, setMonthDays] = useState(setDays(monthQuery));
-  console.log("MONTH DAYS");
-  console.log(monthDays);
 
   // useEffect(() => {
   //   dispatch(reauthenticate(token));
   // }, [dispatch]);
 
   const handleMonthChange = (value) => {
-    setPageSize(value);
+    setMonthQuery(value);
 
     router.push({
       pathname: router.pathname,
-      query: {
-        ...dataFilter,
-        pageSize: value,
-        pageNumber: 1,
-        search: searchQuery,
-      },
+      // query: {
+      //   ...dataFilter,
+      //   pageSize: value,
+      //   pageNumber: 1,
+      //   search: searchQuery,
+      // },
     });
   };
 
@@ -251,7 +249,7 @@ const InternshipAttendance = (props) => {
         <tbody className="text-center text-break">
           {monthDays &&
             monthDays.map((data, index) => (
-              <CreateTableRow dispatch={dispatch} data={data} index={index} />
+              <CreateTableRow key={index} dispatch={dispatch} data={data} index={index} />
             ))}
         </tbody>
       </Table>

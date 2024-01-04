@@ -218,20 +218,7 @@ const MasterIntern = (props) => {
     <div>
       <BreadCrumbs breadCrumbParent="Master" breadCrumbActive="Intern" />
       <div className="d-flex align-items-center my-3">
-        <Button.Ripple
-          outline
-          type="submit"
-          color="danger"
-          className="btn-next"
-          onClick={() => router.back()}
-        >
-          <ArrowLeft size={18} />
-          <span className="ml-50 align-middle d-sm-inline-block d-none">
-            Back
-          </span>
-        </Button.Ripple>
-
-        <h2 className={`ml-2 pl-2 border-left-dark`}>Master Intern</h2>
+        <h2>Master Intern</h2>
       </div>
 
       <Card className="p-2">
