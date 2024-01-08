@@ -61,7 +61,10 @@ const CreateTableRow = ({ dispatch, data, index }) => {
     <tr>
       <td>{index + 1}.</td>
       <td>{data.format("DD/MM/YY")}</td>
-      <td className="text-left" style={{ width: "40%", color: isWeekend && "#DAD8DF" }}>
+      <td
+        className="text-left"
+        style={{ width: "40%", color: isWeekend && "#DAD8DF" }}
+      >
         {isWeekend ? "OFF" : "Lorem"}
       </td>
       <td>{isWeekend ? "" : "WFH"}</td>
@@ -148,7 +151,7 @@ const InternshipAttendance = (props) => {
     <div>
       <BreadCrumbs
         breadCrumbParent="Internship"
-        breadCrumbParent2="Attendance List"
+        breadCrumbParent2="Logbook"
         breadCrumbActive="Daniel Emerald"
       />
       <div className="d-flex align-items-center my-3">
@@ -165,7 +168,7 @@ const InternshipAttendance = (props) => {
           </span>
         </Button.Ripple>
 
-        <h2 className={`ml-2 pl-2 border-left-dark`}>Intern Attendance List</h2>
+        <h2 className={`ml-2 pl-2 border-left-dark`}>Intern Logbook</h2>
       </div>
 
       <Card className="p-2 d-flex">
@@ -220,19 +223,21 @@ const InternshipAttendance = (props) => {
               Export to PDF
             </span>
           </Button.Ripple>
-          <Button.Ripple
-            id="saveBtn"
-            className="ml-1"
-            color="primary"
-            onClick={() => {
-              onSaveHandler(transformAndValidation(formik.values));
-            }}
-          >
-            <Check size={18} />
-            <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Approve All
-            </span>
-          </Button.Ripple>
+          {getPermissionComponentByRoles(["MENTOR"]) && (
+            <Button.Ripple
+              id="saveBtn"
+              className="ml-1"
+              color="primary"
+              onClick={() => {
+                onSaveHandler(transformAndValidation(formik.values));
+              }}
+            >
+              <Check size={18} />
+              <span className="align-middle ml-1 d-sm-inline-block d-none">
+                Approve All
+              </span>
+            </Button.Ripple>
+          )}
         </div>
       </div>
       <Table responsive className="border">
@@ -249,7 +254,12 @@ const InternshipAttendance = (props) => {
         <tbody className="text-center text-break">
           {monthDays &&
             monthDays.map((data, index) => (
-              <CreateTableRow key={index} dispatch={dispatch} data={data} index={index} />
+              <CreateTableRow
+                key={index}
+                dispatch={dispatch}
+                data={data}
+                index={index}
+              />
             ))}
         </tbody>
       </Table>

@@ -81,7 +81,7 @@ const MasterIntern = (props) => {
   useEffect(() => {
     dispatch(reauthenticate(token));
   }, [dispatch]);
-
+  
   const mentorList = dataMentor.data.map((mentor) => ({
     ...mentor,
     label: mentor.name,
@@ -194,7 +194,7 @@ const MasterIntern = (props) => {
               "Error",
               "Something went wrong, Please try again later."
             );
-          } else if (res.status === 200) {
+          } else if (res.status === 200 || res.status === 204) {
             successAlertNotification(
               "Deleted Success",
               "Successfully Deleted User"

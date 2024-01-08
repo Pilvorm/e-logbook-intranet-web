@@ -28,7 +28,7 @@ export const navigationData = [
   },
   {
     id: "internshipAttendance",
-    title: "Internship Attendance",
+    title: "Internship Logbook",
     icon: <List size={24} />,
     href: "/internship",
     roles: ["MENTOR", "HR", "ADMIN"],

@@ -1,5 +1,5 @@
 import { HTTP_CODE, SYSTEM_ADMIN, SUPER_USER } from "constant";
-
+import Link from "next/link";
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -33,10 +33,9 @@ import { reauthenticate } from "redux/actions/auth";
 
 import {
   getAllMasterUserInternal,
-  deleteMasterUserInternal,
-  getSbuAsyncSelect,
-  searchMentor,
 } from "redux/actions/master/userInternal";
+
+import { getAllMasterIntern } from "redux/actions/master/intern";
 import { wrapper } from "redux/store";
 
 import {
@@ -54,7 +53,7 @@ import { getSchoolAsyncSelect } from "redux/actions/master/school";
 import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
 import { getDepartmentAsyncSelect } from "redux/actions/master/department";
 
-const MasterUser = (props) => {
+const Internship = (props) => {
   const {
     dataMasterIntern,
     dataSchool,
@@ -69,12 +68,27 @@ const MasterUser = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log("TEST");
   console.log(dataMasterIntern);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
   const [pageNumber, setPageNumber] = useState(query?.pageNumber ?? 1);
   const [searchQuery, setSearchQuery] = useState(query?.search ?? "");
+  const [filterQuery, setFilterQuery] = useState(
+    query?.filter
+      ? { ...JSON.parse(query?.filter) }
+      : {
+          name: "",
+          mentorName: "",
+          companyName: "",
+          dept: "",
+          schoolName: "",
+          faculty: "",
+          joinDate: "",
+          endDate: "",
+        }
+  );
 
   const [visibleFilter, setVisibleFilter] = useState(false);
   const toggleFilterPopup = () => setVisibleFilter(!visibleFilter);
@@ -89,10 +103,10 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: value,
         pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -103,10 +117,10 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
         pageNumber: page.selected + 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
@@ -115,70 +129,34 @@ const MasterUser = (props) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
         pageSize: pageSize,
-        pageNumber: "",
+        pageNumber: 1,
         search: searchQuery,
+        filter: JSON.stringify(filterQuery),
       },
     });
   };
 
-  const handleDelete = (e, data) => {
-    e.preventDefault();
-    confirmAlertNotification(
-      "Delete Item",
-      "Are you sure to delete this document?",
-      () => {
-        dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
-          (res) => {
-            console.log(res);
-            if (res.status === HTTP_CODE.UNAUTHORIZED) {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            } else if (res.status === 200) {
-              successAlertNotification(
-                "Deleted Success",
-                "Successfully Deleted Item"
-              );
-              router.push({
-                pathname: router.pathname,
-                query: { pageSize, pageNumber, searchQuery },
-              });
-            } else {
-              errorAlertNotification(
-                "Error",
-                "Something went wrong, Please try again later."
-              );
-            }
-          }
-        );
-      }
-    );
+  const handleFilterQuery = (param) => {
+    router.push({
+      pathname: router.pathname,
+      query: {
+        pageSize: pageSize,
+        pageNumber: 1,
+        search: searchQuery,
+        filter: JSON.stringify(param),
+      },
+    });
   };
 
   return (
     <div>
       <BreadCrumbs
         breadCrumbParent="Internship"
-        breadCrumbActive="Attendance List"
+        breadCrumbActive="Intern List"
       />
       <div className="d-flex align-items-center my-3">
-        <Button.Ripple
-          outline
-          type="submit"
-          color="danger"
-          className="btn-next"
-          onClick={() => router.back()}
-        >
-          <ArrowLeft size={18} />
-          <span className="ml-50 align-middle d-sm-inline-block d-none">
-            Back
-          </span>
-        </Button.Ripple>
-
-        <h2 className={`ml-2 pl-2 border-left-dark`}>Internship Attendance</h2>
+        <h2>Internship Logbook</h2>
       </div>
 
       <Card className="p-2">
@@ -251,25 +229,30 @@ const MasterUser = (props) => {
             <th>Name</th>
             <th>Department</th>
             <th>Company</th>
-            <th>Supervisor</th>
+            <th>Mentor</th>
             <th>School/College</th>
             <th>Faculty</th>
             <th>Status</th>
           </tr>
         </thead>
         <tbody className="text-center text-break">
-          <tr>
-            <td>1</td>
-            <td className="cursor-pointer" style={{ color: "#3e11ff" }}>
-              Daniel
-            </td>
-            <td>IT</td>
-            <td>PT XYZ</td>
-            <td>Joko Chandra</td>
-            <td>Binus University</td>
-            <td>Computer Science</td>
-            <td style={{ color: "#46A583" }}>Signed by Supervisor</td>
-          </tr>
+          {dataMasterIntern &&
+            dataMasterIntern.data.map((intern, index) => (
+              <tr key={intern.id}>
+                <td>{index + 1}.</td>
+                <td className="text-uppercase">
+                  <Link href={router.pathname + "/logbook/" + intern.id}>
+                    <a style={{ color: "#3E11FF" }}>{intern.name}</a>
+                  </Link>
+                </td>
+                <td>{intern.dept}</td>
+                <td>{intern.companyName}</td>
+                <td className="text-uppercase">{intern.mentorName}</td>
+                <td>{intern.schoolName}</td>
+                <td>{intern.faculty}</td>
+                <td style={{ color: "#46A583" }}>Signed by Supervisor</td>
+              </tr>
+            ))}
         </tbody>
       </Table>
       <Row className="mt-1 mb-3">
@@ -311,7 +294,11 @@ const MasterUser = (props) => {
   );
 };
 
-MasterUser.getLayout = function getLayout(page) {
+// Internship.auth = {
+//   roles: "INTERN",
+// };
+
+Internship.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
@@ -332,6 +319,24 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const token = sessionData.user.token;
 
     store.dispatch(reauthenticate(token));
+
+    await store.dispatch(
+      getAllMasterIntern({
+        "CSTM-COMPID": sessionData.user.CompCode,
+        "CSTM-NAME": sessionData.user.Name,
+        "CSTM-EMAIL": sessionData.user.Email,
+        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
+        "CSTM-UPN": sessionData.user.UserPrincipalName,
+        "X-PAGINATION": true,
+        "X-PAGE": query.pageNumber || 1,
+        "X-PAGESIZE": query.pageSize || 10,
+        "X-ORDERBY": "createdDate desc",
+        "X-SEARCH": `*${query.search || ""}*`,
+        "X-FILTER": `${
+          query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+        }`,
+      })
+    );
 
     await store.dispatch(
       getAllMasterUserInternal({
@@ -366,4 +371,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default connect((state) => state)(MasterUser);
+export default connect((state) => state)(Internship);

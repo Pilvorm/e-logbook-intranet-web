@@ -48,8 +48,8 @@ const UserDropdown = ({ newUser }) => {
 
   const site = session?.user.userSite ? JSON.parse(session?.user.userSite) : "";
   const defaultRole =
-    localStorage.getItem("currentUserRole") !== null
-      ? localStorage.getItem("currentUserRole")
+    localStorage.getItem("userRoles") !== null
+      ? localStorage.getItem("userRoles")
       : "";
   const defaultSite =
     localStorage.getItem("currentUserSite") !== null
@@ -57,6 +57,7 @@ const UserDropdown = ({ newUser }) => {
       : "";
 
   let getCompName = null;
+  let getRoleName = JSON.parse(defaultRole)[0]
 
   try {
     if (
@@ -87,7 +88,7 @@ const UserDropdown = ({ newUser }) => {
         onClick={(e) => e.preventDefault()}
       >
         <div className="user-nav d-sm-flex d-none">
-          <span className="user-name font-weight-bold">
+          <span className="user-name font-weight-bold text-uppercase">
             {session?.user.Name
               ? session.user.Name
               : session.user.name
@@ -95,7 +96,12 @@ const UserDropdown = ({ newUser }) => {
               : ""}
           </span>
           <span className="user-status">
-            {session?.user.CompName}
+            {getRoleName} —{" "}
+            {session?.user.CompName
+              ? session.user.CompName
+              : session.user.CompanyName
+              ? session.user.CompanyName
+              : ""}
             {/* {session?.user.iss} */}
           </span>
         </div>

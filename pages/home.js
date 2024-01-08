@@ -52,11 +52,7 @@ const Home = ({ userRoles, query, roles, sessionData }) => {
   }, [dispatch]);
 
   const { data: session } = useSession();
-  console.log("SESSION")
   console.log(session);
-
-  console.log("SESSION DATA")
-  console.log(sessionData)
 
   return (
     <>
@@ -110,7 +106,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     try {
       if (sessionData) {
         if (sessionData.user.guest) {
-          temp.push("HSSE-USR");
+          temp.push("INTERN");
         } else {
           const response = await getRoleUser(
             sessionData.user.UserPrincipalName.replace("@", "%40")
@@ -118,9 +114,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
           console.log("step 2", response);
           if (response.data != false) {
             response.data.map(async (item) => {
-              if (item.applicationCode === "HSSEONLINE") {
-                return temp.push(item.roleCode); // multi roles
-              }
+              return temp.push(item.roleCode); // multi roles
             });
           } else {
             return (temp = response.data[0].roleCode);
