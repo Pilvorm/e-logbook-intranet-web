@@ -4,38 +4,20 @@ import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  Edit,
-  Filter,
-  MoreVertical,
-  Plus,
-  Trash,
-} from "react-feather";
+import { Filter, MoreVertical } from "react-feather";
 import ReactPaginate from "react-paginate";
 import {
   Button,
   Card,
   Col,
   CustomInput,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
   Input,
   Label,
   Row,
   Table,
-  UncontrolledDropdown,
 } from "reactstrap";
-
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
-
-import {
-  getAllMasterUserInternal,
-} from "redux/actions/master/userInternal";
-
-import { getAllMasterIntern } from "redux/actions/master/intern";
 import { wrapper } from "redux/store";
 
 import {
@@ -44,14 +26,20 @@ import {
   successAlertNotification,
   deleteAlertNotification,
 } from "components/notification";
-
 import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
-import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
+
+import { fetchUserRolesFunction } from "redux/actions/master/userInternal";
+import { getAllMasterIntern } from "redux/actions/master/intern";
+import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 
 import { getSchoolAsyncSelect } from "redux/actions/master/school";
 import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
 import { getDepartmentAsyncSelect } from "redux/actions/master/department";
+
+import { getPermissionComponentByRoles } from "helpers/getPermission";
+
+import moment from "moment";
 
 const Internship = (props) => {
   const {
@@ -64,12 +52,13 @@ const Internship = (props) => {
     token,
     dataFilter,
     sessionData,
+    userRoles,
   } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
-  console.log("TEST");
-  console.log(dataMasterIntern);
+  const isMentor = getPermissionComponentByRoles(["MENTOR"]);
+  const isHR = getPermissionComponentByRoles(["HR"]);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
@@ -80,7 +69,7 @@ const Internship = (props) => {
       ? { ...JSON.parse(query?.filter) }
       : {
           name: "",
-          mentorName: "",
+          mentorName: isMentor ? sessionData.user.Name : "",
           companyName: "",
           dept: "",
           schoolName: "",
@@ -231,7 +220,7 @@ const Internship = (props) => {
             <th>Company</th>
             <th>Mentor</th>
             <th>School/College</th>
-            <th>Faculty</th>
+            <th>Internship Period</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -249,8 +238,11 @@ const Internship = (props) => {
                 <td>{intern.companyName}</td>
                 <td className="text-uppercase">{intern.mentorName}</td>
                 <td>{intern.schoolName}</td>
-                <td>{intern.faculty}</td>
-                <td style={{ color: "#46A583" }}>Signed by Supervisor</td>
+                <td>
+                  {moment(intern.joinDate).format("DD MMM YYYY")} -{" "}
+                  {moment(intern.endDate).format("DD MMM YYYY")}
+                </td>
+                <td style={{ color: "#46A583" }}>Approved by Supervisor</td>
               </tr>
             ))}
         </tbody>
@@ -320,6 +312,24 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     store.dispatch(reauthenticate(token));
 
+    const userRoles = await store.dispatch(
+      fetchUserRolesFunction(sessionData.user.UserPrincipalName)
+    );
+    let mentorFilter = userRoles?.some((role) => role.roleCode === "MENTOR")
+      ? `mentorName=${sessionData.user.Name}`
+      : "";
+
+    const formatFilter = (filterData) => {
+      const filteredFilter = Object.entries(filterData).filter(
+        (data) => data[1] !== ""
+      );
+      const finalFilter = filteredFilter
+        .map((data) => `${data[0]}=${data[1]}`)
+        .join("|");
+
+      return finalFilter;
+    };
+
     await store.dispatch(
       getAllMasterIntern({
         "CSTM-COMPID": sessionData.user.CompCode,
@@ -333,7 +343,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "X-ORDERBY": "createdDate desc",
         "X-SEARCH": `*${query.search || ""}*`,
         "X-FILTER": `${
-          query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
+          query?.filter ? formatFilter(JSON.parse(query?.filter)) : mentorFilter
         }`,
       })
     );
@@ -366,6 +376,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         dataMentor,
         dataFilter: query,
         sessionData,
+        userRoles,
       },
     };
   }

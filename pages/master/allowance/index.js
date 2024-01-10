@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { ComboAlert } from "components/Alert";
 import { useRouter } from "next/router";
 import { getSession, useSession } from "next-auth/react";
-import VerticalLayout from "src/@core/layouts/VerticalLayout";
+import { Edit } from "react-feather";
 import {
   Nav,
   NavItem,
@@ -12,58 +12,18 @@ import {
   TabContent,
   TabPane,
   Button,
-  Spinner,
   Table,
-  Row,
-  Col,
   Card,
-  Container,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  CustomInput,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  UncontrolledDropdown,
 } from "reactstrap";
-import {
-  Search,
-  Save,
-  Edit,
-  Check,
-  Plus,
-  Trash,
-  ArrowLeft,
-  MoreVertical,
-} from "react-feather";
-
-import {
-  confirmAlertNotification,
-  errorAlertNotification,
-  successAlertNotification,
-} from "components/notification";
-
-import UserOptionItem from "components/UserOptionItem";
-
-import AsyncSelect from "react-select/async";
-import { FieldArray, Formik } from "formik";
-import * as yup from "yup";
-import CustomRadio from "components/CustomInputs/CustomRadio";
-
 import { wrapper } from "redux/store";
 import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
-import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
-import { searchRole, searchUser } from "helpers/master/masterRole";
-import {
-  getAllMasterUser,
-  createMasterUser,
-  getAllMasterUserInternal,
-} from "redux/actions/master/userInternal";
+
+import VerticalLayout from "src/@core/layouts/VerticalLayout";
+
 import { getAllAllowance } from "redux/actions/master/allowance";
 import EditAllowance from "components/ModalForm/EditAllowance";
+
 import debounce from "lodash/debounce";
 
 const CreateTableRow = ({ dispatch, data }) => {

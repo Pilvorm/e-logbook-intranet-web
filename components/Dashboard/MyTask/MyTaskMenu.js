@@ -1,13 +1,8 @@
-import React, { useState } from "react";
-import CarouselComponent from "components/Carousel";
-import Image from "next/image";
+import { useState } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import DashboardMenu from "./DashboardMenu";
-import MyTaskMenu from "./MyTask/MyTaskMenu";
 
-const Dashboard = () => {
+const MyTaskMenu = () => {
   const [active, setActive] = useState(1);
-
   return (
     <div>
       <Nav tabs className="mt-2 mx-2">
@@ -18,7 +13,7 @@ const Dashboard = () => {
               setActive(1);
             }}
           >
-            My Task
+            Kecelakaan Kerja
           </NavLink>
         </NavItem>
         <NavItem>
@@ -28,20 +23,26 @@ const Dashboard = () => {
               setActive(2);
             }}
           >
-            Dashboard
+            Nearmiss
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink
+            active={active === 3}
+            onClick={() => {
+              setActive(3);
+            }}
+          >
+            P3K
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent className="py-50" activeTab={active}>
-        <TabPane tabId={1}>
-          <MyTaskMenu />
-        </TabPane>
-        <TabPane tabId={2}>
-          <DashboardMenu />
-        </TabPane>
+        <TabPane tabId={1}></TabPane>
+        <TabPane tabId={2}></TabPane>
       </TabContent>
     </div>
   );
 };
 
-export default Dashboard;
+export default MyTaskMenu;

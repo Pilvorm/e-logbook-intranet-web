@@ -32,3 +32,28 @@ export const getAsyncOptionsUserInternal = (inputText) => {
     }));
   });
 };
+
+export const searchMentor = (searchQuery) => {
+  const header = getHeaders();
+
+  return fetch(`${API_MASTER}/UserInternal/GetUserInternal`, {
+    headers: {
+      ...header,
+      "X-PAGINATION": true,
+      "X-PAGE": 1,
+      "X-PAGESIZE": 10,
+      "X-ORDERBY": "createdDate desc",
+      "X-SEARCH": `*${searchQuery || ""}*`,
+      "X-FILTER": `userRoles=mentor`,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      return data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};

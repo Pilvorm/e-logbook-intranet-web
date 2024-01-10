@@ -4,38 +4,10 @@ import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import {
-  ArrowLeft,
-  Edit,
-  Filter,
-  MoreVertical,
-  Plus,
-  Trash,
-  Check,
-  ExternalLink,
-} from "react-feather";
-import {
-  Button,
-  Card,
-  Col,
-  CustomInput,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Input,
-  Label,
-  Row,
-  Table,
-  UncontrolledDropdown,
-} from "reactstrap";
-
+import { ArrowLeft, Check, ExternalLink } from "react-feather";
+import { Button, Card, Col, CustomInput, Label, Row, Table } from "reactstrap";
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
-import {
-  getAllMasterUser,
-  deleteMasterUser,
-  getSbuAsyncSelect,
-} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
 import {
@@ -44,10 +16,12 @@ import {
   successAlertNotification,
   deleteAlertNotification,
 } from "components/notification";
-
-import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import { InternDetailCard } from "components/Card/InternDetailCard";
+
+import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
+import { getPermissionComponentByRoles } from "helpers/getPermission";
+
 import moment from "moment";
 
 const CreateTableRow = ({ dispatch, data, index }) => {

@@ -24,7 +24,7 @@ import { wrapper } from "redux/store";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 
-import { searchMentor } from "redux/actions/master/userInternal";
+import { searchMentor } from "helpers/master/masterUserInternal";
 import UserOptionItem from "components/UserOptionItem";
 
 import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
@@ -42,6 +42,9 @@ const ModalFilterIntern = ({
 }) => {
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  const isMentor = getPermissionComponentByRoles(["MENTOR"]);
+  const isHR = getPermissionComponentByRoles(["HR"]);
 
   const query = router.query ?? {};
 
@@ -200,6 +203,7 @@ const ModalFilterIntern = ({
                             selectedMentor?.name ||
                             "Search by name or email"
                           }
+                          isDisabled={isMentor}
                         />
                       </FormGroup>
                     </Col>

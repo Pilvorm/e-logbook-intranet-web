@@ -104,27 +104,19 @@ export const deleteMasterUserInternal = (id) => async (dispatch) => {
   }
 };
 
-export const searchMentor = (searchQuery) => {
-  const header = getHeaders();
+export const fetchUserRolesFunction = (upn) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
 
-  return fetch(`${API_MASTER}/UserInternal/GetUserInternal`, {
-    headers: {
-      ...header,
-      "X-PAGINATION": true,
-      "X-PAGE": 1,
-      "X-PAGESIZE": 10,
-      "X-ORDERBY": "createdDate desc",
-      "X-SEARCH": `*${searchQuery || ""}*`,
-      "X-FILTER": `userRoles=mentor`,
-    },
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      return data;
-    })
-    .catch((err) => {
-      console.log(err);
+  try {
+    const response = await axios({
+      url: `${API_MASTER}/Role/GetRoleByUpn?Upn=${upn}`,
+      headers: header,
+      method: "GET",
     });
+
+    return response.data;
+
+  } catch (error) {
+    return error.response;
+  }
 };

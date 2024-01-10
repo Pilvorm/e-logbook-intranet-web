@@ -14,6 +14,7 @@ import DashboardChart from "components/Dashboard/DashboardChart";
 import DashboardComplaint from "components/Dashboard/DashboardComplaint";
 import { useRouter } from "next/router";
 import useMobileDetector from "components/useMobileDetector";
+import HomeMobile from "components/Mobile_version/Home/Index";
 import DashboardAccident from "components/Dashboard/DashboardAccident";
 import DashboardNearmiss from "components/Dashboard/DashboardNearmiss";
 import DashboardVictim from "components/Dashboard/DashboardVictim";
@@ -25,7 +26,8 @@ import {
 } from "helpers/auth";
 import { useSelector } from "react-redux";
 
-const Home = ({ userRoles, query, roles, sessionData }) => {
+const Home = ({ userRoles, query, roles }) => {
+  console.log(roles);
   const router = useRouter();
   const dispatch = useDispatch();
   const isMobileWidth = useMobileDetector();
@@ -52,30 +54,19 @@ const Home = ({ userRoles, query, roles, sessionData }) => {
   }, [dispatch]);
 
   const { data: session } = useSession();
-  console.log(session);
 
   return (
     <>
-      <div className="mt-3">
-        <Dashboard />
-        <div className="mt-1"></div>
-      </div>
-      <div className="mt-3">
-        <DashboardChart />
-      </div>
-      <div className="mt-3">
-        <DashboardComplaint />
-        <div className="mt-2"></div>
-      </div>
-      <div className="mt-3">
-        <DashboardAccident />
-      </div>
-      <div className="mt-3">
-        <DashboardNearmiss />
-      </div>
-      <div className="mt-3">
-        <DashboardVictim />
-      </div>
+      {isMobileWidth ? (
+        <HomeMobile user={userRoles?.user} moduleMobile={moduleMobile} />
+      ) : (
+        <>
+          <div className="mt-3">
+            <Dashboard />
+            <div className="mt-1"></div>
+          </div>
+        </>
+      )}
     </>
   );
 };
@@ -106,34 +97,20 @@ export const getServerSideProps = wrapper.getServerSideProps(
     try {
       if (sessionData) {
         if (sessionData.user.guest) {
-          temp.push("INTERN");
+          temp.push("HSSE-USR");
         } else {
-          const response = await getRoleUser(
-            sessionData.user.UserPrincipalName.replace("@", "%40")
-          );
-          console.log("step 2", response);
-          if (response.data != false) {
-            response.data.map(async (item) => {
-              return temp.push(item.roleCode); // multi roles
-            });
-          } else {
-            return (temp = response.data[0].roleCode);
-          }
+          const roles = JSON.parse(sessionData.user.Roles).map((role) => {
+            temp.push(role.RoleCode);
+          });
         }
-        store.dispatch(storeUserRoles(temp));
-        // if (typeof window !== "undefined") {
-        //   localStorage.setItem("tes", JSON.stringify(["tes", "ok"]))
-        // }
       }
     } catch (err) {}
-    console.log(temp, "temp");
 
     return {
       props: {
         userRoles: sessionData,
         query: ctx.query,
         roles: temp,
-        sessionData,
       },
     };
   }

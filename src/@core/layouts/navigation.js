@@ -15,7 +15,7 @@ import {
   Compass,
   PlusSquare,
   FileText,
-  DollarSign
+  DollarSign,
 } from "react-feather";
 
 export const navigationData = [
@@ -37,29 +37,29 @@ export const navigationData = [
     id: "master",
     title: "Master",
     icon: <Grid size={24} />,
-    roles: ["MENTOR", "HR", "ADMIN"],
+    roles: ["HR", "ADMIN"],
     children: [
       {
         id: "intern",
         title: "Master Intern",
         icon: <Users size={24} />,
-        roles: ["MENTOR", "HR", "ADMIN"],
+        roles: ["HR", "ADMIN"],
         href: "/master/intern",
       },
       {
         id: "user",
         title: "Master User",
         icon: <Users size={24} />,
-        roles: ["MENTOR", "HR", "ADMIN"],
+        roles: ["HR", "ADMIN"],
         href: "/master/user",
       },
       {
         id: "allowance",
         title: "Master Allowance",
         icon: <DollarSign size={24} />,
-        roles: ["MENTOR", "HR", "ADMIN"],
+        roles: ["HR", "ADMIN"],
         href: "/master/allowance",
-      }
+      },
     ],
   },
 ];

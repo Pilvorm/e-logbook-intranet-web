@@ -1,5 +1,4 @@
 import { HTTP_CODE, SYSTEM_ADMIN, SUPER_USER } from "constant";
-
 import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -27,14 +26,8 @@ import {
   Table,
   UncontrolledDropdown,
 } from "reactstrap";
-
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
-import {
-  getAllMasterUserInternal,
-  deleteMasterUserInternal,
-  getSbuAsyncSelect,
-} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
 import {
@@ -43,10 +36,14 @@ import {
   successAlertNotification,
   deleteAlertNotification,
 } from "components/notification";
-
 import ModalFilterUser from "components/modal/filter/ModalFilterUser";
-import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
+
+import {
+  getAllMasterUserInternal,
+  deleteMasterUserInternal,
+} from "redux/actions/master/userInternal";
+import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 const MasterUser = (props) => {
   const {

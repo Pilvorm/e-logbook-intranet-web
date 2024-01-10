@@ -17,39 +17,30 @@ import {
   Input,
 } from "reactstrap";
 import { Search, Save, Check, ArrowLeft } from "react-feather";
+import { wrapper } from "redux/store";
+import { reauthenticate } from "redux/actions/auth";
+import { connect, useDispatch } from "react-redux";
 
 import {
   confirmAlertNotification,
   errorAlertNotification,
   successAlertNotification,
 } from "components/notification";
-
 import UserOptionItem from "components/UserOptionItem";
+import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 
 import AsyncSelect from "react-select/async";
 import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
 
-import { wrapper } from "redux/store";
-import { reauthenticate } from "redux/actions/auth";
-import { connect, useDispatch } from "react-redux";
-import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
-import { searchRole, searchUser } from "helpers/master/masterRole";
-import {
-  getAllMasterUserInternal,
-  deleteMasterUserInternal,
-  getSbuAsyncSelect,
-  searchMentor
-} from "redux/actions/master/userInternal";
+import { searchMentor } from "helpers/master/masterUserInternal";
+import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 import {
   getMasterInternById,
   updateMasterIntern,
   approveMasterIntern,
 } from "redux/actions/master/intern";
-import { searchCompany, getAsyncOptionsSBU } from "helpers/sbu";
-import FormikDatePicker from "components/CustomInputs/CustomDatePicker";
 import debounce from "lodash/debounce";
-import moment from "moment";
 
 import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
 import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
@@ -58,6 +49,8 @@ import { getAsyncOptionsDepartment } from "helpers/master/masterDepartment";
 import { getSchoolAsyncSelect } from "redux/actions/master/school";
 import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
 import { getDepartmentAsyncSelect } from "redux/actions/master/department";
+
+import moment from "moment";
 
 const EditMasterIntern = (props) => {
   const {
@@ -80,7 +73,7 @@ const EditMasterIntern = (props) => {
   const [active, setActive] = useState("1");
   const [values, setValues] = useState(null);
   const toggle = (key) => setActive(key);
-  
+
   const [selectedCompany, setSelectedCompany] = useState([]);
   const [selectedFaculty, setSelectedFaculty] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
@@ -200,7 +193,7 @@ const EditMasterIntern = (props) => {
   const validationSchema = yup
     .object({
       name: yup.string().required("Name is required"),
-      joinDate: yup.date(), 
+      joinDate: yup.date(),
       endDate: yup
         .date()
         .min(yup.ref("joinDate"), "End date can't be before join date"),

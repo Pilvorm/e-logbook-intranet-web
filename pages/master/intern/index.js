@@ -5,14 +5,7 @@ import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import debounce from "lodash/debounce";
-import {
-  ArrowLeft,
-  Edit,
-  Filter,
-  MoreVertical,
-  Plus,
-  Trash,
-} from "react-feather";
+import { Edit, Filter, MoreVertical, Trash } from "react-feather";
 import ReactPaginate from "react-paginate";
 import {
   Button,
@@ -28,15 +21,8 @@ import {
   Table,
   UncontrolledDropdown,
 } from "reactstrap";
-
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
-import {
-  getAllMasterUserInternal,
-  deleteMasterUserInternal,
-  getSbuAsyncSelect,
-  searchMentor,
-} from "redux/actions/master/userInternal";
 import { wrapper } from "redux/store";
 
 import {
@@ -45,23 +31,26 @@ import {
   successAlertNotification,
   deleteAlertNotification,
 } from "components/notification";
-
 import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
-import { getPermissionComponentByRoles } from "helpers/getPermission";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
+
+import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 import {
   getAllMasterIntern,
   deleteMasterIntern,
 } from "redux/actions/master/intern";
-import moment from "moment";
 
+import { getPermissionComponentByRoles } from "helpers/getPermission";
 import { getAsyncOptionsSchool } from "helpers/master/masterSchool";
 import { getAsyncOptionsFaculty } from "helpers/master/masterFaculty";
 import { getAsyncOptionsDepartment } from "helpers/master/masterDepartment";
+import { searchMentor } from "helpers/master/masterUserInternal";
 
 import { getSchoolAsyncSelect } from "redux/actions/master/school";
 import { getFacultyAsyncSelect } from "redux/actions/master/faculty";
 import { getDepartmentAsyncSelect } from "redux/actions/master/department";
+
+import moment from "moment";
 
 const MasterIntern = (props) => {
   const {
@@ -81,7 +70,7 @@ const MasterIntern = (props) => {
   useEffect(() => {
     dispatch(reauthenticate(token));
   }, [dispatch]);
-  
+
   const mentorList = dataMentor.data.map((mentor) => ({
     ...mentor,
     label: mentor.name,

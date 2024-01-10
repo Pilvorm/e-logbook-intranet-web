@@ -13,38 +13,40 @@ import {
   TabPane,
   Button,
   Spinner,
-  Table,
   Row,
   Col,
   Card,
   Container,
-  Form,
   FormGroup,
   Label,
   Input,
   CustomInput,
 } from "reactstrap";
-import { Search, Save, Plus, Trash, ArrowLeft } from "react-feather";
+import { Search, Save, ArrowLeft } from "react-feather";
 
 import {
   confirmAlertNotification,
   errorAlertNotification,
   successAlertNotification,
 } from "components/notification";
-
 import UserOptionItem from "components/UserOptionItem";
 
 import AsyncSelect from "react-select/async";
 import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
-import CustomRadio from "components/CustomInputs/CustomRadio";
 
 import { wrapper } from "redux/store";
 import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
+import {
+  getAllMasterUser,
+  createMasterUserInternal,
+  getAllMasterUserInternal,
+} from "redux/actions/master/userInternal";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
+
 import { searchRole, searchUser } from "helpers/master/masterRole";
-import { getAllMasterUser, createMasterUserInternal, getAllMasterUserInternal, } from "redux/actions/master/userInternal";
+
 import debounce from "lodash/debounce";
 
 const AddMasterUser = (props) => {
@@ -176,10 +178,7 @@ const AddMasterUser = (props) => {
     };
 
     if (bodyData.userRoles.length === 0) {
-      return errorAlertNotification(
-        "Validation Error",
-        `Please select a role`
-      );
+      return errorAlertNotification("Validation Error", `Please select a role`);
     }
 
     if (bodyData.userPrincipalName.length === 0) {

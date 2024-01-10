@@ -1,15 +1,12 @@
-import React, { useState } from "react";
-import CarouselComponent from "components/Carousel";
-import Image from "next/image";
+import { useState } from "react";
 import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import DashboardMenu from "./DashboardMenu";
-import MyTaskMenu from "./MyTask/MyTaskMenu";
+import ButuhInspeksi from "./ButuhInspeksi";
+import RiwayatInspeksi from "./RiwayatInspeksi";
 
-const Dashboard = () => {
+const NavInspeksi = ({ listInspeksi, sessionData, listButuhInspeksi }) => {
   const [active, setActive] = useState(1);
-
   return (
-    <div>
+    <>
       <Nav tabs className="mt-2 mx-2">
         <NavItem>
           <NavLink
@@ -18,7 +15,7 @@ const Dashboard = () => {
               setActive(1);
             }}
           >
-            My Task
+            Riwayat
           </NavLink>
         </NavItem>
         <NavItem>
@@ -28,20 +25,20 @@ const Dashboard = () => {
               setActive(2);
             }}
           >
-            Dashboard
+            Butuh Inspeksi
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
-          <MyTaskMenu />
+          <RiwayatInspeksi listInspeksi={listInspeksi} sessionData={sessionData}/>
         </TabPane>
         <TabPane tabId={2}>
-          <DashboardMenu />
+          <ButuhInspeksi listButuhInspeksi={listButuhInspeksi} />
         </TabPane>
       </TabContent>
-    </div>
+    </>
   );
 };
 
-export default Dashboard;
+export default NavInspeksi;
