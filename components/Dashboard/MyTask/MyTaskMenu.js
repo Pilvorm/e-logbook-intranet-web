@@ -13,27 +13,7 @@ const MyTaskMenu = () => {
               setActive(1);
             }}
           >
-            Kecelakaan Kerja
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            active={active === 2}
-            onClick={() => {
-              setActive(2);
-            }}
-          >
-            Nearmiss
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink
-            active={active === 3}
-            onClick={() => {
-              setActive(3);
-            }}
-          >
-            P3K
+            Logbook
           </NavLink>
         </NavItem>
       </Nav>

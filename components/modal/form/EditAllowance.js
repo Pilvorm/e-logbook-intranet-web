@@ -22,8 +22,8 @@ import * as yup from "yup";
 
 const validationSchema = yup
   .object({
-    wfhAllowanceFee: yup.number().min(1, "Must be greather than 0").required(),
-    wfoAllowanceFee: yup.number().min(1, "Must be greather than 0").required(),
+    wfhAllowanceFee: yup.number().min(1, "Must be greater than 0").required(),
+    wfoAllowanceFee: yup.number().min(1, "Must be greater than 0").required(),
   })
   .required();
 

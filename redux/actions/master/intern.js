@@ -86,7 +86,7 @@ export const deleteMasterIntern = (id) => async (dispatch) => {
   }
 };
 
-export const approveMasterIntern = (id) => async (dispatch) => {
+export const confirmMasterIntern = (id) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
   try {

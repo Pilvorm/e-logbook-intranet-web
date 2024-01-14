@@ -38,7 +38,7 @@ import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 import {
   getMasterInternById,
   updateMasterIntern,
-  approveMasterIntern,
+  confirmMasterIntern,
 } from "redux/actions/master/intern";
 import debounce from "lodash/debounce";
 
@@ -200,14 +200,14 @@ const EditMasterIntern = (props) => {
     })
     .required();
 
-  const onApproveHandler = async () => {
+  const onConfirmHandler = async () => {
     const id = data.id;
-    dispatch(approveMasterIntern(id))
+    dispatch(confirmMasterIntern(id))
       .then((res) => {
         console.log(res, "rsponsee");
 
         if (res.status >= 200 && res.status < 300) {
-          successAlertNotification("Success", "User approved succesfully");
+          successAlertNotification("Success", "User confirmed succesfully");
           router.push(`/master/intern/edit/${id}/`);
         } else {
           const { title, message } = formatAxiosErrorMessage(
@@ -226,12 +226,12 @@ const EditMasterIntern = (props) => {
 
   // approval-related handler
   const notificationHandler = (state) => {
-    if (state == "Approve") {
+    if (state == "Confirm") {
       confirmAlertNotification(
         "Confirmation",
-        `Apakah Anda yakin untuk approve data ini?`,
+        `Are you sure to confirm this user?`,
         () => {
-          onApproveHandler();
+          onConfirmHandler();
         },
         () => {}
       );
@@ -342,14 +342,14 @@ const EditMasterIntern = (props) => {
                         color="primary"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleSubmit, notificationHandler("Approve");
+                          handleSubmit, notificationHandler("Confirm");
                         }}
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? (
                           <>
                             <Spinner size="sm" color="white" />
-                            <span className="ml-50">Approving...</span>
+                            <span className="ml-50">Confirming...</span>
                           </>
                         ) : (
                           <div
@@ -357,7 +357,7 @@ const EditMasterIntern = (props) => {
                             style={{ alignItems: "center" }}
                           >
                             <Check size={18} />
-                            <div className="ml-1">Approve</div>
+                            <div className="ml-1">Confirm</div>
                           </div>
                         )}
                       </Button.Ripple>

@@ -22,7 +22,7 @@ import { connect, useDispatch } from "react-redux";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 
 import { getAllAllowance } from "redux/actions/master/allowance";
-import EditAllowance from "components/ModalForm/EditAllowance";
+import EditAllowance from "components/modal/form/EditAllowance";
 
 import debounce from "lodash/debounce";
 
@@ -40,12 +40,16 @@ const CreateTableRow = ({ dispatch, data }) => {
       <td>
         <Button.Ripple
           outline
+          id="editBtn"
           type="submit"
           color="warning"
           className="btn-next"
           onClick={toggleEditPopup}
         >
           <Edit size={18} />
+          <span className="ml-50 align-middle d-sm-inline-block d-none">
+            Edit
+          </span>
           <EditAllowance
             visible={editPopup}
             toggle={toggleEditPopup}
@@ -63,6 +67,8 @@ const MasterAllowance = (props) => {
   const router = useRouter();
 
   const { data: session, status } = useSession();
+
+  console.log(sessionData);
 
   const [isEditing, setEditing] = useState(false);
   const [editPopup, setEditPopup] = useState(false);

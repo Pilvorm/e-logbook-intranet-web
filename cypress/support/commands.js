@@ -39,57 +39,66 @@ Cypress.Commands.add("login", () => {
 
   cy.setCookie(
     "next-auth.session-token",
-    "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..nzom3AijxpSAxAWv.ZGnPUiobXbWMKTtLJBO0ptp74xk_5uSwnQ72mGosBl9NLRLrzhA1igPQmIM8JhEyaegEJM9dN-6SU7Me6B-ozbYE4q3szbVgLvjIIJX1nEX4Tsqk5eTmNvvH2pC9BipmYeW6hzdH_ecXJG6rv9oVkQTJ7POVy8Joc5de4CMFCjgVFeSbbIopFM6FrIQ3rq5femMjviTvKmtsQXpw-X2uDX7CwfnYGiFHPyM9R8qVvfTqbMtQH02t3zcRXWdjNTlzhSyu9bhaQF_AoYGBkB3BSf1vLCuAxezrEhlItXrugdg4e0C-_QbSap3181hQwN8N4w6g_YvJTJhe2URuNBrGb1kwRlFS7Pk1FNlh3q0p7I8-emQupoje5R-1AdoHglrRxmjfOTQGbs4lO_m0ncVYidkvW59CrSJUfozR6-d2Ks7uDoS1Ad0ypwfbbYbIbFi4gEYxOrTrjz28b8MLYaeKpALvVZEfKTt1_8ZM48B3rOaPAXxBcf8e3md05_263YrqIWM6kc67Boo4lDR2p1haaBWDb-sib-5N8mYCdk7NZAUnXc54oyhf0CoKoGGKM9J3y2Tx6R1McnQux70-JS9dMO-_7IIV6B60U8r_FVrfU3i22ezFEzqb0jbiS6GqlhHrC67c7HeLgH2geQt8v65sKT6htkXJ85uxNGJCNuSrg6TzOIezCoPHa2GooIu2SLnkHqEWOSgS9JU1TB-HjJpmQOUfTKg3bR8x8JjknqkTuLJlExa3mU4DRlyEZUUHxbM2MwmPdFW12twPiKneHRS-oOzS8Q2fqpdJIQnUaaKu8TFtB5s18fa9uNsbSdIJdZFMWmDiFhzeIdlEqhSR9O4VJXkbh0ze66pBq5Ks7jLbEQP44oTpbQncuwi4_Mw0W0fbmqVP3SHDRoXoT0sx76RlFYHCy_k0inoxHUCOwIqsbhyoJH7yzCMfs9bPRpAp-jfvZwIRrofWfIQ3NT6RExNLIEfCvmRc-f_KpwF9VQe1eq2TmO_7zs8NlU23Nl7ZuUV3f91V09jh-B0IZ3glXx4BYOY8guDlPA3YXUKMBAohnQBwspb6fYZjhmBpEb12Ick6d4WPjlA3_5_hbL0bQW-ff4tZEpzWWWl64JIV_zg8D6dE07QTHOSAJtlPFMB0HGAZz8QHIcLDBd4i-9WZBsZ7o1Nn8X2fVXwnN1n3xWI4iZ1Q-Jz_f_Sg6AAkkYI0cuKyPZ71qUf7t9maNCqQNLcLRStlcfy1FDBssxL9gztSuDNW7vZzAbeaqnAjomvY4HSrh7iJm24-xuZnxlPGLgA776_WxEFua0FFKWYngkiZQGW1hBV5jevb9ZrWWotU7yyyqkX0jY5r0EMl5ajphD399byjWH2sfKpySjZj0K4R5DNsFjT9hqX9U-W2TpuV1__vG5LhncYZkfuSlNvwqIIlxu70NlYaqd7BWE4m5KPStgv0g8yPLxzsQkLj-WiPoiec4RI-HfnFB4vsfJKMhXJVsrtuzDb1feuhe5s5adJ3HZHTC1YbbVIilowmjQCVUEBmrZXfbFa_qRi6AuKoMod-DcwzZJHABYqs3feQ3vGRHxoSv_mh24n6snquMPyaTNUw3R5o8TpzsHCuu1p0u2lKsF1g-i8p.sIu5LJJvzL4DUpTn1dPT0g"
+    "eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..BGE-SEJOohWUHWC1.p5YWmdvJw-rWDWf3iQaaQsu-RZz8EDkxQdO_xubdvARBgsnO3Bvh3xEaukViQO4cnZvSqG1yCFmVYuR2Y53QqclCeBAJ34W_xYhcCfzJNhLO_oqXbq9fQ6D8TcUAAxSNDbhKgCEjJFc81w2dLV6QAKefT1TzU9JyoBdUQPFSKe-yDNf1F41vLAQwSWFa2Nu0kkiMEQ9f9S0J0YoDCfk74AxyhlV_UdmSVVs63cpurxJ8LYDddVnoqXbcqQdjQqeSgeNnR9x-ZgStkXmLX-9KfVdKXA8sWPNHGZ-JgFneFWFi6Hc0NpJeFQQJDL9Qzs9C1vKmLhMxqdxwkDdS8lOerqSLTd24Neap7pOFzrtLeLiGTF-dqc4pweso8zfNxAENTH7EnXxZRVsBDPkJVCkIB5CiCXF5qezgmFciOAhcPrw7WWDDVu20nhbCJLKVw6C7oNUspQA5atHiubzolHtW14xcny24_ggxpe4CDGPS6dWijxgDYllxsyiGPfAy_e-uR_F4d_u9GfFTOq0q-mhC_hGNBwZHz91OsiMP46rUEKk78XW2c_OOXEnT45g8DUDBjOxhgmwAJhlDYO954zc9u_x_DKDG5DtIwphr_tyCXskcgVChSgsu373bF8wK2YlTfR6-8PyYgWzCteX7oxJcCcCxx7BHl35G5IezAIWztJ1kyBJAW827M5WSAEBJyuupFhTtWIatoq5dzqDxkVt7Fx-hnJuClyLq9tzO8hyXEJuasQxbUCr8NJJZRai8QmVkNbCHtJ-av6v9al0uEVypJxGviBsd5D2-6P6j0xBH6YDubO4uIawTLm1hCCzaB8980QwrpFuY3pfYMnQH5LyETVKEU0ZjwjuJlyz-5EdsK15n3OrsuB1-7XIuuPmbR9i1EMZc8-QsrERMS8pUM7FfjU3l1TsL7Ht3_BGP-1O8kQwMbVeXlqkiNsegWijhoSW4LtWS6qud4Euh52tqbZEuIymVZlv2skdJ0t4FFBRSV_CBx_OINpO8UPZBRhGSsXERh6Um6gwqJzH2KnJrFrmodAvUb_VTp9muB23r6pGJXy2tr3hxmJLSeb7lTHb7-NkJchyiQNfAlsfh0RFFGfRBvmaA529pU614yGXgpVOizLBBXvutHdK3tv-CtwONlIiBp8HtpoRtYuwn5Ipa_4aq0YdEhJFaob0aVypgHNjS4POHrvFKfKUpNgtZMt1j0J2e3EYiRLU7U1WwJeAQw_kcb_xqdSm5D6PE9cdbe-dnV5Bm76Zjs5PhgZ23eqs0wB4Tb52foB3oV5a1dxMTeW7mpiytSuY26VBHujkfIqThpyiX7Le2GhLJpWFWOvPbxDpoO4BkiVgrTYglS6vlxdQNNP-Vseqab6fqGygf2iJWUBvX1m6CFnL-kE-baOdEVwOL-Wo1xQRCeCxfYBbMpO3gsLMn9DlWp231FAk5tx8QAvOcZJbmbxE9LlfIsOc37PNA1JsNMklnEDwiAcI-wJrXbPUkKiCiBvWGTZCtEL2ZDKJQm4pigQyak8-km8wE1XPCG6YuHwMXvKdYiHvNkFRsongvEyQdZkePj6KKi1tTi-JMCwVRtR6LUmWTKSZcOut1YzgexVzPxDY-SyvrcBM6uPoszHi5q-O1gK6ZzXzyUlXgONw3GqgDlOrLpomP0YQJb9jvMliV-53bgwfsVAxV7HrvXDHREqlgGxfXyFPNBY3_Yg5VqFRZQ_DRJwFz3E0FF42ofTsJ2kgJVdao-m3LIASw9Zvck8v-L_OchvVqBznXWphkKUdhj2mq2iPsJsg_OJjNX5e_XY7HnpLyxqgVRT6N745NsrQuGQ4ELipt0oHj4SZdgswLyanOaTTRs_qV1XIpz8drQmnmtJNlrtZuMP8tAQ3s7Ykec_nv7x6TeZfqhOueyVOVfvI1N3yriXjz0MALhaIH0SdqbD1XhcHp6hkxtJ5Qv6PDbYrivEHkI5EFGnuCGfMuxG5rjcB49lnGU2d5m87928cAkC5bLMknjV7-f0x7d_4Nc23Mlm9_pzA-8lVu3RAg7bMZ2Lg1ff3Hy8BSGfA7pIaoKDwF.P4pn2899qAI7eFmzOIO3QQ"
   );
 
   Cypress.Cookies.preserveOnce("next-auth.session-token");
 });
 
 Cypress.Commands.add("storageSet", () => {
-  cy.setLocalStorage("flagRole", "true");
-  cy.setLocalStorage(
-    "userRoles",
-    JSON.stringify([
-      {
-        nik: "user.one",
-        userPrincipalName: "user.one@kalbe.co.id",
-        email: "user.one@kalbe.co.id",
-        roleCodeOld: "ESELECTION-ADMIN",
-        roleCode: "ESELECTION-ADMIN",
-        roleName: "HRD-Admin",
-        applicationCode: "E-SELECTION",
-        companyCode: "1",
-        jabatan: "-",
-        notes: "Role CRUD module masterasdzz",
-        isActive: true,
-        createdDate: "2023-03-23T00:00:00",
-        createdBy: "hanif.mahadika@kalbe.co.id",
-        updatedDate: "2023-03-31T14:22:47.567",
-        updatedBy: "User One",
-        orgType: null,
-        clusterCode: null,
-        companyName: null,
-        name: "User One",
-      },
-    ])
-  );
-  cy.setLocalStorage(
-    "currentUserSite",
-    JSON.stringify({
-      Id: "18dc8e9c-9e49-4c61-abd1-2bc2ba631bd1",
-      Nik: "0001",
-      UserPrincipalName: "user.one@kalbe.co.id",
-      ApplicationCode: "E-SELECTION",
-      CompanyCode: "01",
-      ClusterCode: "KF",
-      CompanyName: "PT. Kalbe Farma Tbk.",
-      IsDeleted: false,
-      CreatedDate: "2023-05-09T00:00:00",
-      CreatedBy: "hanif.mahadika@kalbe.co.id",
-      UpdatedDate: "2023-05-09T00:00:00",
-      UpdatedBy: "hanif.mahadika@kalbe.co.id",
-      IsDefault: true,
-    })
-  );
-  cy.setLocalStorage("currentUserRole", "HRD-Admin");
+  cy.window().then((win) => {
+    win.localStorage.setItem(
+      "userRoles",
+      JSON.stringify(["MENTOR", "HR", "ADMIN",])
+    );
+  });
 });
+
+// Cypress.Commands.add("storageSet", () => {
+//   cy.setLocalStorage("flagRole", "true");
+//   cy.setLocalStorage(
+//     "userRoles",
+//     JSON.stringify([
+//       {
+//         nik: "user.one",
+//         userPrincipalName: "user.one@kalbe.co.id",
+//         email: "user.one@kalbe.co.id",
+//         roleCodeOld: "ESELECTION-ADMIN",
+//         roleCode: "ESELECTION-ADMIN",
+//         roleName: "HRD-Admin",
+//         applicationCode: "E-SELECTION",
+//         companyCode: "1",
+//         jabatan: "-",
+//         notes: "Role CRUD module masterasdzz",
+//         isActive: true,
+//         createdDate: "2023-03-23T00:00:00",
+//         createdBy: "hanif.mahadika@kalbe.co.id",
+//         updatedDate: "2023-03-31T14:22:47.567",
+//         updatedBy: "User One",
+//         orgType: null,
+//         clusterCode: null,
+//         companyName: null,
+//         name: "User One",
+//       },
+//     ])
+//   );
+//   cy.setLocalStorage(
+//     "currentUserSite",
+//     JSON.stringify({
+//       Id: "18dc8e9c-9e49-4c61-abd1-2bc2ba631bd1",
+//       Nik: "0001",
+//       UserPrincipalName: "user.one@kalbe.co.id",
+//       ApplicationCode: "E-SELECTION",
+//       CompanyCode: "01",
+//       ClusterCode: "KF",
+//       CompanyName: "PT. Kalbe Farma Tbk.",
+//       IsDeleted: false,
+//       CreatedDate: "2023-05-09T00:00:00",
+//       CreatedBy: "hanif.mahadika@kalbe.co.id",
+//       UpdatedDate: "2023-05-09T00:00:00",
+//       UpdatedBy: "hanif.mahadika@kalbe.co.id",
+//       IsDefault: true,
+//     })
+//   );
+//   cy.setLocalStorage("currentUserRole", "HRD-Admin");
+// });
