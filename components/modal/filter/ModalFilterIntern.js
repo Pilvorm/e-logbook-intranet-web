@@ -374,11 +374,12 @@ const ModalFilterIntern = ({
                   </Row>
                 </ModalBody>
                 <ModalFooter>
-                  <div className="d-flex justify-content-between w-100">
+                  <div className="d-flex justify-content-end w-100">
                     <Button
                       color="danger"
                       id="submitBtn"
                       name="submitBtn"
+                      className="mr-2"
                       outline
                       onClick={() => {
                         resetForm();

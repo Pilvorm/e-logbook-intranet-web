@@ -354,6 +354,10 @@ MasterUser.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
+MasterUser.auth = {
+  roles: ["HR"]
+}
+
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {
     const { query } = ctx;

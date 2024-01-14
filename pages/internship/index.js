@@ -315,6 +315,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const userRoles = await store.dispatch(
       fetchUserRolesFunction(sessionData.user.UserPrincipalName)
     );
+    
     let mentorFilter = userRoles?.some((role) => role.roleCode === "MENTOR")
       ? `mentorName=${sessionData.user.Name}`
       : "";

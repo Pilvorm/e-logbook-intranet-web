@@ -49,7 +49,7 @@ import { searchRole, searchUser } from "helpers/master/masterRole";
 
 import debounce from "lodash/debounce";
 
-const AddMasterUser = (props) => {
+const AddMasterUserInternal = (props) => {
   const { dataRoles, dataMasterUser, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -525,9 +525,13 @@ const AddMasterUser = (props) => {
   );
 };
 
-AddMasterUser.getLayout = function getLayout(page) {
+AddMasterUserInternal.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
+
+AddMasterUserInternal.auth = {
+  roles: ["HR"]
+}
 
 //Render Data
 export const getServerSideProps = wrapper.getServerSideProps(
@@ -581,4 +585,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default AddMasterUser;
+export default AddMasterUserInternal;

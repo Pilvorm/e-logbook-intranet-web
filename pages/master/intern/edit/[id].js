@@ -607,6 +607,10 @@ EditMasterIntern.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
+EditMasterIntern.auth = {
+  roles: ["HR"]
+}
+
 //Render Data
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {

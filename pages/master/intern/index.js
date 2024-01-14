@@ -380,6 +380,10 @@ MasterIntern.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
 };
 
+MasterIntern.auth = {
+  roles: ["HR"]
+}
+
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {
     const { query } = ctx;
