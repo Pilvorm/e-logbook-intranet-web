@@ -4,7 +4,7 @@ import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, Edit, ExternalLink } from "react-feather";
+import { ArrowLeft, Check, Edit, ExternalLink, Download } from "react-feather";
 import { Button, Card, Col, CustomInput, Label, Row, Table } from "reactstrap";
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
@@ -19,6 +19,7 @@ import {
 } from "components/notification";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import { InternDetailCard } from "components/Card/InternDetailCard";
+import { CustomBadge } from "components/Badge/CustomBadge";
 
 import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
@@ -26,32 +27,47 @@ import { getPermissionComponentByRoles } from "helpers/getPermission";
 import moment from "moment";
 import { reviseLogbook } from "redux/actions/logbook";
 
-const LogbookRow = ({ dispatch, data, index }) => {
-  const { data: session, status } = useSession();
-
+const LogbookRow = ({ data, index, holidayDates }) => {
   const [editPopup, setEditPopup] = useState(false);
   const toggleEditPopup = () => setEditPopup(!editPopup);
+
+  const currentDate = new Date();
   const isWeekend = moment(data).day() == 6 || moment(data).day() == 0;
+  var holidayIndex = holidayDates
+    .map((date) => {
+      return date.holiday_date;
+    })
+    .indexOf(data.format("YYYY-MM-D"));
+  const isHoliday = holidayIndex > -1;
+  const holidayName = holidayDates[holidayIndex]?.holiday_name ?? "";
+  const blockEntry = isWeekend || isHoliday ? true : false;
 
   return (
     <tr>
       <td>{index + 1}.</td>
-      <td>{data.format("DD/MM/YY")}</td>
+      <td style={{ color: blockEntry && "#cac7d1" }}>
+        {data.format("ddd, DD MMM YYYY")}
+      </td>
       <td
         className="text-left"
-        style={{ width: "40%", color: isWeekend && "#DAD8DF" }}
+        style={{ width: "40%", color: blockEntry && "#cac7d1" }}
       >
-        {isWeekend ? "OFF" : "Lorem"}
+        {isHoliday ? holidayName : isWeekend ? "OFF" : "Lorem"}
       </td>
-      <td>{isWeekend ? "" : "WFH"}</td>
-      <td style={{ color: "#46A583" }}>{isWeekend ? "" : "Approved by ..."}</td>
+      <td>{blockEntry ? "" : "WFH"}</td>
+      <td style={{ color: "#46A583" }}>
+        {blockEntry
+          ? ""
+          : // <CustomBadge type="success" content="Approved by Joko Chandra" />
+            "Approved by Joko Chandra"}
+      </td>
       <td>{""}</td>
     </tr>
   );
 };
 
 const InternshipAttendance = (props) => {
-  const { query, dataFilter } = props;
+  const { query, dataFilter, holidayDates } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -59,7 +75,7 @@ const InternshipAttendance = (props) => {
   //   dispatch(reauthenticate(token));
   // }, [dispatch]);
 
-    const currentDate = new Date();
+  const currentDate = new Date();
   const startDate = moment("2023-02-20T12:00:00Z");
   const endDate = moment("2024-02-16T12:00:00Z");
 
@@ -137,10 +153,6 @@ const InternshipAttendance = (props) => {
   //   fillLogbookDays();
   // }, []);
 
-  console.log("OK");
-  console.log(logbookDays);
-
-
   const handleMonthChange = (value) => {
     router.push({
       pathname: router.pathname,
@@ -158,7 +170,10 @@ const InternshipAttendance = (props) => {
     dispatch(reviseLogbook(id, note))
       .then((res) => {
         if (res.status >= 200 && res.status < 300) {
-          successAlertNotification("Success", "Revision Request Sent Successfully");
+          successAlertNotification(
+            "Success",
+            "Revision Request Sent Successfully"
+          );
           router.push({
             pathname: router.pathname,
           });
@@ -241,7 +256,7 @@ const InternshipAttendance = (props) => {
 
         <div className="d-flex align-items-center">
           <Button.Ripple id="saveBtn" color="warning">
-            <ExternalLink size={18} />
+            <Download size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
               Export to PDF
             </span>
@@ -293,10 +308,9 @@ const InternshipAttendance = (props) => {
           {monthDays &&
             monthDays.map((data, index) => (
               <LogbookRow
-                key={index}
-                dispatch={dispatch}
                 data={data}
                 index={index}
+                holidayDates={holidayDates}
               />
             ))}
         </tbody>
@@ -339,12 +353,27 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     // store.dispatch(reauthenticate(token));
 
+    const currentMonth =
+      moment().month(query.month?.split(" ")[0]).format("M") ??
+      moment().format("M");
+    const currentYear = query.month?.split(" ")[1] ?? moment().format("YYYY");
+
+    const res = await fetch(
+      `https://api-harilibur.vercel.app/api?month=${currentMonth}&year=${currentYear}`
+    );
+    const holidayDates = await res.json().then((data) => {
+      return data.filter((date) => {
+        return date.is_national_holiday;
+      });
+    });
+
     return {
       props: {
-        query,
         // token,
-        dataFilter: query,
         // sessionData,
+        query,
+        dataFilter: query,
+        holidayDates,
       },
     };
   }
