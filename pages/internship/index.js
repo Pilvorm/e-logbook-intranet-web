@@ -4,7 +4,7 @@ import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { Filter, MoreVertical } from "react-feather";
+import { Filter, Upload, MoreVertical } from "react-feather";
 import ReactPaginate from "react-paginate";
 import {
   Button,
@@ -28,6 +28,7 @@ import {
 } from "components/notification";
 import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
+import UploadAutograph from "components/modal/form/UploadAutograph";
 
 import { fetchUserRolesFunction } from "redux/actions/master/userInternal";
 import { getAllMasterIntern } from "redux/actions/master/intern";
@@ -43,19 +44,22 @@ import moment from "moment";
 
 const Internship = (props) => {
   const {
+    query,
+    token,
+    sessionData,
     dataMasterIntern,
     dataSchool,
     dataFaculty,
     dataDepartment,
     dataMentor,
-    query,
-    token,
     dataFilter,
-    sessionData,
     userRoles,
   } = props;
   const dispatch = useDispatch();
   const router = useRouter();
+
+  const [uploadPopup, setUploadPopup] = useState(false);
+  const toggleUploadPopup = () => setUploadPopup(!uploadPopup);
 
   const isMentor = getPermissionComponentByRoles(["MENTOR"]);
   const isHR = getPermissionComponentByRoles(["HR"]);
@@ -174,6 +178,23 @@ const Internship = (props) => {
               Filter
             </span>
           </Button.Ripple>
+          {/* GET PERMISSION - MENTOR */}
+          <Button.Ripple
+            color="primary"
+            id="buttonFilter"
+            name="buttonFilter"
+            className="btn-next mr-1"
+            onClick={toggleUploadPopup}
+          >
+            <Upload size={18} />
+            <span className="align-middle ml-1 d-sm-inline-block d-none">
+              Autograph
+            </span>
+            <UploadAutograph
+              visible={uploadPopup}
+              toggle={toggleUploadPopup}
+            />
+          </Button.Ripple>
         </div>
       </Card>
 
@@ -286,9 +307,9 @@ const Internship = (props) => {
   );
 };
 
-// Internship.auth = {
-//   roles: "INTERN",
-// };
+AddMasterUserInternal.auth = {
+  roles: ["HR", "MENTOR", "ADMIN"],
+};
 
 Internship.getLayout = function getLayout(page) {
   return <VerticalLayout>{page}</VerticalLayout>;
@@ -315,7 +336,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
     const userRoles = await store.dispatch(
       fetchUserRolesFunction(sessionData.user.UserPrincipalName)
     );
-    
+
     let mentorFilter = userRoles?.some((role) => role.roleCode === "MENTOR")
       ? `mentorName=${sessionData.user.Name}`
       : "";
@@ -370,13 +391,13 @@ export const getServerSideProps = wrapper.getServerSideProps(
       props: {
         query,
         token,
+        sessionData,
+        dataFilter: query,
         dataMasterIntern,
         dataSchool,
         dataFaculty,
         dataDepartment,
         dataMentor,
-        dataFilter: query,
-        sessionData,
         userRoles,
       },
     };

@@ -4,7 +4,7 @@ import BreadCrumbs from "components/custom/BreadcrumbCustom";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Check, ExternalLink } from "react-feather";
+import { ArrowLeft, Check, Edit, ExternalLink } from "react-feather";
 import { Button, Card, Col, CustomInput, Label, Row, Table } from "reactstrap";
 import { connect, useDispatch } from "react-redux";
 import { reauthenticate } from "redux/actions/auth";
@@ -15,6 +15,7 @@ import {
   errorAlertNotification,
   successAlertNotification,
   deleteAlertNotification,
+  reviseWithValidation,
 } from "components/notification";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import { InternDetailCard } from "components/Card/InternDetailCard";
@@ -23,6 +24,7 @@ import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 import moment from "moment";
+import { reviseLogbook } from "redux/actions/logbook";
 
 const CreateTableRow = ({ dispatch, data, index }) => {
   const { data: session, status } = useSession();
@@ -108,17 +110,30 @@ const InternshipAttendance = (props) => {
     });
   };
 
-  const handleDelete = (e, data) => {
-    e.preventDefault();
-    confirmAlertNotification(
-      "Delete Item",
-      "Are you sure to delete this document?",
-      () => {
-        dispatch(deleteMasterUser(data.nik, data.userPrincipalName)).then(
-          (res) => {}
-        );
-      }
-    );
+  const onReviseHandler = async (note) => {
+    const id = 0;
+
+    setIsActionBtnLoading(true);
+    dispatch(reviseLogbook(id, note))
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          successAlertNotification("Success", "Revision Request Sent Successfully");
+          router.push({
+            pathname: router.pathname,
+          });
+        } else {
+          const { title, message } = formatAxiosErrorMessage(
+            res,
+            "Something went wrong, please try again later."
+          );
+          errorAlertNotification(title, message);
+        }
+        return res;
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+      .finally(() => setIsActionBtnLoading(false));
   };
 
   return (
@@ -131,7 +146,6 @@ const InternshipAttendance = (props) => {
       <div className="d-flex align-items-center my-3">
         <Button.Ripple
           outline
-          type="submit"
           color="danger"
           className="btn-next"
           onClick={() => router.back()}
@@ -185,27 +199,36 @@ const InternshipAttendance = (props) => {
         </div>
 
         <div className="d-flex align-items-center">
-          <Button.Ripple
-            id="saveBtn"
-            color="warning"
-            onClick={() => {
-              onSaveHandler(transformAndValidation(formik.values));
-            }}
-          >
+          <Button.Ripple id="saveBtn" color="warning">
             <ExternalLink size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
               Export to PDF
             </span>
           </Button.Ripple>
+
+          {/* ALSO MENTOR */}
+          <Button.Ripple
+            id="saveBtn"
+            color="warning"
+            className="ml-1"
+            onClick={() => {
+              confirmAlertNotification(
+                "Confirmation",
+                `Are you sure to request a revision?`,
+                () => {
+                  reviseWithValidation("Revise", "Revise", onReviseHandler);
+                },
+                () => {}
+              );
+            }}
+          >
+            <Edit size={18} />
+            <span className="align-middle ml-1 d-sm-inline-block d-none">
+              Revise
+            </span>
+          </Button.Ripple>
           {getPermissionComponentByRoles(["MENTOR"]) && (
-            <Button.Ripple
-              id="saveBtn"
-              className="ml-1"
-              color="primary"
-              onClick={() => {
-                onSaveHandler(transformAndValidation(formik.values));
-              }}
-            >
+            <Button.Ripple id="saveBtn" className="ml-1" color="primary">
               <Check size={18} />
               <span className="align-middle ml-1 d-sm-inline-block d-none">
                 Approve All

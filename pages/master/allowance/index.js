@@ -39,7 +39,6 @@ const CreateTableRow = ({ dispatch, data }) => {
       <td>Rp {data.allowances[1].allowanceFee.toLocaleString("de-DE")}</td>
       <td>
         <Button.Ripple
-          outline
           id="editBtn"
           type="submit"
           color="warning"

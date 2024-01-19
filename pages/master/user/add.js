@@ -45,12 +45,17 @@ import {
 } from "redux/actions/master/userInternal";
 import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
 
-import { searchRole, searchUser } from "helpers/master/masterRole";
+import {
+  searchRole,
+  searchUser,
+  searchDummyUser,
+} from "helpers/master/masterRole";
 
 import debounce from "lodash/debounce";
+import { promises as fs } from "fs";
 
 const AddMasterUserInternal = (props) => {
-  const { dataRoles, dataMasterUser, sessionData, token } = props;
+  const { dataRoles, dataMasterUser, userProfile, sessionData, token } = props;
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -79,24 +84,26 @@ const AddMasterUserInternal = (props) => {
     }
   };
 
-  const getAsyncOptionsName = (inputText) => {
-    return searchUser(inputText).then((resp) => {
-      return resp.data.items.map((singleData) => ({
-        ...singleData,
-        value: singleData.nik,
-        label: singleData.name,
-      }));
+  const searchUserAlt = (inputText) => {
+    return userProfile.data.items.filter((user) => {
+      return user.name.toLowerCase().includes(inputText.toLowerCase());
     });
   };
 
-  const loadOptionsName = useCallback(
-    debounce((inputText, callback) => {
-      if (inputText) {
-        getAsyncOptionsName(inputText).then((options) => callback(options));
-      }
-    }, 1000),
-    []
-  );
+  const getAsyncOptionsName2 = (inputText) => {
+    return searchUserAlt(inputText).map((singleData) => ({
+      ...singleData,
+      value: singleData.nik,
+      label: singleData.name,
+    }));
+  };
+
+  const loadOptionsName = (inputText) =>
+    new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(getAsyncOptionsName2(inputText));
+      }, 1000);
+    });
 
   // Handling role
   const [role, setRole] = useState([]);
@@ -203,7 +210,7 @@ const AddMasterUserInternal = (props) => {
             console.error(res);
             errorAlertNotification(
               "Error",
-              res?.data?.message ? res?.data?.message : "Failed to save data"
+              res?.data?.message ? res?.data?.message : "Something went wrong, please try again later."
             );
           }
         });
@@ -217,10 +224,6 @@ const AddMasterUserInternal = (props) => {
   const validationSchema = yup
     .object({
       name: yup.string().required("Name is required"),
-      // userPrincipalName: yup.string().required("User principal name is required"),
-      // jabatan: yup.string().required("Job title is required"),
-      // email: yup.string().required("Email is required"),
-      // companyName: yup.string().required("Company name is required"),
     })
     .required();
 
@@ -530,8 +533,8 @@ AddMasterUserInternal.getLayout = function getLayout(page) {
 };
 
 AddMasterUserInternal.auth = {
-  roles: ["HR"]
-}
+  roles: ["HR"],
+};
 
 //Render Data
 export const getServerSideProps = wrapper.getServerSideProps(
@@ -559,7 +562,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,
@@ -574,12 +576,19 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const dataMasterUser = store.getState().masterUserInternalReducers;
 
+    const file = await fs.readFile(
+      process.cwd() + "/dummyUserProfile.json",
+      "utf8"
+    );
+    const userProfile = JSON.parse(file);
+
     return {
       props: {
         token: sessionData.user.token,
+        sessionData,
         dataRoles,
         dataMasterUser,
-        sessionData,
+        userProfile,
       },
     };
   }

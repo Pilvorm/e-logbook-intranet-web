@@ -155,14 +155,14 @@ const UserDropdown = ({ newUser }) => {
             </DropdownItem>
             <DropdownItem className="dropdown-item w-100" onClick={logoutFunc}>
               <Power size={14} className="mr-75" />
-              <span className="align-middle">Logout</span>
+              <span className="align-middle">Log Out</span>
             </DropdownItem>
           </>
         )}
         {newUser && (
           <DropdownItem className="dropdown-item w-100" onClick={signIn}>
             <Power size={14} className="mr-75" />
-            <span className="align-middle">Login</span>
+            <span className="align-middle">Log In</span>
           </DropdownItem>
         )}
       </DropdownMenu>

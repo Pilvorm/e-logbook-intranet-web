@@ -206,7 +206,7 @@ function EditMasterUserInternal(props) {
                           "Error",
                           res?.data?.message
                             ? res?.data?.message
-                            : "Failed to save data"
+                            : "Something went wrong, please try again later."
                         );
                       }
                     });

@@ -212,7 +212,7 @@ const EditMasterIntern = (props) => {
         } else {
           const { title, message } = formatAxiosErrorMessage(
             res,
-            "Something went wrong, Please try again later."
+            "Something went wrong, please try again later."
           );
           errorAlertNotification(title, message);
         }

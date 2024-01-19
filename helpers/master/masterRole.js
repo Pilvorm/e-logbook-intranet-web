@@ -25,6 +25,27 @@ export const searchUser = (searchQuery) => {
     });
 };
 
+export const searchDummyUser = (searchQuery) => {
+  const header = getHeaders();
+
+  return fetch(`${API_MASTER}/School`, {
+    headers: {
+      ...header,
+    },
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .then((data) => {
+      return data.filter((school) => {
+        return school.schoolName.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 export const searchRole = (searchQuery) => {
   const header = getHeaders();
 

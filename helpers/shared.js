@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_FILE, API_FILES_URL, API_MASTER } from "constant";
+import { API_LOGBOOK, API_FILE, API_FILES_URL, API_MASTER } from "constant";
 import { getHeaders } from "./utils";
 import { store } from "redux/store";
 
@@ -22,11 +22,11 @@ export const getFileHelper = (token, attachmentFileId) => {
     .catch((error) => console.log(error));
 };
 
-export const uploadSingleFiles = async (data, moduleCode) => {
+export const uploadSingleFiles = async (data) => {
   const header = getHeaders(store.getState().authReducers.token);
   try {
     const response = await axios({
-      url: `${API_FILE}/api/Files/upload/single?applicationCode=HSSE&ModuleCode=${moduleCode}`,
+      url: `${API_LOGBOOK}/UploadSign`,
       method: "POST",
       headers: { ...header },
       data,
