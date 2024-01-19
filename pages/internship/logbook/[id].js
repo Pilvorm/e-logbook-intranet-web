@@ -26,7 +26,7 @@ import { getPermissionComponentByRoles } from "helpers/getPermission";
 import moment from "moment";
 import { reviseLogbook } from "redux/actions/logbook";
 
-const CreateTableRow = ({ dispatch, data, index }) => {
+const LogbookRow = ({ dispatch, data, index }) => {
   const { data: session, status } = useSession();
 
   const [editPopup, setEditPopup] = useState(false);
@@ -45,7 +45,7 @@ const CreateTableRow = ({ dispatch, data, index }) => {
       </td>
       <td>{isWeekend ? "" : "WFH"}</td>
       <td style={{ color: "#46A583" }}>{isWeekend ? "" : "Approved by ..."}</td>
-      <td>{isWeekend ? "" : "Action"}</td>
+      <td>{""}</td>
     </tr>
   );
 };
@@ -55,10 +55,15 @@ const InternshipAttendance = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
-  const currentDate = new Date();
+  // useEffect(() => {
+  //   dispatch(reauthenticate(token));
+  // }, [dispatch]);
+
+    const currentDate = new Date();
   const startDate = moment("2023-02-20T12:00:00Z");
   const endDate = moment("2024-02-16T12:00:00Z");
 
+  // Set Period Function
   const setPeriod = (start, end) => {
     const period = [];
     for (
@@ -78,35 +83,71 @@ const InternshipAttendance = (props) => {
     query?.month ?? moment(currentDate).format("MMMM YYYY")
   );
 
+  // Handle Chosen Month Days
   const setDays = (month) => {
-    var daysInMonth = moment(month).daysInMonth();
+    var daysInMonth = moment(month, "MMMM YYYY").daysInMonth();
     var arrDays = [];
 
     while (daysInMonth) {
-      var current = moment().date(daysInMonth);
+      var current = moment(`${month} ${daysInMonth}`, "MMMM YYYY DD");
+      // if (!(moment(current).day() == 6 || moment(current).day() == 0)) {
       arrDays.unshift(current);
+      // }
       daysInMonth--;
     }
     return arrDays;
   };
 
+  const isWeekend = (day) => {
+    if (moment(day).day() == 6 || moment(day).day() == 0) {
+      return true;
+    }
+    return false;
+  };
+
   const [monthDays, setMonthDays] = useState(setDays(monthQuery));
+  const [daysInMonth, setDaysInMonth] = useState(
+    moment(monthQuery, "MMMM YYYY").daysInMonth()
+  );
+
+  const initLogbookDays = () => {
+    let count = daysInMonth;
+    let arr = [];
+    while (count) {
+      arr.unshift({});
+      count--;
+    }
+    return arr;
+  };
+
+  const [logbookDays, setLogbookDays] = useState(initLogbookDays()); //array with 31 empty objects
+
+  // const fillLogbookDays = () => {
+  //   let index = 0;
+  //   let temp = initLogbookDays();
+  //   let logbookDaysLength = dataLogbook.data[0].logbookDays.length;
+  //   for (var i = 0; i < logbookDaysLength; i++) {
+  //     index = moment(dataLogbook.data[0].logbookDays[i].date).day() - 1;
+  //     temp[index] = dataLogbook.data[0].logbookDays[i];
+  //   }
+  //   setLogbookDays(temp);
+  // };
 
   // useEffect(() => {
-  //   dispatch(reauthenticate(token));
-  // }, [dispatch]);
+  //   fillLogbookDays();
+  // }, []);
+
+  console.log("OK");
+  console.log(logbookDays);
+
 
   const handleMonthChange = (value) => {
-    setMonthQuery(value);
-
     router.push({
       pathname: router.pathname,
-      // query: {
-      //   ...dataFilter,
-      //   pageSize: value,
-      //   pageNumber: 1,
-      //   search: searchQuery,
-      // },
+      query: {
+        ...dataFilter,
+        month: value,
+      },
     });
   };
 
@@ -251,7 +292,7 @@ const InternshipAttendance = (props) => {
         <tbody className="text-center text-break">
           {monthDays &&
             monthDays.map((data, index) => (
-              <CreateTableRow
+              <LogbookRow
                 key={index}
                 dispatch={dispatch}
                 data={data}
