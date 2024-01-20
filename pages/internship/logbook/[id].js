@@ -22,7 +22,7 @@ import { InternDetailCard } from "components/Card/InternDetailCard";
 import { CustomBadge } from "components/Badge/CustomBadge";
 
 import { getMasterInternById } from "redux/actions/master/intern";
-import { getLogbookData } from "redux/actions/logbook";
+import { approveLogbook, getLogbookData } from "redux/actions/logbook";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 import moment from "moment";
@@ -155,11 +155,12 @@ const InternshipAttendance = (props) => {
     if (dataLogbook) {
       let index = 0;
       let temp = initLogbookDays();
-      let logbookDaysLength = dataLogbook?.logbookDays.length;
+      let logbookDaysLength = dataLogbook.data[0]?.logbookDays.length;
       for (var i = 0; i < logbookDaysLength; i++) {
-        index = moment(dataLogbook?.logbookDays[i].date).format("D") - 1;
+        index =
+          moment(dataLogbook.data[0]?.logbookDays[i].date).format("D") - 1;
         temp[index] = {
-          ...dataLogbook?.logbookDays[i],
+          ...dataLogbook.data[0]?.logbookDays[i],
           originalIndex: i,
         };
       }
@@ -193,7 +194,7 @@ const InternshipAttendance = (props) => {
       role = "";
     }
 
-    const id = dataLogbook?.id;
+    const id = dataLogbook.data[0]?.id;
 
     dispatch(reviseLogbook(role, upn, name, email, id, note))
       .then((res) => {
@@ -225,18 +226,33 @@ const InternshipAttendance = (props) => {
   };
 
   const onApproveHandler = async () => {
-    const id = 0;
+    let role = "";
+    const upn = sessionData?.user?.UserPrincipalName;
+    const name = sessionData?.user?.Name;
+    const email = sessionData?.user?.Email;
+    try {
+      role = JSON.parse(localStorage.getItem("userRoles"))[0];
+    } catch (e) {
+      console.error(e);
+      role = "";
+    }
 
-    setIsActionBtnLoading(true);
-    dispatch(reviseLogbook(id, note))
+    const id = dataLogbook.data[0]?.id;
+
+    dispatch(approveLogbook(role, upn, name, email, id))
       .then((res) => {
         if (res.status >= 200 && res.status < 300) {
           successAlertNotification(
             "Success",
-            "Revision Request Sent Successfully"
+            "Logbook approved succesfully"
           );
           router.push({
             pathname: router.pathname,
+            query: {
+              ...query,
+              id: query.id,
+              month: query.month,
+            },
           });
         } else {
           const { title, message } = formatAxiosErrorMessage(
@@ -284,7 +300,7 @@ const InternshipAttendance = (props) => {
               school={`${internData.schoolName}`}
               faculty={`${internData.faculty}`}
               month={`${monthQuery}`}
-              status={`${dataLogbook?.status.toUpperCase()}`}
+              status={`${dataLogbook.data[0]?.status.toUpperCase()}`}
               workingDays="14 WFH / 8 WFO"
               pay="Rp 1.920.000"
             />
@@ -323,7 +339,7 @@ const InternshipAttendance = (props) => {
           </Button.Ripple>
 
           {getPermissionComponentByRoles(["MENTOR"]) &&
-            dataLogbook?.status.includes("Approval") && (
+            dataLogbook.data[0]?.status.includes("approval") && (
               <>
                 <Button.Ripple
                   id="saveBtn"
@@ -349,7 +365,19 @@ const InternshipAttendance = (props) => {
                     Revise
                   </span>
                 </Button.Ripple>
-                <Button.Ripple id="saveBtn" className="ml-1" color="primary">
+                <Button.Ripple
+                  id="saveBtn"
+                  className="ml-1"
+                  color="primary"
+                  onClick={() => {
+                    confirmAlertNotification(
+                      "Confirmation",
+                      `Are you sure to approve this logbook?`,
+                      () => onApproveHandler(),
+                      () => {}
+                    );
+                  }}
+                >
                   <Check size={18} />
                   <span className="align-middle ml-1 d-sm-inline-block d-none">
                     Approve All
@@ -471,7 +499,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         sessionData,
         query,
         internData: internData,
-        dataLogbook: dataLogbook.data[0],
+        dataLogbook: dataLogbook,
         holidayDates,
       },
     };
