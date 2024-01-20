@@ -178,23 +178,24 @@ const Internship = (props) => {
               Filter
             </span>
           </Button.Ripple>
-          {/* GET PERMISSION - MENTOR */}
-          <Button.Ripple
-            color="primary"
-            id="buttonFilter"
-            name="buttonFilter"
-            className="btn-next mr-1"
-            onClick={toggleUploadPopup}
-          >
-            <Upload size={18} />
-            <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Autograph
-            </span>
-            <UploadAutograph
-              visible={uploadPopup}
-              toggle={toggleUploadPopup}
-            />
-          </Button.Ripple>
+          {getPermissionComponentByRoles(["MENTOR"]) && (
+            <Button.Ripple
+              color="primary"
+              id="buttonFilter"
+              name="buttonFilter"
+              className="btn-next mr-1"
+              onClick={toggleUploadPopup}
+            >
+              <Upload size={18} />
+              <span className="align-middle ml-1 d-sm-inline-block d-none">
+                Autograph
+              </span>
+              <UploadAutograph
+                visible={uploadPopup}
+                toggle={toggleUploadPopup}
+              />
+            </Button.Ripple>
+          )}
         </div>
       </Card>
 

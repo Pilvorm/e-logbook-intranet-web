@@ -1,9 +1,9 @@
-describe("master user role", () => {
-  it("positive test add new user", () => {
+describe("master user internal", () => {
+  it("positive test add new user internal", () => {
     cy.storageSet();
     cy.login();
 
-    cy.visit("http://localhost:8080/hsse/master/user/add");
+    cy.visit("http://localhost:8080/master/user/add");
 
     // cy.wait("@session");
     cy.wait(2500);
@@ -11,7 +11,7 @@ describe("master user role", () => {
     cy.get("#nameSearch>.css-yk16xz-control")
       .click()
       .get(".css-26l3qy-menu")
-      .type("Edwin Fitriadi")
+      .type("Edwin Hans")
       .wait(5000)
       .get(".css-26l3qy-menu")
       .should("be.visible")
@@ -23,16 +23,16 @@ describe("master user role", () => {
 
     cy.get("button#saveBtn").click({ force: true });
     cy.contains("Yes").click();
-    cy.contains("Data Created Successfully");
+    cy.contains("Data saved successfully");
   });
 });
 
-describe("master user role", () => {
-  it("negative test add new user", () => {
+describe("master user internal", () => {
+  it("negative test add new internal", () => {
     cy.storageSet();
     cy.login();
 
-    cy.visit("http://localhost:8080/hsse/master/user/add");
+    cy.visit("http://localhost:8080/master/user/add");
 
     // cy.wait("@session");
     cy.wait(2500);
@@ -40,7 +40,7 @@ describe("master user role", () => {
     cy.get("#nameSearch>.css-yk16xz-control")
       .click()
       .get(".css-26l3qy-menu")
-      .type("Edwin Fitriadi")
+      .type("Edwin Hans")
       .wait(5000)
       .get(".css-26l3qy-menu")
       .should("be.visible")
@@ -50,15 +50,12 @@ describe("master user role", () => {
 
     cy.get(".custom-checkbox").last().click();
 
-    cy.get("button#saveBtn").click({ force: true });
-    cy.contains("Yes").click();
-    cy.contains("User Data Already Exist For This Application");
-    cy.contains("OK").click();
+    cy.contains("Data for this user already exists");
 
     cy.get("#nameSearch>.css-yk16xz-control")
       .click()
       .get(".css-26l3qy-menu")
-      .type("Jorieta")
+      .type("Ezra")
       .wait(5000)
       .get(".css-26l3qy-menu")
       .should("be.visible")
@@ -67,42 +64,65 @@ describe("master user role", () => {
       .click();
 
     cy.get("button#saveBtn").click({ force: true });
-    cy.contains("Please select at least one role");
+    cy.contains("Please select a role");
   });
 });
 
-describe("master user role", () => {
-  it("positive test edit user role", () => {
+describe("master user internal", () => {
+  it("positive test edit user internal", () => {
     cy.storageSet();
     cy.login();
 
-    cy.visit("http://localhost:8080/hsse/master/user/edit?UPN=edwin.fitriadi@kalbe.co.id&ApplicationCode=HSSEONLINE&CompanyCode=");
+    cy.visit("http://localhost:8080/master/user/edit/35");
 
     // cy.wait("@session");
     cy.wait(2500);
 
-    cy.get(".custom-checkbox").eq(4).click();
+    cy.get(".custom-checkbox").eq(2).click();
 
     cy.get("button#saveBtn").click({ force: true });
     cy.contains("Yes").click();
-    cy.contains("Data Updated Successfully");
+    cy.contains("User updated successfully");
   });
 });
 
-describe("master user role", () => {
-  it("negative test edit user role", () => {
+describe("master user internal", () => {
+  it("negative test edit user internal", () => {
     cy.storageSet();
     cy.login();
 
-    cy.visit("http://localhost:8080/hsse/master/user/edit?UPN=edwin.fitriadi@kalbe.co.id&ApplicationCode=HSSEONLINE&CompanyCode=");
+    cy.visit("http://localhost:8080/master/user/edit/35");
 
     // cy.wait("@session");
     cy.wait(2500);
     
-    cy.get(".custom-checkbox").eq(4).click();
+    cy.get(".custom-checkbox").eq(2).click();
     cy.get(".custom-checkbox").last().click();
 
     cy.get("button#saveBtn").click({ force: true });
-    cy.contains("Please select at least one role");
+    cy.contains("Please select a role");
+  });
+});
+
+describe("master user internal", () => {
+  it("delete user internal positive test", () => {
+    cy.storageSet();
+    cy.login();
+
+    cy.visit("http://localhost:8080/master/user");
+
+  //   cy.wait("@session");
+
+    cy.wait(2500);
+
+    cy.get("button#optionsSelect")
+      .first()
+      .click({ force: true })
+      .get("button#deleteBtn")
+      .first()
+      .click()
+      .get(".swal2-content").contains('Yes')
+      .click()
+    cy.contains("Successfully deleted user");
   });
 });

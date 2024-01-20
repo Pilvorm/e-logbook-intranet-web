@@ -56,6 +56,9 @@ const MasterUser = (props) => {
   const dispatch = useDispatch();
   const router = useRouter();
 
+  console.log(sessionData);
+  console.log(dataMasterUserInternal);
+
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
   const [pageNumber, setPageNumber] = useState(query?.pageNumber ?? 1);
@@ -147,7 +150,7 @@ const MasterUser = (props) => {
           } else if (res.status === 200) {
             successAlertNotification(
               "Deleted Success",
-              "Successfully Deleted User"
+              "Successfully deleted user"
             );
             router.push({
               pathname: router.pathname,

@@ -121,13 +121,8 @@ export const Auth = ({ children, permittedRole }) => {
     userRole = currentUserRole ? currentUserRole : [];
   }
 
-  console.log(userRole, "ROLEE");
-  console.log(permittedRole, "PERM");
-
   const similarRoles =
     userRole.filter((role) => permittedRole.includes(role)) || [];
-
-  console.log(similarRoles, "SIM");
 
   if (similarRoles.length === 0 && status === "authenticated") {
     return <UnauthorizedAccess />;

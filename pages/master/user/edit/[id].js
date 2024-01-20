@@ -171,7 +171,7 @@ function EditMasterUserInternal(props) {
                 if (values.userRoles.length === 0) {
                   errorAlertNotification(
                     "Validation Error",
-                    "Please select at least one role"
+                    "Please select a role"
                   );
                   return;
                 }
@@ -197,7 +197,7 @@ function EditMasterUserInternal(props) {
                         actions.setSubmitting(false);
                         successAlertNotification(
                           "Success",
-                          "User updated succesfully"
+                          "User updated successfully"
                         );
                         router.push("/master/user");
                       } else {

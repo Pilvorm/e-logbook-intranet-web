@@ -197,13 +197,13 @@ const AddMasterUserInternal = (props) => {
 
     confirmAlertNotification(
       "Add New User",
-      "Are you sure to add new user?",
+      "Are you sure to add this user?",
       () => {
         actions.setSubmitting(true);
         dispatch(createMasterUserInternal(bodyData)).then((res) => {
           if (res.status >= 200 && res.status <= 300) {
             actions.setSubmitting(false);
-            successAlertNotification("Success", "Data saved succesfully");
+            successAlertNotification("Success", "Data saved successfully");
             router.push("/master/user");
           } else {
             actions.setSubmitting(false);
@@ -317,7 +317,7 @@ const AddMasterUserInternal = (props) => {
                           id="saveBtn"
                           color="primary"
                           onClick={handleSubmit}
-                          disabled={isSubmitting}
+                          disabled={isSubmitting || userExist}
                         >
                           {isSubmitting ? (
                             <>
@@ -368,7 +368,7 @@ const AddMasterUserInternal = (props) => {
                                 setFieldValue("name", e.name);
                                 setSelectedName(e);
                                 findUser(e.name);
-                                // setRole([]);
+                                setRole([]);
                                 // setFieldValue("userRoles", []);
                               }}
                               placeholder={
