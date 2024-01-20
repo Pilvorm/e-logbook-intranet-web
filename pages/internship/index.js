@@ -307,7 +307,7 @@ const Internship = (props) => {
   );
 };
 
-AddMasterUserInternal.auth = {
+Internship.auth = {
   roles: ["HR", "MENTOR", "ADMIN"],
 };
 

@@ -48,7 +48,7 @@ const ReviseReasonSubmit = ({ title, description, onClose, onConfirm }) => {
         <div className="row p-1 d-flex justify-content-end">
           <Button.Ripple
             outline
-            color="warning"
+            color="danger"
             className="btn-next"
             onClick={onClose}
           >

@@ -21,45 +21,64 @@ import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import { InternDetailCard } from "components/Card/InternDetailCard";
 import { CustomBadge } from "components/Badge/CustomBadge";
 
-import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
+import { getMasterInternById } from "redux/actions/master/intern";
+import { getLogbookData } from "redux/actions/logbook";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 import moment from "moment";
 import { reviseLogbook } from "redux/actions/logbook";
 
-const LogbookRow = ({ data, index, holidayDates }) => {
+const LogbookRow = ({
+  jsDate,
+  index,
+  internData,
+  logbookDays,
+  holidayDates,
+}) => {
   const [editPopup, setEditPopup] = useState(false);
   const toggleEditPopup = () => setEditPopup(!editPopup);
 
   const currentDate = new Date();
-  const isWeekend = moment(data).day() == 6 || moment(data).day() == 0;
+  const isWeekend = moment(jsDate).day() == 6 || moment(jsDate).day() == 0;
   var holidayIndex = holidayDates
     .map((date) => {
       return date.holiday_date;
     })
-    .indexOf(data.format("YYYY-MM-D"));
+    .indexOf(jsDate.format("YYYY-MM-D"));
   const isHoliday = holidayIndex > -1;
   const holidayName = holidayDates[holidayIndex]?.holiday_name ?? "";
   const blockEntry = isWeekend || isHoliday ? true : false;
+  const currEntry = logbookDays[index];
+  const ogIdx = currEntry.originalIndex ?? "";
 
   return (
-    <tr>
+    <tr key={jsDate}>
       <td>{index + 1}.</td>
-      <td style={{ color: blockEntry && "#cac7d1" }}>
-        {data.format("ddd, DD MMM YYYY")}
+      <td style={{ color: blockEntry && "#CAC7D1" }}>
+        {jsDate.format("ddd, DD MMM YYYY")}
       </td>
       <td
         className="text-left"
-        style={{ width: "40%", color: blockEntry && "#cac7d1" }}
+        style={{ width: "40%", color: blockEntry && "#CAC7D1" }}
       >
-        {isHoliday ? holidayName : isWeekend ? "OFF" : "Lorem"}
+        {isHoliday
+          ? holidayName
+          : isWeekend
+          ? "OFF"
+          : `${currEntry?.activity ?? "-"}`}
       </td>
-      <td>{blockEntry ? "" : "WFH"}</td>
-      <td style={{ color: "#46A583" }}>
-        {blockEntry
+      <td style={{ width: "2%" }}>
+        {blockEntry ? "" : `${currEntry?.workType ?? "-"}`}
+      </td>
+      <td
+        style={{
+          width: "15%",
+          color: currEntry?.status == null ? "#FF5B5C" : "#46A583",
+        }}
+      >
+        {blockEntry || !ogIdx
           ? ""
-          : // <CustomBadge type="success" content="Approved by Joko Chandra" />
-            "Approved by Joko Chandra"}
+          : currEntry?.status ?? `Waiting for Approval`}
       </td>
       <td>{""}</td>
     </tr>
@@ -67,13 +86,14 @@ const LogbookRow = ({ data, index, holidayDates }) => {
 };
 
 const InternshipAttendance = (props) => {
-  const { query, dataFilter, holidayDates } = props;
+  const { token, sessionData, query, internData, dataLogbook, holidayDates } =
+    props;
   const dispatch = useDispatch();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   dispatch(reauthenticate(token));
-  // }, [dispatch]);
+  useEffect(() => {
+    dispatch(reauthenticate(token));
+  }, [dispatch]);
 
   const currentDate = new Date();
   const startDate = moment("2023-02-20T12:00:00Z");
@@ -114,13 +134,6 @@ const InternshipAttendance = (props) => {
     return arrDays;
   };
 
-  const isWeekend = (day) => {
-    if (moment(day).day() == 6 || moment(day).day() == 0) {
-      return true;
-    }
-    return false;
-  };
-
   const [monthDays, setMonthDays] = useState(setDays(monthQuery));
   const [daysInMonth, setDaysInMonth] = useState(
     moment(monthQuery, "MMMM YYYY").daysInMonth()
@@ -138,32 +151,80 @@ const InternshipAttendance = (props) => {
 
   const [logbookDays, setLogbookDays] = useState(initLogbookDays()); //array with 31 empty objects
 
-  // const fillLogbookDays = () => {
-  //   let index = 0;
-  //   let temp = initLogbookDays();
-  //   let logbookDaysLength = dataLogbook.data[0].logbookDays.length;
-  //   for (var i = 0; i < logbookDaysLength; i++) {
-  //     index = moment(dataLogbook.data[0].logbookDays[i].date).day() - 1;
-  //     temp[index] = dataLogbook.data[0].logbookDays[i];
-  //   }
-  //   setLogbookDays(temp);
-  // };
+  const fillLogbookDays = () => {
+    if (dataLogbook) {
+      let index = 0;
+      let temp = initLogbookDays();
+      let logbookDaysLength = dataLogbook?.logbookDays.length;
+      for (var i = 0; i < logbookDaysLength; i++) {
+        index = moment(dataLogbook?.logbookDays[i].date).format("D") - 1;
+        temp[index] = {
+          ...dataLogbook?.logbookDays[i],
+          originalIndex: i,
+        };
+      }
+      setLogbookDays(temp);
+    }
+  };
 
-  // useEffect(() => {
-  //   fillLogbookDays();
-  // }, []);
+  useEffect(() => {
+    fillLogbookDays();
+  }, []);
 
   const handleMonthChange = (value) => {
     router.push({
       pathname: router.pathname,
       query: {
-        ...dataFilter,
+        ...query,
         month: value,
       },
     });
   };
 
   const onReviseHandler = async (note) => {
+    let role = "";
+    const upn = sessionData?.user?.UserPrincipalName;
+    const name = sessionData?.user?.Name;
+    const email = sessionData?.user?.Email;
+    try {
+      role = JSON.parse(localStorage.getItem("userRoles"))[0];
+    } catch (e) {
+      console.error(e);
+      role = "";
+    }
+
+    const id = dataLogbook?.id;
+
+    dispatch(reviseLogbook(role, upn, name, email, id, note))
+      .then((res) => {
+        if (res.status >= 200 && res.status < 300) {
+          successAlertNotification(
+            "Success",
+            "Revision Request Sent Successfully"
+          );
+          router.push({
+            pathname: router.pathname,
+            query: {
+              ...query,
+              id: query.id,
+              month: query.month,
+            },
+          });
+        } else {
+          const { title, message } = formatAxiosErrorMessage(
+            res,
+            "Something went wrong, please try again later."
+          );
+          errorAlertNotification(title, message);
+        }
+        return res;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
+
+  const onApproveHandler = async () => {
     const id = 0;
 
     setIsActionBtnLoading(true);
@@ -188,8 +249,7 @@ const InternshipAttendance = (props) => {
       })
       .catch((error) => {
         console.error(error);
-      })
-      .finally(() => setIsActionBtnLoading(false));
+      });
   };
 
   return (
@@ -219,12 +279,12 @@ const InternshipAttendance = (props) => {
         <div className="flex-col align-items-center ">
           <div className="">
             <InternDetailCard
-              nama="Daniel Emerald Sumarly"
-              department="Corporate IT"
-              school="Binus University"
-              faculty="Computer Science"
-              month="February"
-              status="Complete"
+              nama={`${internData.name}`}
+              department={`${internData.dept}`}
+              school={`${internData.schoolName}`}
+              faculty={`${internData.faculty}`}
+              month={`${monthQuery}`}
+              status={`${dataLogbook?.status.toUpperCase()}`}
               workingDays="14 WFH / 8 WFO"
               pay="Rp 1.920.000"
             />
@@ -262,35 +322,41 @@ const InternshipAttendance = (props) => {
             </span>
           </Button.Ripple>
 
-          {/* ALSO MENTOR */}
-          <Button.Ripple
-            id="saveBtn"
-            color="warning"
-            className="ml-1"
-            onClick={() => {
-              confirmAlertNotification(
-                "Confirmation",
-                `Are you sure to request a revision?`,
-                () => {
-                  reviseWithValidation("Revise", "Revise", onReviseHandler);
-                },
-                () => {}
-              );
-            }}
-          >
-            <Edit size={18} />
-            <span className="align-middle ml-1 d-sm-inline-block d-none">
-              Revise
-            </span>
-          </Button.Ripple>
-          {getPermissionComponentByRoles(["MENTOR"]) && (
-            <Button.Ripple id="saveBtn" className="ml-1" color="primary">
-              <Check size={18} />
-              <span className="align-middle ml-1 d-sm-inline-block d-none">
-                Approve All
-              </span>
-            </Button.Ripple>
-          )}
+          {getPermissionComponentByRoles(["MENTOR"]) &&
+            dataLogbook?.status.includes("Approval") && (
+              <>
+                <Button.Ripple
+                  id="saveBtn"
+                  color="warning"
+                  className="ml-1"
+                  onClick={() => {
+                    confirmAlertNotification(
+                      "Confirmation",
+                      `Are you sure to request a revision?`,
+                      () => {
+                        reviseWithValidation(
+                          "Revise",
+                          "Revise",
+                          onReviseHandler
+                        );
+                      },
+                      () => {}
+                    );
+                  }}
+                >
+                  <Edit size={18} />
+                  <span className="align-middle ml-1 d-sm-inline-block d-none">
+                    Revise
+                  </span>
+                </Button.Ripple>
+                <Button.Ripple id="saveBtn" className="ml-1" color="primary">
+                  <Check size={18} />
+                  <span className="align-middle ml-1 d-sm-inline-block d-none">
+                    Approve All
+                  </span>
+                </Button.Ripple>
+              </>
+            )}
         </div>
       </div>
       <Table responsive className="border">
@@ -306,10 +372,11 @@ const InternshipAttendance = (props) => {
         </thead>
         <tbody className="text-center text-break">
           {monthDays &&
-            monthDays.map((data, index) => (
+            monthDays.map((date, index) => (
               <LogbookRow
-                data={data}
+                jsDate={date}
                 index={index}
+                logbookDays={logbookDays}
                 holidayDates={holidayDates}
               />
             ))}
@@ -338,25 +405,56 @@ InternshipAttendance.getLayout = function getLayout(page) {
 export const getServerSideProps = wrapper.getServerSideProps(
   (store) => async (ctx) => {
     const { query } = ctx;
-    // const sessionData = await getSession(ctx);
+    const sessionData = await getSession(ctx);
 
-    // if (!sessionData) {
-    //   return {
-    //     redirect: {
-    //       destination: `/auth?url=${ctx.resolvedUrl}`,
-    //       permanent: false,
-    //     },
-    //   };
-    // }
+    if (!sessionData) {
+      return {
+        redirect: {
+          destination: `/auth?url=${ctx.resolvedUrl}`,
+          permanent: false,
+        },
+      };
+    }
 
-    // const token = sessionData.user.token;
+    const token = sessionData.user.token;
 
-    // store.dispatch(reauthenticate(token));
+    store.dispatch(reauthenticate(token));
 
-    const currentMonth =
-      moment().month(query.month?.split(" ")[0]).format("M") ??
-      moment().format("M");
-    const currentYear = query.month?.split(" ")[1] ?? moment().format("YYYY");
+    const response = await store.dispatch(getMasterInternById(query.id));
+    const internData = response.data;
+
+    if (response.status !== 200) {
+      return {
+        redirect: {
+          destination: "/internship",
+          permanent: false,
+        },
+      };
+    }
+
+    const monthFilter = query.month
+      ? query.month?.split(" ")[0]
+      : moment().format("MMMM");
+    const yearFilter = query.month
+      ? query.month?.split(" ")[1]
+      : moment().format("YYYY");
+
+    await store.dispatch(
+      getLogbookData({
+        "CSTM-UPN": internData.userPrincipalName,
+        "X-PAGINATION": true,
+        "X-FILTER": `upn=${internData.userPrincipalName}|month=${monthFilter}|year=${yearFilter}`,
+      })
+    );
+
+    const dataLogbook = store.getState().logbookReducers;
+
+    const currentMonth = query.month
+      ? moment().month(query.month?.split(" ")[0]).format("M")
+      : moment().format("M");
+    const currentYear = query.month
+      ? query.month?.split(" ")[1]
+      : moment().format("YYYY");
 
     const res = await fetch(
       `https://api-harilibur.vercel.app/api?month=${currentMonth}&year=${currentYear}`
@@ -369,10 +467,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     return {
       props: {
-        // token,
-        // sessionData,
+        token,
+        sessionData,
         query,
-        dataFilter: query,
+        internData: internData,
+        dataLogbook: dataLogbook.data[0],
         holidayDates,
       },
     };

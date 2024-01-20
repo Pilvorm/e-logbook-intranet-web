@@ -26,15 +26,14 @@ export const getLogbookData = (param) => async (dispatch) => {
 };
 
 export const reviseLogbook =
-  (id, note) => async (dispatch) => {
+  (role, upn, name, email, id, note) => async (dispatch) => {
     const header = getHeaders(store.getState().authReducers.token);
-    // const cstmHeaders = {
-    //   "CSTM-COMPID": compId,
-    //   "CSTM-ROLE": role,
-    //   "CSTM-UPN": upn,
-    //   "CSTM-NAME": name,
-    //   "CSTM-EMAIL": email,
-    // };
+    const cstmHeaders = {
+      "CSTM-ROLE": role,
+      "CSTM-UPN": upn,
+      "CSTM-NAME": name,
+      "CSTM-EMAIL": email,
+    };
 
     try {
       const response = await axios({
@@ -42,7 +41,7 @@ export const reviseLogbook =
         method: "PUT",
         headers: {
           ...header,
-          // ...cstmHeaders,
+          ...cstmHeaders,
         },
         data: {
           alasan: note,
@@ -57,3 +56,30 @@ export const reviseLogbook =
     }
   };
 
+export const approveLogbook =
+  (role, upn, name, email, id) => async (dispatch) => {
+    const header = getHeaders(store.getState().authReducers.token);
+    const cstmHeaders = {
+      "CSTM-ROLE": role,
+      "CSTM-UPN": upn,
+      "CSTM-NAME": name,
+      "CSTM-EMAIL": email,
+    };
+
+    try {
+      const response = await axios({
+        url: `${API_LOGBOOK}/Approve/${id}`,
+        method: "PUT",
+        headers: {
+          ...header,
+          ...cstmHeaders,
+        },
+      });
+
+      return response;
+    } catch (error) {
+      console.log(error.response);
+      console.error(error.response);
+      return error;
+    }
+  };
