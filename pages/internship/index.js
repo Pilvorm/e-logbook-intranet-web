@@ -78,7 +78,7 @@ const Internship = (props) => {
           dept: "",
           schoolName: "",
           faculty: "",
-          joinDate: "",
+          startDate: "",
           endDate: "",
         }
   );
@@ -193,6 +193,7 @@ const Internship = (props) => {
               <UploadAutograph
                 visible={uploadPopup}
                 toggle={toggleUploadPopup}
+                sessionData={sessionData}
               />
             </Button.Ripple>
           )}
@@ -261,7 +262,7 @@ const Internship = (props) => {
                 <td className="text-uppercase">{intern.mentorName}</td>
                 <td>{intern.schoolName}</td>
                 <td>
-                  {moment(intern.joinDate).format("DD MMM YYYY")} -{" "}
+                  {moment(intern.startDate).format("DD MMM YYYY")} -{" "}
                   {moment(intern.endDate).format("DD MMM YYYY")}
                 </td>
                 <td style={{ color: "#46A583" }}>Approved by Supervisor</td>

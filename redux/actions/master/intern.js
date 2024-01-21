@@ -33,6 +33,23 @@ export const getAllMasterIntern = (param) => async (dispatch) => {
   }
 };
 
+export const getUnconfirmedIntern = (param) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+
+  try {
+    const response = await axios({
+      url: API_MASTER + "/UserExternal/GetUnconfirmedIntern",
+      method: "GET",
+      headers: { ...header, ...param },
+    });
+
+    dispatch({ type: GET_MASTER_INTERN_BY_ID, payload: response.data });
+    return response;
+  } catch (error) {
+    return error.response;
+  }
+};
+
 export const getMasterInternById = (id) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 

@@ -22,13 +22,23 @@ export const getFileHelper = (token, attachmentFileId) => {
     .catch((error) => console.log(error));
 };
 
-export const uploadSingleFiles = async (data) => {
+export const uploadSingleFiles = async (role, upn, name, email, data) => {
   const header = getHeaders(store.getState().authReducers.token);
+  const cstmHeaders = {
+    "CSTM-ROLE": role,
+    "CSTM-UPN": upn,
+    "CSTM-NAME": name,
+    "CSTM-EMAIL": email,
+  };
+
   try {
     const response = await axios({
       url: `${API_LOGBOOK}/UploadSign`,
       method: "POST",
-      headers: { ...header },
+      headers: {
+        ...header,
+        ...cstmHeaders,
+      },
       data,
     });
 

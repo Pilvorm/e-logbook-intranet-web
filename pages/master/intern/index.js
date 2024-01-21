@@ -110,7 +110,7 @@ const MasterIntern = (props) => {
           dept: "",
           schoolName: "",
           faculty: "",
-          joinDate: "",
+          startDate: "",
           endDate: "",
         }
   );
@@ -297,7 +297,7 @@ const MasterIntern = (props) => {
                 <td>{intern.schoolName}</td>
                 <td>{intern.faculty}</td>
                 <td>
-                  {moment(intern.joinDate).format("DD MMM YYYY")} -{" "}
+                  {moment(intern.startDate).format("DD MMM YYYY")} -{" "}
                   {moment(intern.endDate).format("DD MMM YYYY")}
                 </td>
                 <td>
@@ -418,7 +418,6 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
-        // "CSTM-ROLE": JSON.parse(sessionData.user.Roles)[0],
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
         "X-PAGE": query.pageNumber || 1,

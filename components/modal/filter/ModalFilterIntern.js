@@ -353,10 +353,10 @@ const ModalFilterIntern = ({
                       <FormGroup className="custom-input-select" md="6">
                         <FormikDatePicker
                           label="Internship Start Date"
-                          name="joinDate"
+                          name="startDate"
                         />
-                        {errors.joinDate && (
-                          <div className="text-danger">{errors.joinDate}</div>
+                        {errors.startDate && (
+                          <div className="text-danger">{errors.startDate}</div>
                         )}
                       </FormGroup>
                     </Col>
@@ -394,7 +394,7 @@ const ModalFilterIntern = ({
                           dept: "",
                           schoolName: "",
                           faculty: "",
-                          joinDate: "",
+                          startDate: "",
                           endDate: "",
                         });
                       }}

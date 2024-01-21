@@ -5,8 +5,11 @@ import { Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import DashboardMenu from "./DashboardMenu";
 import MyTaskMenu from "./MyTask/MyTaskMenu";
 
-const Dashboard = () => {
+const Dashboard = (props) => {
+  const { dataUnconfirmedIntern } = props;
   const [active, setActive] = useState(1);
+
+  console.log(dataUnconfirmedIntern);
 
   return (
     <div>
@@ -34,7 +37,7 @@ const Dashboard = () => {
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
-          <MyTaskMenu />
+          <MyTaskMenu dataUnconfirmedIntern={dataUnconfirmedIntern} />
         </TabPane>
         <TabPane tabId={2}>
           <DashboardMenu />

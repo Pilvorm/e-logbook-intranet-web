@@ -148,7 +148,7 @@ const EditMasterIntern = (props) => {
       dept,
       mentorUpn,
       mentorName,
-      joinDate,
+      startDate,
       endDate,
     } = values;
 
@@ -160,7 +160,7 @@ const EditMasterIntern = (props) => {
       dept,
       mentorUpn,
       mentorName,
-      joinDate,
+      startDate,
       endDate,
     };
 
@@ -193,10 +193,10 @@ const EditMasterIntern = (props) => {
   const validationSchema = yup
     .object({
       name: yup.string().required("Name is required"),
-      joinDate: yup.date(),
+      startDate: yup.date(),
       endDate: yup
         .date()
-        .min(yup.ref("joinDate"), "End date can't be before join date"),
+        .min(yup.ref("startDate"), "End date can't be before join date"),
     })
     .required();
 
@@ -276,7 +276,7 @@ const EditMasterIntern = (props) => {
               dept: data?.dept ?? "",
               mentorUpn: data?.mentorUpn ?? "",
               mentorName: data?.mentorName ?? "",
-              joinDate: data?.joinDate ?? new Date(),
+              startDate: data?.startDate ?? new Date(),
               endDate: data?.endDate ?? new Date(),
             }}
             validationSchema={validationSchema}
@@ -557,12 +557,12 @@ const EditMasterIntern = (props) => {
                           <FormGroup tag={Col} md="12">
                             <FormikDatePicker
                               label="Internship Join Date"
-                              name="joinDate"
+                              name="startDate"
                               isBold
                             />
-                            {errors.joinDate && (
+                            {errors.startDate && (
                               <div className="text-danger">
-                                {errors.joinDate}
+                                {errors.startDate}
                               </div>
                             )}
                           </FormGroup>

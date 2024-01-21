@@ -76,9 +76,11 @@ const LogbookRow = ({
           color: currEntry?.status == null ? "#FF5B5C" : "#46A583",
         }}
       >
-        {blockEntry || !ogIdx
+        {blockEntry || !currEntry?.activity
           ? ""
-          : currEntry?.status ?? `Waiting for Approval`}
+          : currEntry?.status == null
+          ? `Waiting for Approval`
+          : currEntry?.status}
       </td>
       <td>{""}</td>
     </tr>
@@ -201,7 +203,7 @@ const InternshipAttendance = (props) => {
         if (res.status >= 200 && res.status < 300) {
           successAlertNotification(
             "Success",
-            "Revision Request Sent Successfully"
+            "Revision request sent successfully"
           );
           router.push({
             pathname: router.pathname,
@@ -300,7 +302,7 @@ const InternshipAttendance = (props) => {
               school={`${internData.schoolName}`}
               faculty={`${internData.faculty}`}
               month={`${monthQuery}`}
-              status={`${dataLogbook.data[0]?.status.toUpperCase()}`}
+              status={`${dataLogbook.data[0]?.status.toUpperCase() ?? "Waiting for entry"}`}
               workingDays="14 WFH / 8 WFO"
               pay="Rp 1.920.000"
             />

@@ -30,42 +30,63 @@ const validationSchema = yup
   })
   .required();
 
-const UploadAutograph = ({ visible, toggle, data }) => {
+const UploadAutograph = ({ visible, toggle, data, ...props }) => {
+  const { sessionData } = props;
   const router = useRouter();
   const dispatch = useDispatch();
 
   const [previewModal, setPreviewModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState();
   const [fileName, setFileName] = useState("");
 
   const onSubmit = async (values, actions) => {
-    const { file } = values;
+    const { file, fileName } = values;
 
-    const bodyData = {
-      file,
-    };
+    let role = "";
+    const upn = sessionData?.user?.UserPrincipalName;
+    const name = sessionData?.user?.Name;
+    const email = sessionData?.user?.Email;
+    try {
+      role = JSON.parse(localStorage.getItem("userRoles"))[0];
+    } catch (e) {
+      console.error(e);
+      role = "";
+    }
 
-    console.log(bodyData);
+    const formData = new FormData();
+    formData.append("file", values.file);
 
-    // try {
-    //   const response = await uploadSingleFiles(bodyData);
+    console.log(formData);
 
-    //   if (response.status >= 200 || response.status <= 302) {
-    //     actions.setSubmitting(false);
-    //     successAlertNotification("Success", "Data saved succesfully");
-    //     router.push({
-    //       pathname: router.pathname,
-    //     });
-    //   } else {
-    //     actions.setSubmitting(false);
-    //     errorAlertNotification("Error", "Something went wrong, please try again later.");
-    //   }
-    // } catch (error) {
-    //   errorAlertNotification(
-    //     "Error",
-    //     error?.response || "Something went wrong, please try again later."
-    //   );
-    //   console.error("File upload failed:", error);
-    // }
+    try {
+      const response = await uploadSingleFiles(
+        role,
+        upn,
+        name,
+        email,
+        formData
+      );
+
+      if (response.status >= 200 || response.status <= 302) {
+        actions.setSubmitting(false);
+        successAlertNotification("Success", "Data saved succesfully");
+        router.push({
+          pathname: router.pathname,
+        });
+      } else {
+        actions.setSubmitting(false);
+        errorAlertNotification(
+          "Error",
+          "Something went wrong, please try again later."
+        );
+      }
+    } catch (error) {
+      errorAlertNotification(
+        "Error",
+        error?.response || "Something went wrong, please try again later."
+      );
+      console.error("File upload failed:", error);
+    }
   };
 
   return (
@@ -97,6 +118,7 @@ const UploadAutograph = ({ visible, toggle, data }) => {
                   <Label for="custom-file">Choose File</Label>
                   <CustomInput
                     type="file"
+                    accept="image/*"
                     id="custom-file"
                     onChange={(e) => {
                       if (e.target.files[0]) {
@@ -115,6 +137,18 @@ const UploadAutograph = ({ visible, toggle, data }) => {
                     </div>
                   )}
                 </FormGroup>
+                {values.file && (
+                  <div className="d-flex justify-content-center my-2">
+                    <img
+                      alt="Autograph"
+                      src={URL.createObjectURL(values.file)}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
+                  </div>
+                )}
                 <FormGroup>
                   <Label for="fileName">File Name</Label>
                   <Input
