@@ -540,6 +540,7 @@ const EditMasterIntern = (props) => {
                           )}
                           onChange={(e) => {
                             setFieldValue("mentorName", e.name);
+                            setFieldValue("mentorUpn", e.userPrincipalName);
                             setSelectedMentor(e);
                           }}
                           placeholder={

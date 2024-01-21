@@ -81,6 +81,7 @@ export const getFiles = async (data, moduleCode) => {
     return error.response;
   }
 };
+
 export const uploadFile = (data, moduleCode) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
   try {
@@ -135,26 +136,4 @@ export const transformYupErrorsIntoObject = (errors) => {
   });
 
   return validationErrors;
-};
-
-export const searchP3KItem = (searchQuery) => {
-  const header = getHeaders(store.getState().authReducers.token);
-
-  console.log(header);
-
-  try {
-    // const response = await axios.get(`${API_MASTER}/api/MasterP3kItem`, {
-    //   headers: {
-    //     ...header,
-    //     "X-PAGINATION": true,
-    //     "X-PAGE": 1,
-    //     "X-PAGESIZE": 5,
-    //     "X-SEARCH": `*${searchQuery}*`,
-    //   },
-    // });
-    // return response.data;
-  } catch (error) {
-    console.error(error);
-    return error.response;
-  }
 };

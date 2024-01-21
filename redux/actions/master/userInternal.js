@@ -1,11 +1,5 @@
 import axios from "axios";
-import {
-  API_MASTER,
-  API_MASTER_USER,
-  USER_ROLE_URL,
-  API_USER_ROLES,
-  API_GLOBAL_SBU_URL,
-} from "constant";
+import { API_MASTER, API_LOGBOOK } from "constant";
 import { getHeaders } from "helpers/utils";
 import { store } from "redux/store";
 import {
@@ -115,7 +109,48 @@ export const fetchUserRolesFunction = (upn) => async (dispatch) => {
     });
 
     return response.data;
+  } catch (error) {
+    return error.response;
+  }
+};
 
+export const getMentorTask = (name) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+  const cstmHeaders = {
+    "CSTM-NAME": name,
+  };
+  try {
+    const response = await axios({
+      url: `${API_LOGBOOK}/GetMentorTask`,
+      headers: {
+        ...header,
+        ...cstmHeaders,
+      },
+      method: "GET",
+    });
+
+    return response.data;
+  } catch (error) {
+    return error.response;
+  }
+};
+
+export const getAutographName = (upn) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+  const cstmHeaders = {
+    "CSTM-UPN": upn,
+  };
+  try {
+    const response = await axios({
+      url: `${API_LOGBOOK}/GetSignFileName`,
+      headers: {
+        ...header,
+        ...cstmHeaders,
+      },
+      method: "GET",
+    });
+
+    return response.data;
   } catch (error) {
     return error.response;
   }

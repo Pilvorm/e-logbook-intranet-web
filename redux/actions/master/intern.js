@@ -5,6 +5,7 @@ import {
   USER_ROLE_URL,
   API_USER_ROLES,
   API_GLOBAL_SBU_URL,
+  API_LOGBOOK,
 } from "constant";
 import { getHeaders } from "helpers/utils";
 import { store } from "redux/store";
@@ -14,6 +15,8 @@ import {
   EDIT_MASTER_INTERN,
   GET_ALL_MASTER_INTERN,
   GET_MASTER_INTERN_BY_ID,
+  GET_UNCONFIRMED_INTERN,
+  GET_MENTOR_TASK,
 } from "redux/types";
 
 export const getAllMasterIntern = (param) => async (dispatch) => {
@@ -120,5 +123,22 @@ export const confirmMasterIntern = (id) => async (dispatch) => {
     console.log(error.response);
     console.error(error.response);
     return error;
+  }
+};
+
+export const getMentorTask = (param) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+
+  try {
+    const response = await axios({
+      url: API_LOGBOOK + "/GetMentorTask",
+      method: "GET",
+      headers: { ...header, ...param },
+    });
+
+    dispatch({ type: GET_MASTER_INTERN_BY_ID, payload: response.data });
+    return response;
+  } catch (error) {
+    return error.response;
   }
 };

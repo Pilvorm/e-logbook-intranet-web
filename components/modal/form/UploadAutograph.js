@@ -31,7 +31,7 @@ const validationSchema = yup
   .required();
 
 const UploadAutograph = ({ visible, toggle, data, ...props }) => {
-  const { sessionData } = props;
+  const { sessionData, uploadedAutograph } = props;
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -97,7 +97,7 @@ const UploadAutograph = ({ visible, toggle, data, ...props }) => {
       <Formik
         initialValues={{
           file: "",
-          fileName: "",
+          fileName: uploadedAutograph ?? "",
         }}
         validationSchema={validationSchema}
         onSubmit={onSubmit}

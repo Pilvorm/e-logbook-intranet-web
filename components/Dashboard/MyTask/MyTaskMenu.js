@@ -23,16 +23,17 @@ import {
   deleteAlertNotification,
 } from "components/notification";
 import { CustomBadge } from "components/Badge/CustomBadge";
+import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 import { deleteMasterIntern } from "redux/actions/master/intern";
 
 import moment from "moment";
 
 const MyTaskMenu = (props) => {
-  const { dataUnconfirmedIntern } = props;
+  const { myTask } = props;
   const [active, setActive] = useState(1);
 
-  console.log(dataUnconfirmedIntern);
+  console.log(myTask);
 
   const dispatch = useDispatch();
   const router = useRouter();
@@ -78,10 +79,10 @@ const MyTaskMenu = (props) => {
               setActive(1);
             }}
           >
-            Intern
+            {getPermissionComponentByRoles(["HR"]) ? "Intern" : "Logbook"}
           </NavLink>
         </NavItem>
-        <NavItem>
+        {/* <NavItem>
           <NavLink
             active={active === 2}
             onClick={() => {
@@ -90,80 +91,88 @@ const MyTaskMenu = (props) => {
           >
             Logbook
           </NavLink>
-        </NavItem>
+        </NavItem> */}
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
-          <div className="shadow px-2 py-3">
-            <h3 className="mb-3">Unconfirmed Intern</h3>
-            <Table responsive className="border">
-              <thead className="text-center">
-                <tr>
-                  <th>Name</th>
-                  <th>Department</th>
-                  <th>Company</th>
-                  <th>Mentor</th>
-                  <th>School/College</th>
-                  <th>Faculty</th>
-                  <th>Internship Period</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody className="text-center text-break">
-                {dataUnconfirmedIntern &&
-                  dataUnconfirmedIntern.map((intern) => (
-                    <tr key={intern.id}>
-                      <td className="text-uppercase">
-                        <CustomBadge type="danger" content={`${intern.name}`} />
-                        {/* {intern.name} */}
-                      </td>
-                      <td>{intern.dept}</td>
-                      <td>{intern.companyName}</td>
-                      <td className="text-uppercase">{intern.mentorName}</td>
-                      <td>{intern.schoolName}</td>
-                      <td>{intern.faculty}</td>
-                      <td>
-                        {moment(intern.startDate).format("DD MMM YYYY")} -{" "}
-                        {moment(intern.endDate).format("DD MMM YYYY")}
-                      </td>
-                      <td>
-                        <UncontrolledDropdown>
-                          <DropdownToggle
-                            className="icon-btn hide-arrow"
-                            id="optionsSelect"
-                            color="transparent"
-                            size="sm"
-                            caret
-                          >
-                            <MoreVertical size={15} />
-                          </DropdownToggle>
-                          <DropdownMenu>
-                            <DropdownItem
-                              className="w-100"
-                              onClick={() =>
-                                router.push(`/master/intern/edit/${intern.id}/`)
-                              }
-                              id="editBtn"
+          {getPermissionComponentByRoles(["HR"]) && (
+            <div className="shadow px-2 py-3">
+              <h3 className="mb-3">Unconfirmed Intern</h3>
+              <Table responsive className="border">
+                <thead className="text-center">
+                  <tr>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Company</th>
+                    <th>Mentor</th>
+                    <th>School/College</th>
+                    <th>Faculty</th>
+                    <th>Internship Period</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center text-break">
+                  {dataUnconfirmedIntern &&
+                    dataUnconfirmedIntern.map((intern) => (
+                      <tr key={intern.id}>
+                        <td className="text-uppercase">
+                          <CustomBadge
+                            type="danger"
+                            content={`${intern.name}`}
+                          />
+                          {/* {intern.name} */}
+                        </td>
+                        <td>{intern.dept}</td>
+                        <td>{intern.companyName}</td>
+                        <td className="text-uppercase">{intern.mentorName}</td>
+                        <td>{intern.schoolName}</td>
+                        <td>{intern.faculty}</td>
+                        <td>
+                          {moment(intern.startDate).format("DD MMM YYYY")} -{" "}
+                          {moment(intern.endDate).format("DD MMM YYYY")}
+                        </td>
+                        <td>
+                          <UncontrolledDropdown>
+                            <DropdownToggle
+                              className="icon-btn hide-arrow"
+                              id="optionsSelect"
+                              color="transparent"
+                              size="sm"
+                              caret
                             >
-                              <Edit className="mr-50" size={15} />
-                              <span className="align-middle">Edit</span>
-                            </DropdownItem>
-                            <DropdownItem
-                              className="w-100"
-                              onClick={(e) => handleDelete(e, intern)}
-                              id="deleteBtn"
-                            >
-                              <Trash className="mr-50" size={15} />
-                              <span className="align-middle">Delete</span>
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </td>
-                    </tr>
-                  ))}
-              </tbody>
-            </Table>
-          </div>
+                              <MoreVertical size={15} />
+                            </DropdownToggle>
+                            <DropdownMenu>
+                              <DropdownItem
+                                className="w-100"
+                                onClick={() =>
+                                  router.push(
+                                    `/master/intern/edit/${intern.id}/`
+                                  )
+                                }
+                                id="editBtn"
+                              >
+                                <Edit className="mr-50" size={15} />
+                                <span className="align-middle">Edit</span>
+                              </DropdownItem>
+                              <DropdownItem
+                                className="w-100"
+                                onClick={(e) => handleDelete(e, intern)}
+                                id="deleteBtn"
+                              >
+                                <Trash className="mr-50" size={15} />
+                                <span className="align-middle">Delete</span>
+                              </DropdownItem>
+                            </DropdownMenu>
+                          </UncontrolledDropdown>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+          )}
+          
         </TabPane>
         <TabPane tabId={2}></TabPane>
       </TabContent>

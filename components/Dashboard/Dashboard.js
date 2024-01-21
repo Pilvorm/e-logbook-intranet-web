@@ -6,10 +6,8 @@ import DashboardMenu from "./DashboardMenu";
 import MyTaskMenu from "./MyTask/MyTaskMenu";
 
 const Dashboard = (props) => {
-  const { dataUnconfirmedIntern } = props;
+  const { myTask } = props;
   const [active, setActive] = useState(1);
-
-  console.log(dataUnconfirmedIntern);
 
   return (
     <div>
@@ -37,7 +35,9 @@ const Dashboard = (props) => {
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
-          <MyTaskMenu dataUnconfirmedIntern={dataUnconfirmedIntern} />
+          <MyTaskMenu
+            myTask={myTask}
+          />
         </TabPane>
         <TabPane tabId={2}>
           <DashboardMenu />

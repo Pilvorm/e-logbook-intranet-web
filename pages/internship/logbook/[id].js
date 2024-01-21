@@ -22,7 +22,11 @@ import { InternDetailCard } from "components/Card/InternDetailCard";
 import { CustomBadge } from "components/Badge/CustomBadge";
 
 import { getMasterInternById } from "redux/actions/master/intern";
-import { approveLogbook, getLogbookData } from "redux/actions/logbook";
+import {
+  GenerateLogbookPDF,
+  approveLogbook,
+  getLogbookData,
+} from "redux/actions/logbook";
 import { getPermissionComponentByRoles } from "helpers/getPermission";
 
 import moment from "moment";
@@ -244,10 +248,7 @@ const InternshipAttendance = (props) => {
     dispatch(approveLogbook(role, upn, name, email, id))
       .then((res) => {
         if (res.status >= 200 && res.status < 300) {
-          successAlertNotification(
-            "Success",
-            "Logbook approved succesfully"
-          );
+          successAlertNotification("Success", "Logbook approved succesfully");
           router.push({
             pathname: router.pathname,
             query: {
@@ -270,6 +271,12 @@ const InternshipAttendance = (props) => {
       });
   };
 
+  const handleDownload = async (dataLogbook) => {
+    const name = internData.name;
+    const month = monthQuery;
+    await dispatch(GenerateLogbookPDF(name, month, dataLogbook));
+  };
+
   return (
     <div>
       <BreadCrumbs
@@ -282,7 +289,7 @@ const InternshipAttendance = (props) => {
           outline
           color="danger"
           className="btn-next"
-          onClick={() => router.back()}
+          onClick={() => router.push("/internship")}
         >
           <ArrowLeft size={18} />
           <span className="ml-50 align-middle d-sm-inline-block d-none">
@@ -302,7 +309,7 @@ const InternshipAttendance = (props) => {
               school={`${internData.schoolName}`}
               faculty={`${internData.faculty}`}
               month={`${monthQuery}`}
-              status={`${dataLogbook.data[0]?.status.toUpperCase() ?? "Waiting for entry"}`}
+              status={`${dataLogbook.data[0]?.status ?? "Waiting for entry"}`}
               workingDays="14 WFH / 8 WFO"
               pay="Rp 1.920.000"
             />
@@ -333,16 +340,22 @@ const InternshipAttendance = (props) => {
         </div>
 
         <div className="d-flex align-items-center">
-          <Button.Ripple id="saveBtn" color="warning">
+          <Button.Ripple
+            id="saveBtn"
+            color="warning"
+            onClick={() => {
+              handleDownload(dataLogbook.data[0]);
+            }}
+          >
             <Download size={18} />
             <span className="align-middle ml-1 d-sm-inline-block d-none">
               Export to PDF
             </span>
           </Button.Ripple>
 
-          {getPermissionComponentByRoles(["MENTOR"]) &&
-            dataLogbook.data[0]?.status.includes("approval") && (
-              <>
+          {getPermissionComponentByRoles(["MENTOR"]) && (
+            <>
+              {dataLogbook.data[0]?.status.includes("Approved") && (
                 <Button.Ripple
                   id="saveBtn"
                   color="warning"
@@ -367,6 +380,8 @@ const InternshipAttendance = (props) => {
                     Revise
                   </span>
                 </Button.Ripple>
+              )}
+              {dataLogbook.data[0]?.status.includes("approval") && (
                 <Button.Ripple
                   id="saveBtn"
                   className="ml-1"
@@ -385,8 +400,9 @@ const InternshipAttendance = (props) => {
                     Approve All
                   </span>
                 </Button.Ripple>
-              </>
-            )}
+              )}
+            </>
+          )}
         </div>
       </div>
       <Table responsive className="border">

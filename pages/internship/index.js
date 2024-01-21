@@ -30,7 +30,10 @@ import ModalFilterIntern from "components/modal/filter/ModalFilterIntern";
 import VerticalLayout from "src/@core/layouts/VerticalLayout";
 import UploadAutograph from "components/modal/form/UploadAutograph";
 
-import { fetchUserRolesFunction } from "redux/actions/master/userInternal";
+import {
+  fetchUserRolesFunction,
+  getAutographName,
+} from "redux/actions/master/userInternal";
 import { getAllMasterIntern } from "redux/actions/master/intern";
 import { getAllMasterUserInternal } from "redux/actions/master/userInternal";
 
@@ -54,6 +57,7 @@ const Internship = (props) => {
     dataMentor,
     dataFilter,
     userRoles,
+    autographName
   } = props;
   const dispatch = useDispatch();
   const router = useRouter();
@@ -63,6 +67,9 @@ const Internship = (props) => {
 
   const isMentor = getPermissionComponentByRoles(["MENTOR"]);
   const isHR = getPermissionComponentByRoles(["HR"]);
+
+  console.log("OK")
+  console.log(autographName);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);
@@ -194,6 +201,7 @@ const Internship = (props) => {
                 visible={uploadPopup}
                 toggle={toggleUploadPopup}
                 sessionData={sessionData}
+                uploadedAutograph={autographName}
               />
             </Button.Ripple>
           )}
@@ -382,6 +390,10 @@ export const getServerSideProps = wrapper.getServerSideProps(
       })
     );
 
+    const autographName = await store.dispatch(
+      getAutographName(sessionData.user.UserPrincipalName)
+    );
+
     const dataMasterIntern = store.getState().masterInternReducers;
 
     const dataMentor = store.getState().masterUserInternalReducers;
@@ -401,6 +413,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
         dataDepartment,
         dataMentor,
         userRoles,
+        autographName,
       },
     };
   }

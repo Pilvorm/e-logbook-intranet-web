@@ -8,6 +8,8 @@ import {
   EDIT_LOGBOOK_DATA,
 } from "redux/types";
 
+import FileSaver from "file-saver";
+
 export const getLogbookData = (param) => async (dispatch) => {
   const header = getHeaders(store.getState().authReducers.token);
 
@@ -83,3 +85,22 @@ export const approveLogbook =
       return error;
     }
   };
+
+export const GenerateLogbookPDF = (name, month, data) => async (dispatch) => {
+  const header = getHeaders(store.getState().authReducers.token);
+  try {
+    const response = await axios({
+      url: `${API_LOGBOOK}/GeneratePDF`,
+      method: "POST",
+      data,
+      responseType: "blob",
+    });
+
+    if (response) {
+      FileSaver.saveAs(response.data, `Logbook ${name} ${month}`);
+      return response.data;
+    }
+  } catch (error) {
+    return error.response;
+  }
+};

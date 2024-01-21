@@ -20,15 +20,12 @@ import {
   getRoleUser,
 } from "helpers/auth";
 import { useSelector } from "react-redux";
-import { getUnconfirmedIntern } from "redux/actions/master/intern";
+import {
+  getUnconfirmedIntern,
+  getMentorTask,
+} from "redux/actions/master/intern";
 
-const Home = ({
-  userRoles,
-  query,
-  roles,
-  sessionData,
-  dataUnconfirmedIntern,
-}) => {
+const Home = ({ userRoles, query, roles, sessionData, myTask, currRole }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const isMobileWidth = useMobileDetector();
@@ -48,11 +45,13 @@ const Home = ({
 
   const { data: session } = useSession();
   console.log(session);
+  console.log(roles);
+  console.log("LMFAOO " + currRole);
 
   return (
     <>
       <div className="mt-3">
-        <Dashboard dataUnconfirmedIntern={dataUnconfirmedIntern} />
+        <Dashboard myTask={myTask} />
         <div className="mt-1"></div>
       </div>
     </>
@@ -99,21 +98,31 @@ export const getServerSideProps = wrapper.getServerSideProps(
     } catch (err) {}
     console.log(temp, "temp");
 
-    await store.dispatch(
-      getUnconfirmedIntern({
-        "CSTM-COMPID": sessionData.user.CompCode,
-        "CSTM-NAME": sessionData.user.Name,
-        "CSTM-EMAIL": sessionData.user.Email,
-        "CSTM-UPN": sessionData.user.UserPrincipalName,
-        "X-PAGINATION": true,
-        "X-PAGE": 1,
-        "X-PAGESIZE": 50,
-        "X-ORDERBY": "createdDate desc",
-        "X-SEARCH": `*${""}*`,
-      })
-    );
+    let currRole = temp == "MENTOR" ? "MENTOR" : "HR";
 
-    const dataUnconfirmedIntern = store.getState().masterInternReducers;
+    if (currRole == "HR") {
+      await store.dispatch(
+        getUnconfirmedIntern({
+          "CSTM-COMPID": sessionData.user.CompCode,
+          "CSTM-NAME": sessionData.user.Name,
+          "CSTM-EMAIL": sessionData.user.Email,
+          "CSTM-UPN": sessionData.user.UserPrincipalName,
+          "X-PAGINATION": true,
+          "X-PAGE": 1,
+          "X-PAGESIZE": 50,
+          "X-ORDERBY": "createdDate desc",
+          "X-SEARCH": `*${""}*`,
+        })
+      );
+    } else {
+      await store.dispatch(
+        getMentorTask({
+          "CSTM-NAME": sessionData.user.Name,
+        })
+      );
+    }
+
+    const myTask = store.getState().masterInternReducers;
 
     return {
       props: {
@@ -121,7 +130,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
         query: ctx.query,
         roles: temp,
         sessionData,
-        dataUnconfirmedIntern,
+        myTask,
+        currRole,
       },
     };
   }
