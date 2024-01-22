@@ -10,7 +10,7 @@ const ReviseReasonSubmit = ({ title, description, onClose, onConfirm }) => {
       notes: "",
     },
     validationSchema: yup.object().shape({
-      notes: yup.string().required("Harus diisi"),
+      notes: yup.string().required("Must be filled"),
     }),
     onSubmit: async (values) => {
       onConfirm(values.notes);

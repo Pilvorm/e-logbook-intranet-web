@@ -163,7 +163,7 @@ const UploadAutograph = ({ visible, toggle, data, ...props }) => {
             <ModalFooter>
               <Button
                 color="success"
-                id="submitBtn"
+                id="saveBtn"
                 name="submitBtn"
                 onClick={handleSubmit}
               >

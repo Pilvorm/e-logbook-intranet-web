@@ -164,7 +164,7 @@ const MasterIntern = (props) => {
           } else if (res.status === 200 || res.status === 204) {
             successAlertNotification(
               "Deleted Success",
-              "Successfully Deleted User"
+              "Successfully deleted user"
             );
             router.push({
               pathname: router.pathname,

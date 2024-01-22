@@ -188,7 +188,7 @@ const Internship = (props) => {
           {getPermissionComponentByRoles(["MENTOR"]) && (
             <Button.Ripple
               color="primary"
-              id="buttonFilter"
+              id="autographBtn"
               name="buttonFilter"
               className="btn-next mr-1"
               onClick={toggleUploadPopup}

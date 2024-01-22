@@ -35,6 +35,7 @@ import { reviseLogbook } from "redux/actions/logbook";
 const LogbookRow = ({
   jsDate,
   index,
+  dataLogbook,
   internData,
   logbookDays,
   holidayDates,
@@ -77,14 +78,18 @@ const LogbookRow = ({
       <td
         style={{
           width: "15%",
-          color: currEntry?.status == null ? "#FF5B5C" : "#46A583",
+          color: dataLogbook?.status.includes("Approved")
+            ? "#46A583"
+            : "#FF5B5C",
         }}
       >
         {blockEntry || !currEntry?.activity
           ? ""
-          : currEntry?.status == null
-          ? `Waiting for Approval`
-          : currEntry?.status}
+          : dataLogbook?.status.includes("Approved")
+          ? "Approved"
+          : dataLogbook?.status.includes("revision")
+          ? `Waiting for Revision`
+          : `Waiting for Approval`}
       </td>
       <td>{""}</td>
     </tr>
@@ -362,9 +367,10 @@ const InternshipAttendance = (props) => {
 
           {getPermissionComponentByRoles(["MENTOR"]) && (
             <>
-              {dataLogbook.data[0]?.status.includes("Approved") && (
+              {(dataLogbook.data[0]?.status.includes("Approved") ||
+                dataLogbook.data[0]?.status.includes("approval")) && (
                 <Button.Ripple
-                  id="saveBtn"
+                  id="reviseBtn"
                   color="warning"
                   className="ml-1"
                   onClick={() => {
@@ -390,7 +396,7 @@ const InternshipAttendance = (props) => {
               )}
               {dataLogbook.data[0]?.status.includes("approval") && (
                 <Button.Ripple
-                  id="saveBtn"
+                  id="approveBtn"
                   className="ml-1"
                   color="primary"
                   onClick={() => {
@@ -429,6 +435,7 @@ const InternshipAttendance = (props) => {
               <LogbookRow
                 jsDate={date}
                 index={index}
+                dataLogbook={dataLogbook.data[0]}
                 logbookDays={logbookDays}
                 holidayDates={holidayDates}
               />

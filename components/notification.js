@@ -21,7 +21,7 @@ export const reviseAlertNotification = (title, btnName, customFunction) => {
         buttonName={btnName}
         onConfirm={(noteRevise) => {
           if (noteRevise.length == 0) {
-            alert("Alasan harus diisi");
+            alert("Must be filled");
           } else {
             console.log(noteRevise);
             MySwal.close();

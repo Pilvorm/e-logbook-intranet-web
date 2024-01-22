@@ -338,11 +338,11 @@ const EditMasterIntern = (props) => {
                     </Button.Ripple>
                     {data.status === "Unconfirmed" && (
                       <Button.Ripple
-                        id="saveBtn"
+                        id="confirmBtn"
                         color="primary"
                         onClick={(e) => {
                           e.preventDefault();
-                          handleSubmit, notificationHandler("Confirm");
+                          notificationHandler("Confirm");
                         }}
                         disabled={isSubmitting}
                       >
