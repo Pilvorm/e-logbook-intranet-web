@@ -10,34 +10,9 @@ import {
   ModalFooter,
   ModalHeader,
 } from "reactstrap";
+import { getPermissionComponentByRoles } from "helpers/getPermission";
 
-const StatusModal = ({ visible, toggle, status }) => {
-  function formatApprovalString(inputString) {
-    if (
-      inputString.includes("Waiting for") &&
-      inputString.includes("approval")
-    ) {
-      const trimmedString = inputString
-        .replace("Waiting for ", "")
-        .replace("’s approval", "");
-
-      // Split the remaining string by '/'
-      const names = trimmedString.split("/");
-
-      // Create a new HTML string with line break elements
-      const formattedString = `Waiting for approval:<br>${names
-        .map((name) => `- ${name.trim()}`)
-        .join("<br>")}`;
-
-      return formattedString;
-    }
-
-    return inputString;
-    // Remove "Waiting for" and "’s approval" parts
-  }
-
-  const formattedStatus = formatApprovalString(status);
-
+const StatusModal = ({ visible, toggle, status, pay }) => {
   return (
     <Modal
       isOpen={visible}
@@ -54,10 +29,18 @@ const StatusModal = ({ visible, toggle, status }) => {
         Status
       </ModalHeader>
       <ModalBody>
-        <div
-          className="w-100 d-flex justify-content-start"
-          dangerouslySetInnerHTML={{ __html: formattedStatus }}
-        />
+        <div className="w-100 py-1 d-flex flex-column justify-content-start">
+          <div>
+            <h5>Status</h5>
+            <span>{status}</span>
+          </div>
+          {getPermissionComponentByRoles(["HR"]) && (
+            <div className="mt-2">
+              <h5>Pay</h5>
+              <span>Rp {pay.toLocaleString("de-DE")}</span>
+            </div>
+          )}
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color="danger" outline onClick={toggle}>

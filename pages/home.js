@@ -46,12 +46,12 @@ const Home = ({ userRoles, query, roles, sessionData, myTask, currRole }) => {
   const { data: session } = useSession();
   console.log(session);
   console.log(roles);
-  console.log("LMFAOO " + currRole);
+  console.log("Test " + currRole);
 
   return (
     <>
       <div className="mt-3">
-        <Dashboard myTask={myTask} />
+        <Dashboard sessionData={sessionData} currRole={currRole} myTask={myTask} />
         <div className="mt-1"></div>
       </div>
     </>
