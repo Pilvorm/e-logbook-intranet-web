@@ -268,7 +268,7 @@ const MasterIntern = (props) => {
           {dataMasterIntern &&
             dataMasterIntern.data.map((intern) => (
               <tr key={intern.id}>
-                <td>{intern.status == "Unconfirmed" ? <CustomBadge type="danger" content={intern.name}/> : `${intern.name}`}</td>
+                <td className="text-uppercase">{intern.status == "Unconfirmed" ? <CustomBadge type="danger" content={intern.name}/> : `${intern.name}`}</td>
                 {/* <td className="text-uppercase">{intern.name}</td> */}
                 <td>{intern.dept}</td>
                 <td>{intern.companyName}</td>
