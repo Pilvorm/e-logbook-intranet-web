@@ -226,7 +226,7 @@ const InternshipAttendance = (props) => {
             query: {
               ...query,
               id: query.id,
-              month: query.month,
+              month: monthQuery,
             },
           });
         } else {
@@ -266,7 +266,7 @@ const InternshipAttendance = (props) => {
             query: {
               ...query,
               id: query.id,
-              month: query.month,
+              month: monthQuery,
             },
           });
         } else {
@@ -322,7 +322,8 @@ const InternshipAttendance = (props) => {
               faculty={`${internData.faculty}`}
               month={`${monthQuery}`}
               status={`${dataLogbook.data[0]?.status ?? "Waiting for entry"}`}
-              workingDays="14 WFH / 8 WFO"
+              wfhCount={dataLogbook?.data[0]?.wfhCount ?? 0}
+              wfoCount={dataLogbook?.data[0]?.wfoCount ?? 0}
               pay="Rp 1.920.000"
             />
           </div>
