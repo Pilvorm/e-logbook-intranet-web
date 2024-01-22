@@ -126,9 +126,10 @@ const InternshipAttendance = (props) => {
     setPeriod(startDate, endDate)
   );
   const [monthQuery, setMonthQuery] = useState(
-    query?.month ?? moment(currentDate) > endDate
-      ? moment(startDate).format("MMMM YYYY")
-      : moment(currentDate).format("MMMM YYYY")
+    query.month ??
+      (moment(currentDate) >= startDate && moment(currentDate) <= endDate
+        ? moment(currentDate).format("MMMM YYYY")
+        : moment(startDate).format("MMMM YYYY"))
   );
 
   // Handle Chosen Month Days
@@ -484,12 +485,21 @@ export const getServerSideProps = wrapper.getServerSideProps(
       };
     }
 
+    const currentDate = new Date();
+    const startDate = moment(internData.startDate);
+    const endDate = moment(internData.endDate);
+
     const monthFilter = query.month
       ? query.month?.split(" ")[0]
-      : moment().format("MMMM");
+      : moment(currentDate) >= startDate && moment(currentDate) <= endDate
+      ? moment(currentDate).format("MMMM")
+      : moment(startDate).format("MMMM");
+
     const yearFilter = query.month
       ? query.month?.split(" ")[1]
-      : moment().format("YYYY");
+      : moment(currentDate) >= startDate && moment(currentDate) <= endDate
+      ? moment(currentDate).format("YYYY")
+      : moment(startDate).format("YYYY");
 
     await store.dispatch(
       getLogbookData({
@@ -503,10 +513,14 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const currentMonth = query.month
       ? moment().month(query.month?.split(" ")[0]).format("M")
-      : moment().format("M");
+      : moment(currentDate) >= startDate && moment(currentDate) <= endDate
+      ? moment(currentDate).format("M")
+      : moment(startDate).format("M");
     const currentYear = query.month
       ? query.month?.split(" ")[1]
-      : moment().format("YYYY");
+      : moment(currentDate) >= startDate && moment(currentDate) <= endDate
+      ? moment(currentDate).format("YYYY")
+      : moment(startDate).format("YYYY");
 
     const res = await fetch(
       `https://api-harilibur.vercel.app/api?month=${currentMonth}&year=${currentYear}`

@@ -72,30 +72,7 @@ const MasterIntern = (props) => {
     dispatch(reauthenticate(token));
   }, [dispatch]);
 
-  const mentorList = dataMentor.data.map((mentor) => ({
-    ...mentor,
-    label: mentor.name,
-    value: mentor.userPrincipalName,
-  }));
-
-  const getAsyncOptionsMentor = (inputText) => {
-    return searchMentor(inputText).then((resp) => {
-      return resp.data.map((singleData) => ({
-        ...singleData,
-        value: singleData.nik,
-        label: singleData.name,
-      }));
-    });
-  };
-
-  const loadOptionsMentor = useCallback(
-    debounce((inputText, callback) => {
-      if (inputText) {
-        getAsyncOptionsMentor(inputText).then((options) => callback(options));
-      }
-    }, 1000),
-    []
-  );
+  console.log(dataMasterIntern);
 
   const pageSizeOptions = [5, 10, 15, 20];
   const [pageSize, setPageSize] = useState(query?.pageSize ?? 10);

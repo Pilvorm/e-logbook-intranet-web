@@ -64,6 +64,7 @@ const Dashboard = (props) => {
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
           <MyTaskMenu
+            sessionData={sessionData}
             myTask={myTask}
           />
         </TabPane>

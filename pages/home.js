@@ -118,6 +118,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
       await store.dispatch(
         getMentorTask({
           "CSTM-NAME": sessionData.user.Name,
+          "X-PAGINATION": true,
         })
       );
     }
