@@ -102,8 +102,12 @@ const InternshipAttendance = (props) => {
   }, [dispatch]);
 
   const currentDate = new Date();
-  const startDate = moment("2023-02-20T12:00:00Z");
-  const endDate = moment("2024-02-16T12:00:00Z");
+  // const startDate = moment("2023-02-20T12:00:00Z");
+  // const endDate = moment("2024-02-16T12:00:00Z");
+  const startDate = moment(internData.startDate);
+  const endDate = moment(internData.endDate);
+
+  console.log(internData);
 
   // Set Period Function
   const setPeriod = (start, end) => {
@@ -122,7 +126,9 @@ const InternshipAttendance = (props) => {
     setPeriod(startDate, endDate)
   );
   const [monthQuery, setMonthQuery] = useState(
-    query?.month ?? moment(currentDate).format("MMMM YYYY")
+    query?.month ?? moment(currentDate) > endDate
+      ? moment(startDate).format("MMMM YYYY")
+      : moment(currentDate).format("MMMM YYYY")
   );
 
   // Handle Chosen Month Days

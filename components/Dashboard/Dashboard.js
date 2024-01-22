@@ -63,9 +63,9 @@ const Dashboard = (props) => {
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>
-          {/* <MyTaskMenu
+          <MyTaskMenu
             myTask={myTask}
-          /> */}
+          />
         </TabPane>
         <TabPane tabId={2}>
           <DashboardMenu />

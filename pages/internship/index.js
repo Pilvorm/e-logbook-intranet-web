@@ -252,7 +252,7 @@ const Internship = (props) => {
             <th>Mentor</th>
             <th>School/College</th>
             <th>Internship Period</th>
-            <th>Status</th>
+            {/* <th>Status</th> */}
           </tr>
         </thead>
         <tbody className="text-center text-break">
@@ -273,7 +273,7 @@ const Internship = (props) => {
                   {moment(intern.startDate).format("DD MMM YYYY")} -{" "}
                   {moment(intern.endDate).format("DD MMM YYYY")}
                 </td>
-                <td style={{ color: "#46A583" }}>Approved by Supervisor</td>
+                {/* <td style={{ color: "#46A583" }}>Approved by Supervisor</td> */}
               </tr>
             ))}
         </tbody>
