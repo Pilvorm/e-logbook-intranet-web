@@ -39,17 +39,10 @@ import { wrapper } from "redux/store";
 import { reauthenticate } from "redux/actions/auth";
 import { connect, useDispatch } from "react-redux";
 import {
-  getAllMasterUser,
   createMasterUserInternal,
   getAllMasterUserInternal,
 } from "redux/actions/master/userInternal";
-import { getAllRoles, getRolesByUPN } from "redux/actions/master/role";
-
-import {
-  searchRole,
-  searchUser,
-  searchDummyUser,
-} from "helpers/master/masterRole";
+import { getAllRoles } from "redux/actions/master/role";
 
 import debounce from "lodash/debounce";
 import { promises as fs } from "fs";
@@ -231,7 +224,7 @@ const AddMasterUserInternal = (props) => {
     return (
       <Search
         set="light"
-        primaryColor="blueviolet"
+        // primaryColor="blueviolet"
         style={{ padding: "4px", marginRight: "2px" }}
       />
     );
@@ -317,7 +310,7 @@ const AddMasterUserInternal = (props) => {
                           id="saveBtn"
                           color="primary"
                           onClick={handleSubmit}
-                          disabled={isSubmitting || userExist}
+                          // disabled={isSubmitting || userExist}
                         >
                           {isSubmitting ? (
                             <>
@@ -343,8 +336,8 @@ const AddMasterUserInternal = (props) => {
                             <Label className="form-label font-weight-bold">
                               Name
                             </Label>
-                            <AsyncSelect
-                              // cacheOptions
+                            {/* <AsyncSelect
+                              cacheOptions
                               id="nameSearch"
                               className="dropdownModal"
                               isSearchable
@@ -359,7 +352,6 @@ const AddMasterUserInternal = (props) => {
                                     data.profilePicturePath ||
                                     "/images/avatars/avatar-blank.png"
                                   }
-                                  // name={`${data?.name} (${data?.email ?? "UPN N/A"})`}
                                   name={`${data?.name} (${data?.userPrincipalName})`}
                                   subtitle={data?.compName}
                                 />
@@ -374,7 +366,7 @@ const AddMasterUserInternal = (props) => {
                               placeholder={
                                 selectedName?.name || "Search by name or email"
                               }
-                            />
+                            /> */}
                             {userExist && (
                               <div className="text-danger">
                                 Data for this user already exists
@@ -559,18 +551,14 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     await store.dispatch(
       getAllMasterUserInternal({
-        "CSTM-COMPID": sessionData.user.CompCode,
         "CSTM-NAME": sessionData.user.Name,
         "CSTM-EMAIL": sessionData.user.Email,
         "CSTM-UPN": sessionData.user.UserPrincipalName,
         "X-PAGINATION": true,
-        "X-PAGE": query.pageNumber || 1,
-        "X-PAGESIZE": query.pageSize || 10,
+        "X-PAGE": 1,
+        "X-PAGESIZE": 50,
         "X-ORDERBY": "createdDate",
-        "X-SEARCH": `*${query.search || ""}*`,
-        // "X-FILTER": `${
-        //   query?.filter ? formatFilter(JSON.parse(query?.filter)) : ""
-        // }`,
+        "X-SEARCH": `*${""}*`,
       })
     );
 
@@ -594,4 +582,4 @@ export const getServerSideProps = wrapper.getServerSideProps(
   }
 );
 
-export default AddMasterUserInternal;
+export default connect((state) => state)(AddMasterUserInternal);

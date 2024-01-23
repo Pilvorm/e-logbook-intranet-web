@@ -261,8 +261,8 @@ const MasterUser = (props) => {
         </thead>
         <tbody className="text-center text-break">
           {dataMasterUserInternal &&
-            dataMasterUserInternal.data.map((user) => (
-              <tr key={user.nik}>
+            dataMasterUserInternal.data.map((user, index) => (
+              <tr key={index}>
                 <td className="text-uppercase">{user.name}</td>
                 <td className="text-lowercase">{user.userPrincipalName}</td>
                 <td className="text-lowercase">{user.email}</td>
@@ -270,7 +270,7 @@ const MasterUser = (props) => {
                 <td>{user.jobTitle}</td>
                 <td>
                   {user.userRoles.map((users, index, obj) => (
-                    <span key={users.nik}>
+                    <span key={index}>
                       {users.roleName}
                       {index + 1 !== obj.length && ", "}
                     </span>
