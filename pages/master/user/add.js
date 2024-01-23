@@ -46,6 +46,7 @@ import { getAllRoles } from "redux/actions/master/role";
 
 import debounce from "lodash/debounce";
 import { promises as fs } from "fs";
+import path from 'path';
 
 const AddMasterUserInternal = (props) => {
   const { dataRoles, dataMasterUser, userProfile, sessionData, token } = props;
@@ -566,7 +567,11 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const dataMasterUser = store.getState().masterUserInternalReducers;
 
-    const file = await fs.readFile("dummyUserProfile.json", "utf8");
+    var path = require('path');
+    const file = await fs.readFile(
+      path.join(process.cwd(), "public", "files", "dummyUserProfile.json"),
+      "utf8"
+    );
     const userProfile = JSON.parse(file);
 
     return {
