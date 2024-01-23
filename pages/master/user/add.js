@@ -332,7 +332,7 @@ const AddMasterUserInternal = (props) => {
                     <Container>
                       <Row className="mt-3">
                         <Col md="6">
-                          <FormGroup tag={Col} md="12">
+                          {/* <FormGroup tag={Col} md="12">
                             <Label className="form-label font-weight-bold">
                               Name
                             </Label>
@@ -375,7 +375,7 @@ const AddMasterUserInternal = (props) => {
                             {errors.name && selectedName.length < 1 && (
                               <div className="text-danger">{errors.name}</div>
                             )}
-                          </FormGroup>
+                          </FormGroup> */}
                         </Col>
                         <Col md="6"></Col>
                       </Row>
