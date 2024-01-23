@@ -389,7 +389,9 @@ const ModalFilterIntern = ({
                         setSelectedFaculty("Search...");
                         setFilterQuery({
                           name: "",
-                          mentorName: "",
+                          mentorName: isMentor
+                            ? filterQuery.mentorName
+                            : "",
                           companyName: "",
                           dept: "",
                           schoolName: "",
