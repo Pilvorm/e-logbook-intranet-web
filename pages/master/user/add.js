@@ -203,7 +203,9 @@ const AddMasterUserInternal = (props) => {
             console.error(res);
             errorAlertNotification(
               "Error",
-              res?.data?.message ? res?.data?.message : "Something went wrong, please try again later."
+              res?.data?.message
+                ? res?.data?.message
+                : "Something went wrong, please try again later."
             );
           }
         });
@@ -332,7 +334,7 @@ const AddMasterUserInternal = (props) => {
                     <Container>
                       <Row className="mt-3">
                         <Col md="6">
-                          {/* <FormGroup tag={Col} md="12">
+                          <FormGroup tag={Col} md="12">
                             <Label className="form-label font-weight-bold">
                               Name
                             </Label>
@@ -375,7 +377,7 @@ const AddMasterUserInternal = (props) => {
                             {errors.name && selectedName.length < 1 && (
                               <div className="text-danger">{errors.name}</div>
                             )}
-                          </FormGroup> */}
+                          </FormGroup>
                         </Col>
                         <Col md="6"></Col>
                       </Row>
@@ -564,10 +566,7 @@ export const getServerSideProps = wrapper.getServerSideProps(
 
     const dataMasterUser = store.getState().masterUserInternalReducers;
 
-    const file = await fs.readFile(
-      process.cwd() + "/dummyUserProfile.json",
-      "utf8"
-    );
+    const file = await fs.readFile("dummyUserProfile.json", "utf8");
     const userProfile = JSON.parse(file);
 
     return {

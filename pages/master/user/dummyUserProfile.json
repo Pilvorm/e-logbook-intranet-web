@@ -1,0 +1,234 @@
+{
+  "data": {
+    "items": [
+      {
+        "userPrincipalName": "edwin.wijaya@xyz.com",
+        "nik": "000167102",
+        "name": "EDWIN HANS WIJAYA",
+        "email": "edwinhans@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "kevin.tanadi@xyz.com",
+        "nik": "000145102",
+        "name": "KEVIN MIGUEL TANADI",
+        "email": "kevinmiguel@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "ezra.bridger@xyz.com",
+        "nik": "000123101",
+        "name": "EZRA BRIDGER",
+        "email": "ezrabridger@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "prihatno.setyobekti@xyz.com",
+        "nik": "000100101",
+        "name": "PRIHATNO SETYOBEKTI",
+        "email": "prihatnosetyobekti@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "joko.sulistyo@xyz.com",
+        "nik": "000102008",
+        "name": "JOKO SULISTYO",
+        "email": "jokosulistyo@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "tomas.soelistyo@xyz.com",
+        "nik": "000102010",
+        "name": "TOMAS PRAMONO SOELISTYO",
+        "email": "tomassoelistyo@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "amir.halim@xyz.com",
+        "nik": "000100011",
+        "name": "AMIR HALIM",
+        "email": "amirhalim@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "danny.setiawan@xyz.com",
+        "nik": "000100218",
+        "name": "DANNY SETIAWAN",
+        "email": "dannysetiawan@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "mugi.trianto@xyz.com",
+        "nik": "000100079",
+        "name": "MUGI TRIANTO",
+        "email": "mugitrianto@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "morgan.elsbeth@xyz.com",
+        "nik": "000104107",
+        "name": "MORGAN ELSBETH",
+        "email": "morganelsbeth@gmail.com",
+        "jobTtlName": "Human Resources",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "alfian.hertanto@xyz.com",
+        "nik": "000100139",
+        "name": "ALFIAN HERTANTO",
+        "email": "alfianhertanto@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "agus.widanarta@xyz.com",
+        "nik": "000203031",
+        "name": "AGUS WIDANARTA",
+        "email": "aguswidanarta@gmail.com",
+        "jobTtlName": "Information Technology Manager",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "desy.indriyati@xyz.com",
+        "nik": "000205005",
+        "name": "DESY INDRIYATI",
+        "email": "desyindriyati@gmail.com",
+        "jobTtlName": "Human Resources",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "ridwan.ong@xyz.com",
+        "nik": "000200002",
+        "name": "RIDWAN ONG",
+        "email": "ridwanong@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "mirza.taufiq@xyz.com",
+        "nik": "000200026",
+        "name": "MIRZA TAUFIQ",
+        "email": "mirzataufiq@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "nur.hidayat@xyz.com",
+        "nik": "000200031",
+        "name": "NUR ARIFIN HIDAYAT",
+        "email": "nurhidayat@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "jack.harison@xyz.com",
+        "nik": "000200031",
+        "name": "JACK HARISON M.",
+        "email": "jackharison@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "ferry.nugraha@xyz.com",
+        "nik": "000300004",
+        "name": "FERRY NUGRAHA",
+        "email": "ferrynugraha@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "eko.sulasmono@xyz.com",
+        "nik": "000300043",
+        "name": "EKO SOBAR SULASMONO",
+        "email": "ekosobar234@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      },
+      {
+        "userPrincipalName": "aceng.saprudin@xyz.com",
+        "nik": "000300046",
+        "name": "ACENG SAPRUDIN",
+        "email": "acengkumis54@gmail.com",
+        "jobTtlName": "IT Officer",
+        "divCode": "01.OPR.0007",
+        "divName": "XYZ - BRANCH OPERATIONAL",
+        "compCode": "01",
+        "compName": "PT XYZ Tbk."
+      }
+    ],
+    "page": 1,
+    "pageSize": 20,
+    "totalPage": 909,
+    "sortColumn": "name",
+    "sortOrder": "ASC",
+    "totalItem": 18163
+  },
+  "success": true,
+  "message": ""
+}
