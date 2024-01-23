@@ -336,7 +336,7 @@ const AddMasterUserInternal = (props) => {
                             <Label className="form-label font-weight-bold">
                               Name
                             </Label>
-                            {/* <AsyncSelect
+                            <AsyncSelect
                               cacheOptions
                               id="nameSearch"
                               className="dropdownModal"
@@ -366,7 +366,7 @@ const AddMasterUserInternal = (props) => {
                               placeholder={
                                 selectedName?.name || "Search by name or email"
                               }
-                            /> */}
+                            />
                             {userExist && (
                               <div className="text-danger">
                                 Data for this user already exists
@@ -503,15 +503,15 @@ const AddMasterUserInternal = (props) => {
                   </>
                 )}
               </Formik>
-              <ComboAlert
-                routerPath="/master/user"
+              {/* <ComboAlert
+                routerPath="/master/user/add"
                 {...{
                   isAlertModal,
                   setIsAlertModal,
                   alertStatus,
                   alertMessage,
                 }}
-              />
+              /> */}
             </TabPane>
           </TabContent>
         </div>
