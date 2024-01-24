@@ -324,7 +324,7 @@ const InternshipAttendance = (props) => {
               status={`${dataLogbook.data[0]?.status ?? "Waiting for entry"}`}
               wfhCount={dataLogbook?.data[0]?.wfhCount ?? 0}
               wfoCount={dataLogbook?.data[0]?.wfoCount ?? 0}
-              pay="Rp 1.920.000"
+              pay={dataLogbook?.data[0]?.allowance ?? 0}
             />
           </div>
         </div>

@@ -313,7 +313,7 @@ const AddMasterUserInternal = (props) => {
                           id="saveBtn"
                           color="primary"
                           onClick={handleSubmit}
-                          // disabled={isSubmitting || userExist}
+                          disabled={isSubmitting || userExist}
                         >
                           {isSubmitting ? (
                             <>
