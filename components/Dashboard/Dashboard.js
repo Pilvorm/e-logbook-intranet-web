@@ -50,16 +50,6 @@ const Dashboard = (props) => {
             My Task
           </NavLink>
         </NavItem>
-        {/* <NavItem>
-          <NavLink
-            active={active === 2}
-            onClick={() => {
-              setActive(2);
-            }}
-          >
-            Dashboard
-          </NavLink>
-        </NavItem> */}
       </Nav>
       <TabContent className="py-50" activeTab={active}>
         <TabPane tabId={1}>

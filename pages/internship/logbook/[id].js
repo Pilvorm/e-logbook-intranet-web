@@ -320,6 +320,7 @@ const InternshipAttendance = (props) => {
               department={`${internData.dept}`}
               school={`${internData.schoolName}`}
               faculty={`${internData.faculty}`}
+              mentor={`${internData.mentorName}`}
               month={`${monthQuery}`}
               status={`${dataLogbook.data[0]?.status ?? "Waiting for entry"}`}
               wfhCount={dataLogbook?.data[0]?.wfhCount ?? 0}
