@@ -125,7 +125,7 @@ const LoginPage = (props) => {
                       password,
                       applicationCode: "ELOGBOOK",
                       getProfile: true,
-                      isMobileWidth: isMobileWidth,
+                      // isMobileWidth: isMobileWidth,
                     });
                     if (response.error) {
                       errorAlertNotification(

@@ -117,6 +117,19 @@ const ModalFilterIntern = ({
     filterQuery.faculty === "" ? "Search..." : filterQuery.faculty
   );
 
+  const onSubmit = (values, actions) => {
+    const { startDate, endDate } = values;
+
+    setFilterQuery({
+      ...filterQuery,
+      startDate,
+      endDate,
+    });
+
+    handleFilterQuery(filterQuery);
+    actions.setSubmitting(true);
+  };
+
   const DropdownIndicator = (props) => {
     return (
       <Search
@@ -134,7 +147,14 @@ const ModalFilterIntern = ({
           <ModalHeader className="text-secondary bg-light" toggle={toggle}>
             Filter Intern
           </ModalHeader>
-          <Formik enableReinitialize>
+          <Formik
+            enableReinitialize
+            initialValues={{
+              startDate: filterQuery.startDate || "",
+              endDate: filterQuery.endDate || "",
+            }}
+            onSubmit={onSubmit}
+          >
             {({
               values,
               errors,
@@ -389,9 +409,7 @@ const ModalFilterIntern = ({
                         setSelectedFaculty("Search...");
                         setFilterQuery({
                           name: "",
-                          mentorName: isMentor
-                            ? filterQuery.mentorName
-                            : "",
+                          mentorName: isMentor ? filterQuery.mentorName : "",
                           companyName: "",
                           dept: "",
                           schoolName: "",
@@ -407,10 +425,12 @@ const ModalFilterIntern = ({
                       color="success"
                       id="submitBtn"
                       name="submitBtn"
-                      onClick={() => {
-                        handleFilterQuery(filterQuery);
-                        setSubmitting(true);
-                      }}
+                      // onClick={() => {
+                      //   handleFilterQuery(filterQuery);
+                      //   handleSubmit;
+                      //   setSubmitting(true);
+                      // }}
+                      onClick={handleSubmit}
                     >
                       {isSubmitting ? (
                         <>

@@ -94,11 +94,11 @@ export default function CustomDatePicker({
   return (
     <Fragment>
       <FormGroup className="mx-0 px-0 col-12">
-        {label && !isBold && (
+        {label && (
           <Label
             for={props.name}
             style={{ fontSize: "12px" }}
-            className="font-weight-bold"
+            className={isBold && "font-weight-bold"}
           >
             {label}
           </Label>
