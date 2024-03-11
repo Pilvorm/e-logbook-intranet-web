@@ -375,6 +375,8 @@ export const getServerSideProps = wrapper.getServerSideProps(
         "X-FILTER": `${
           query?.filter ? formatFilter(JSON.parse(query?.filter)) : mentorFilter
         }`,
+        "CSTM-STARTDATE": query?.filter ? JSON.parse(query?.filter).startDate : "",
+        "CSTM-ENDDATE": query?.filter ? JSON.parse(query?.filter).endDate : "",
       })
     );
 

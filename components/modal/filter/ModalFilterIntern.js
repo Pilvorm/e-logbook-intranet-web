@@ -119,15 +119,17 @@ const ModalFilterIntern = ({
 
   const onSubmit = (values, actions) => {
     const { startDate, endDate } = values;
-
     setFilterQuery({
       ...filterQuery,
       startDate,
       endDate,
     });
-
-    handleFilterQuery(filterQuery);
     actions.setSubmitting(true);
+    handleFilterQuery({
+      ...filterQuery,
+      startDate: startDate,
+      endDate: endDate,
+    });
   };
 
   const DropdownIndicator = (props) => {
@@ -150,8 +152,8 @@ const ModalFilterIntern = ({
           <Formik
             enableReinitialize
             initialValues={{
-              startDate: filterQuery.startDate || "",
-              endDate: filterQuery.endDate || "",
+              startDate: filterQuery.startDate || new Date(),
+              endDate: filterQuery.endDate || new Date(),
             }}
             onSubmit={onSubmit}
           >
